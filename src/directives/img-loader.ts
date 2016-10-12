@@ -1,74 +1,68 @@
-import { Directive, Input, Output, EventEmitter, ElementRef, Renderer } from '@angular/core';
-import { ImageLoaderConfig } from "../providers/image-loader-config";
-import {ImageLoader} from "../providers/image-loader";
+import { Component, Input, ElementRef, Renderer } from '@angular/core';
+import { ImageLoader } from "../providers/image-loader";
 
-@Directive({
-  selector: '[imgLoader]'
+@Component({
+  selector: 'img-loader',
+  template: ''
+  // template: '<div *ngIf="useImg && !isLoading">' +
+  // '<img [src]="imageSrc"/>' +
+  // '</div>'
 })
 export class ImgLoader {
 
   /**
    * The URL of the image to load.
    */
-  @Input('imgLoader') imageUrl: string;
-
-  /**
-   * The URL of the image to show if an error occurs. Leave this blank to not show anything.
-   */
-  @Input() errorImage: string;
+  @Input('src') imageUrl: string;
 
   /**
    * The name of the Ionic Spinner to show while loading. Leave this blank to not show anything.
    */
   @Input() spinner: string;
 
-  /**
-   * Event emitter that notifies you when the image is loaded
-   * @type {EventEmitter<void>}
-   */
-  @Output() onLoad: EventEmitter<void> = new EventEmitter<void>();
+  @Input() useImg: boolean = false;
 
-  /**
-   * Event emiter that notifies you when an error occurs, and passes you the error response/message.
-   * @type {EventEmitter<any>}
-   */
-  @Output() onError: EventEmitter<any> = new EventEmitter<any>();
+  @Input() width: string = '100%';
 
-  /**
-   * The tag name of the element this directive is attached to.
-   * This is used to determine whether we're on an `img` tag or something else.
-   */
-  private tagName: string;
+  @Input() height: string = '100%';
 
   /**
    * Whether the image is still loading
    */
-  private isLoading: boolean;
+  private isLoading: boolean = true;
 
-  /**
-   * Whether an error occurred while loading the image
-   */
-  error: boolean;
+  private imageContainer: HTMLElement | HTMLImageElement;
+
+  imgSrc: string = '';
 
   constructor(
     private element: ElementRef
     , private renderer: Renderer
-    , private config: ImageLoaderConfig
     , private imageLoader: ImageLoader
   ) {
   }
 
   ngOnInit(): void {
-    // set tag name
-    this.tagName = this.element.nativeElement.tagName;
-
+    if (this.useImg) {
+      this.renderer.createElement(this.element.nativeElement, 'img');
+      this.imageContainer = <HTMLImageElement>this.element.nativeElement.children[0];
+    } else {
+      this.imageContainer = this.element.nativeElement;
+      this.renderer.setElementStyle(this.imageContainer, 'width', this.width);
+      this.renderer.setElementStyle(this.imageContainer, 'height', this.height);
+      this.renderer.setElementStyle(this.imageContainer, 'display', 'block');
+      this.renderer.setElementStyle(this.imageContainer, 'background-size', 'contain');
+      this.renderer.setElementStyle(this.imageContainer, 'background-repeat', 'no-repeat');
+    }
     // fetch image
     this.imageLoader.getImagePath(this.imageUrl)
       .then((imageUrl: string) => {
-        if (this.tagName === 'IMG') {
-          this.renderer.setElementAttribute(this.element, 'src', imageUrl);
+        console.log('imgUrl is: ', imageUrl);
+        this.isLoading = false;
+        if (this.useImg) {
+          this.imgSrc = imageUrl;
         } else {
-          this.renderer.setElementStyle(this.element, 'background-image', 'url(\'' + imageUrl +'\')');
+          this.renderer.setElementStyle(this.imageContainer, 'background-image', 'url(\'' + imageUrl +'\')');
         }
       });
   }
