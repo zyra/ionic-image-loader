@@ -1,0 +1,39 @@
+{
+  "name": "ionic-image-loader",
+  "version": "0.0.1",
+  "description": "Ionic 2 Directive and Service to load images in a background thread and cache them for later use",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "node_modules/.bin/ngc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zyramedia/ionic-image-loader.git"
+  },
+  "keywords": [
+    "ionic2",
+    "image",
+    "loading",
+    "ionic",
+    "angular2"
+  ],
+  "author": "Zyra Media Inc.",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zyramedia/ionic-image-loader/issues"
+  },
+  "homepage": "https://github.com/zyramedia/ionic-image-loader#readme",
+  "devDependencies": {
+    "@angular/compiler": "2.0.2",
+    "@angular/compiler-cli": "0.6.4",
+    "@angular/core": "2.0.2",
+    "@angular/http": "2.0.0",
+    "@types/es6-shim": "^0.31.32",
+    "ionic-angular": "2.0.0-rc.0",
+    "ionic-native": "^2.2.2",
+    "rxjs": "5.0.0-beta.12",
+    "typescript": "^2.0.3",
+    "zone.js": "0.6.21"
+  }
+}
