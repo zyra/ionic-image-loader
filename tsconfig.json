@@ -6,6 +6,10 @@
     "sourceMap": true,
     "declaration": true,
     "experimentalDecorators": true,
+    "lib": [
+      "dom",
+      "es2015"
+    ],
     "outDir": "dist"
   },
   "exclude": [
