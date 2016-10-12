@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { ImgLoader } from "./directives/img-loader";
+import { ImgLoader } from "./components/img-loader";
 import { ImageLoader } from "./providers/image-loader";
 import { ImageLoaderConfig } from "./providers/image-loader-config";
 
