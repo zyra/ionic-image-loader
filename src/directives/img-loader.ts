@@ -53,7 +53,8 @@ export class ImgLoader {
         private element: ElementRef
         , private renderer: Renderer
         , private config: ImageLoaderConfig
-    ) {}
+    ) {
+    }
 
     ngOnInit(): void {
         // set tag name

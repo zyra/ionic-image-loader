@@ -21,6 +21,8 @@ export class ImageLoader {
     this.platform.ready().then(() => {
       if (typeof cordovaHTTP !== 'undefined') {
         this.isNativeAvailable = true;
+      } else if (this.config.isDebug) {
+        console.info('ImageLoader: Falling back to @angular/http since cordovaHTTP isn\'t available');
       }
     });
   }
@@ -44,10 +46,6 @@ export class ImageLoader {
 
       } else {
         // cordovaHTTP isn't available so we'll use @angular/http
-
-        if (this.config.isDebug) {
-          console.info('ImageLoader: Falling back to @angular/http since cordovaHTTP isn\'t available');
-        }
 
         this.http.get(url)
           .subscribe(
