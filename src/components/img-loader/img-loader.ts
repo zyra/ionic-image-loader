@@ -4,7 +4,7 @@ import { ImageLoaderConfig } from "../../providers/image-loader-config";
 
 @Component({
   selector: 'img-loader',
-  template: ''
+  template: '<image-loader-spinner *ngIf="isLoading"></image-loader-spinner>'
 })
 export class ImgLoader implements OnInit {
 
@@ -13,10 +13,7 @@ export class ImgLoader implements OnInit {
    */
   @Input('src') imageUrl: string;
 
-  /**
-   * The name of the Ionic Spinner to show while loading. Leave this blank to not show anything.
-   */
-  @Input() spinner: string;
+  @Input() spinner: boolean;
 
   @Input() useImg: boolean = false;
 
@@ -24,14 +21,7 @@ export class ImgLoader implements OnInit {
 
   @Input() height: string = '100%';
 
-  /**
-   * Whether the image is still loading
-   */
-  private isLoading: boolean = true;
-
-  private imageContainer: HTMLElement | HTMLImageElement;
-
-  imgSrc: string = '';
+  isLoading: boolean = true;
 
   constructor(
     private element: ElementRef
@@ -39,32 +29,33 @@ export class ImgLoader implements OnInit {
     , private imageLoader: ImageLoader
     , private config: ImageLoaderConfig
   ) {
-    if (!this.spinner && config.spinnerEnabled) {
-      this.spinner = config.defaultSpinner;
+    if (typeof this.spinner === 'undefined' && config.spinnerEnabled) {
+      this.spinner = true;
     }
   }
 
   ngOnInit(): void {
-    if (this.useImg) {
-      this.renderer.createElement(this.element.nativeElement, 'img');
-      this.imageContainer = <HTMLImageElement>this.element.nativeElement.getElementsByTagName('IMG')[0];
-    } else {
-      this.imageContainer = this.element.nativeElement;
-      this.renderer.setElementStyle(this.imageContainer, 'width', this.width);
-      this.renderer.setElementStyle(this.imageContainer, 'height', this.height);
-      this.renderer.setElementStyle(this.imageContainer, 'display', 'block');
-      this.renderer.setElementStyle(this.imageContainer, 'background-size', 'contain');
-      this.renderer.setElementStyle(this.imageContainer, 'background-repeat', 'no-repeat');
-    }
-    // fetch image
     this.imageLoader.getImagePath(this.imageUrl)
       .then((imageUrl: string) => {
-        console.log('imgUrl is: ', imageUrl);
+
+        let element;
+
         this.isLoading = false;
+
         if (this.useImg) {
-          this.imgSrc = imageUrl;
+          this.renderer.createElement(this.element.nativeElement, 'img');
+          element = <HTMLImageElement>this.element.nativeElement.getElementsByTagName('IMG')[0];
+          this.renderer.setElementAttribute(element, 'src', imageUrl);
         } else {
-          this.renderer.setElementStyle(this.imageContainer, 'background-image', 'url(\'' + imageUrl +'\')');
+
+          element = this.element.nativeElement;
+
+          this.renderer.setElementStyle(element, 'width', this.width);
+          this.renderer.setElementStyle(element, 'height', this.height);
+          this.renderer.setElementStyle(element, 'display', 'block');
+          this.renderer.setElementStyle(element, 'background-size', 'contain');
+          this.renderer.setElementStyle(element, 'background-repeat', 'no-repeat');
+          this.renderer.setElementStyle(element, 'background-image', 'url(\'' + imageUrl +'\')');
         }
       });
   }

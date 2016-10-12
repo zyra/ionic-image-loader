@@ -5,6 +5,7 @@
     "moduleResolution": "node",
     "sourceMap": true,
     "declaration": true,
+    "noImplicitAny": false,
     "experimentalDecorators": true,
     "lib": [
       "dom",
