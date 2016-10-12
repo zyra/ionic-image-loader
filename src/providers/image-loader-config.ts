@@ -3,16 +3,25 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class ImageLoaderConfig {
 
-  isDebug: boolean = false;
+  debugMode: boolean = false;
 
-  cacheDirectoryPath: string = 'image-loader-cache';
+  private _cacheDirectoryName: string = 'image-loader-cache';
 
-  enableDebugMode(): void {
-    this.isDebug = true;
+  set cacheDirectoryName(name: string) {
+    name.replace(/\W/g, '');
+    this._cacheDirectoryName = name;
   }
 
-  setCacheDirectory(path: string): void {
-    this.cacheDirectoryPath = path;
+  get cacheDirectoryName(): string {
+    return this._cacheDirectoryName;
+  }
+
+  enableDebugMode(): void {
+    this.debugMode = true;
+  }
+
+  setCacheDirectoryName(name: string): void {
+    this.cacheDirectoryName = name;
   }
 
 }
