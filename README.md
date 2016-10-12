@@ -1,3 +1,7 @@
+[![npm](https://img.shields.io/npm/l/express.svg)](https://www.npmjs.com/package/ionic-image-loader)
+[![NPM](https://nodei.co/npm/ionic-image-loader.png?stars&downloads)](https://nodei.co/npm/ionic-image-loader/)
+[![NPM](https://nodei.co/npm-dl/ionic-image-loader.png?months=6&height=2)](https://nodei.co/npm/ionic-image-loader/)
+
 # ionic-image-loader
 **Ionic 2** Component and Service to load images in a background thread and cache them for later use. Uses `cordova-plugin-file` and `cordova-plugin-file-transfer` via `ionic-native` wrappers.
 
