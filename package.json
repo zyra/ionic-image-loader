@@ -4,7 +4,7 @@
   "description": "Ionic 2 Directive and Service to load images in a background thread and cache them for later use",
   "main": "dist/index.js",
   "scripts": {
-    "build": "node_modules/.bin/ngc",
+    "build": "rm -rf aot dist && node_modules/.bin/ngc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
