@@ -1,10 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
-import {HTTP, File, DirectoryEntry, FileEntry, Transfer} from 'ionic-native';
-import { Platform } from 'ionic-angular';
+import { File, FileEntry, Transfer } from 'ionic-native';
 import { ImageLoaderConfig } from "./image-loader-config";
 
-declare var cordovaHTTP: any;
 declare var cordova: any;
 
 @Injectable()
@@ -13,12 +10,10 @@ export class ImageLoader {
   private isCacheReady: boolean = false;
   private isInit: boolean = false;
 
-  constructor(private http: Http,
-              private platform: Platform,
-              private config: ImageLoaderConfig) {
-    this.platform.ready().then(() => {
+  constructor(private config: ImageLoaderConfig) {
+    document.addEventListener('deviceready', () => {
       this.initCache();
-    });
+    }, false);
   }
 
   private downloadImage(imageUrl: string, localPath: string): Promise<any> {
@@ -43,7 +38,6 @@ export class ImageLoader {
               })
               .catch((e) => {
                 resolve(imageUrl);
-                console.info('Here 2');
                 this.throwError(e);
               });
           });
@@ -86,46 +80,11 @@ export class ImageLoader {
             this.isInit = true;
           })
           .catch(e => {
-            console.info('Here 4');
             this.throwError(e);
             this.isInit = true;
           });
       });
 
-  }
-
-  // private getRawImage(url: string): Promise<any> {
-  //   return new Promise<any>((resolve, reject) => {
-  //     if (this.isNativeHttpAvailable) {
-  //       // cordovaHTTP is available, lets get the image via background thread
-  //       HTTP.get(url, {}, {})
-  //         .then(
-  //           data => {
-  //             resolve(data.data);
-  //           },
-  //           reject
-  //         );
-  //     } else {
-  //       // cordovaHTTP isn't available so we'll use @angular/http
-  //       this.http.get(url)
-  //         .subscribe(
-  //           data => {
-  //             resolve(data.arrayBuffer());
-  //           },
-  //           reject
-  //         );
-  //     }
-  //   });
-  // }
-
-  /**
-   *
-   * @param image {ArrayBuffer} Image in binary
-   * @param fileName {string} File name to save as
-   * @returns {Promise<string>} Promise that resolves with native URL of file
-   */
-  private cacheImage(image: ArrayBuffer, fileName: string): Promise<void> {
-    return File.writeFile(cordova.file.cacheDirectory + this.config.cacheDirectoryName, fileName, new Blob([image]), {replace: true});
   }
 
   private getCachedImagePath(url: string): Promise<string> {
@@ -135,13 +94,9 @@ export class ImageLoader {
       }
       let fileName = this.createFileName(url);
       let dirPath = cordova.file.cacheDirectory + this.config.cacheDirectoryName;
-      File.checkFile(dirPath, fileName)
-        .then(() => {
-          File.resolveLocalFilesystemUrl(dirPath + '/' + fileName)
-            .then((fileEntry: FileEntry) => {
-              resolve(fileEntry.nativeURL);
-            })
-            .catch(reject);
+      File.resolveLocalFilesystemUrl(dirPath + '/' + fileName)
+        .then((fileEntry: FileEntry) => {
+          resolve(fileEntry.nativeURL);
         })
         .catch(reject);
     });
@@ -181,12 +136,8 @@ export class ImageLoader {
    * @returns {string} Unique file name
    */
   private createFileName(url: string): string {
-    // get file extension and clean up anything after the extension
-    // let ext: string = url.split('.').pop().split(/\#|\?/)[0];
     // hash the url to get a unique file name
-    let hash = this.hashString(url);
-    return hash.toString();
-    // return hash + '.' + ext;
+    return this.hashString(url).toString();
   }
 
   /**

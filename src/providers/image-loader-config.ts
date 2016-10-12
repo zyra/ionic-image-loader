@@ -5,6 +5,10 @@ export class ImageLoaderConfig {
 
   debugMode: boolean = false;
 
+  defaultSpinner: string = 'ios';
+
+  spinnerEnabled: boolean = true;
+
   private _cacheDirectoryName: string = 'image-loader-cache';
 
   set cacheDirectoryName(name: string) {
@@ -18,6 +22,14 @@ export class ImageLoaderConfig {
 
   enableDebugMode(): void {
     this.debugMode = true;
+  }
+
+  enableSpinner(enable: boolean): void {
+    this.spinnerEnabled = enable;
+  }
+
+  setDefaultSpinner(name: string): void {
+    this.defaultSpinner = name;
   }
 
   setCacheDirectoryName(name: string): void {
