@@ -11,9 +11,16 @@ export class ImageLoader {
   private isInit: boolean = false;
 
   constructor(private config: ImageLoaderConfig) {
-    document.addEventListener('deviceready', () => {
-      this.initCache();
-    }, false);
+    if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
+      // we are running on a browser, or using livereload
+      // plugin will not function in this case
+      this.isInit = true;
+      this.throwWarning('You are running on a browser or using livereload, IonicImageLoader will not function, falling back to browser loading.');
+    } else {
+      document.addEventListener('deviceready', () => {
+        this.initCache();
+      }, false);
+    }
   }
 
   private downloadImage(imageUrl: string, localPath: string): Promise<any> {
