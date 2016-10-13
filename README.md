@@ -4,6 +4,19 @@
 # ionic-image-loader
 **Ionic 2** Component that load images in a native background thread and cache them for later use. Uses `cordova-plugin-file` and `cordova-plugin-file-transfer` via `ionic-native` wrappers.
 
+## Setup
+
+### 1. Install the NPM Package
+```
+npm install --save ionic-image-loader
+```
+
+### 2. Install Required Plugins
+```
+ionic plugin add cordova-plugin-file --save
+ionic plugin add cordova-plugin-file-transfer --save
+```
+
 ## Usage
 
 ### 1. Import `IonicImageLoader` module into your app's module.
