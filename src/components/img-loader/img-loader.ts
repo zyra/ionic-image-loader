@@ -13,22 +13,50 @@ export class ImgLoader implements OnInit {
    */
   @Input('src') imageUrl: string;
 
+  /**
+   * Fallback URL to load when the image url fails to load or does not exist.
+   */
   @Input('fallback') fallbackUrl: string;
 
+  /**
+   * Whether to show a spinner while the image loads
+   */
   @Input() spinner: boolean;
 
+  /**
+   * Use <img> tag
+   */
   @Input() useImg: boolean;
 
+  /**
+   * Width of the image. This will be ignored if using useImg.
+   */
   @Input() width: string;
 
+  /**
+   * Height of the image. This will be ignored if using useImg.
+   */
   @Input() height: string;
 
+  /**
+   * Display type of the image. This will be ignored if using useImg.
+   */
   @Input() display: string;
 
+  /**
+   * Background size. This will be ignored if using useImg.
+   */
   @Input() backgroundSize: string;
 
+  /**
+   * Background repeat. This will be ignored if using useImg.
+   */
   @Input() backgroundRepeat: string;
 
+  /**
+   * Indicates if the image is still loading
+   * @type {boolean}
+   */
   isLoading: boolean = true;
 
   constructor(
@@ -37,6 +65,9 @@ export class ImgLoader implements OnInit {
     , private imageLoader: ImageLoader
     , private config: ImageLoaderConfig
   ) {
+
+    // if any config item was not provided, it will be replaced by the global config
+
     if (!this.spinner && config.spinnerEnabled) {
       this.spinner = true;
     }
@@ -96,10 +127,15 @@ export class ImgLoader implements OnInit {
     this.isLoading = false;
 
     if (this.useImg) {
+
+      // Using <img> tag
       this.renderer.createElement(this.element.nativeElement, 'img');
       element = <HTMLImageElement>this.element.nativeElement.getElementsByTagName('IMG')[0];
       this.renderer.setElementAttribute(element, 'src', imageUrl);
+
     } else {
+
+      // Not using <img> tag
 
       element = this.element.nativeElement;
 
