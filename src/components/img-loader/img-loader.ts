@@ -113,7 +113,7 @@ export class ImgLoader implements OnInit {
         this.setImage(this.fallbackUrl);
       }
       // remove the spinner just in case there is no fallback image
-      this.isLoading = false;
+      this.isLoading = true;
       return;
     }
 
@@ -124,13 +124,14 @@ export class ImgLoader implements OnInit {
   private setImage(imageUrl: string): void {
     let element;
 
-    this.isLoading = false;
+    this.isLoading = true;
 
     if (this.useImg) {
 
       // Using <img> tag
       this.renderer.createElement(this.element.nativeElement, 'img');
       element = <HTMLImageElement>this.element.nativeElement.getElementsByTagName('IMG')[0];
+      console.log(element.attributes);
       this.renderer.setElementAttribute(element, 'src', imageUrl);
 
     } else {
