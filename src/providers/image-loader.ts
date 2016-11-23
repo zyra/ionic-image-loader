@@ -52,7 +52,7 @@ export class ImageLoader {
    * @returns {Promise<string>} Returns a promise that will always resolve with an image URL
    */
   getImagePath(imageUrl: string): Promise<string> {
-    return new Promise<string>((resolve) => {
+    return new Promise<string>((resolve, reject) => {
 
       let getImage = () => {
         this.getCachedImagePath(imageUrl)
@@ -67,7 +67,7 @@ export class ImageLoader {
                 resolve(localPath);
               })
               .catch((e) => {
-                resolve(imageUrl);
+                reject();
                 this.throwError(e);
               });
           });

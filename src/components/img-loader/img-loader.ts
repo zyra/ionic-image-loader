@@ -118,7 +118,8 @@ export class ImgLoader implements OnInit {
     }
 
     this.imageLoader.getImagePath(this.imageUrl)
-      .then((imageUrl: string) => this.setImage(imageUrl));
+      .then((imageUrl: string) => this.setImage(imageUrl))
+      .catch((error: any) => this.setImage(this.fallbackUrl || this.imageUrl));
   }
 
   private setImage(imageUrl: string): void {
@@ -159,7 +160,7 @@ export class ImgLoader implements OnInit {
         this.renderer.setElementStyle(element, 'background-repeat', this.backgroundRepeat);
       }
 
-      this.renderer.setElementStyle(element, 'background-image', 'url(\'' + imageUrl +'\')');
+      this.renderer.setElementStyle(element, 'background-image', 'url(\'' + imageUrl + '\')');
     }
   }
 
