@@ -159,7 +159,7 @@ export class ImgLoader implements OnInit {
         this.renderer.setElementStyle(element, 'background-repeat', this.backgroundRepeat);
       }
 
-      this.renderer.setElementStyle(element, 'background-image', 'url(\'' + imageUrl +'\')');
+      this.renderer.setElementStyle(element, 'background-image', 'url(\'' + imageUrl + '\')');
     }
   }
 
