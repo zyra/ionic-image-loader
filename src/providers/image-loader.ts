@@ -200,7 +200,7 @@ export class ImageLoader {
    * @returns {Promise<boolean|FileError>} Returns a promise that resolves if exists, and rejects if it doesn't
    */
   private get cacheDirectoryExists(): Promise<boolean> {
-    return File.checkDir(cordova.file.cacheDirectory, this.config.cacheDirectoryName);
+    return <Promise<boolean>>File.checkDir(cordova.file.cacheDirectory, this.config.cacheDirectoryName);
   }
 
   /**

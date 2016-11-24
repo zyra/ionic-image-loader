@@ -31,7 +31,7 @@
     "@angular/compiler-cli": "0.6.2",
     "@angular/core": "2.0.0",
     "@angular/platform-browser": "2.0.0",
-    "ionic-native": "^2.2.2",
+    "ionic-native": "^2.2.6",
     "rxjs": "5.0.0-beta.12",
     "typescript": "^2.0.3",
     "zone.js": "0.6.21"
