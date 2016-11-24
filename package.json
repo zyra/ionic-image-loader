@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "scripts": {
-    "build": "rm -rf aot dist && node_modules/.bin/ngc",
+    "build": "rm -rf aot dist && ngc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
