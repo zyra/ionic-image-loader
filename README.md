@@ -89,7 +89,7 @@ export class MyMainAppComponent {
     imageLoaderConfig.enableDebugMode();
     
     // set a custom name for the cache directory. The default name is 'image-loader-cache'
-    imageLoaderConfig.setCacheDirectory('my-custom-cache-directory-name');
+    imageLoaderConfig.setCacheDirectoryName('my-custom-cache-directory-name');
     
     // disable spinners by default, you can add [spinner]="true" to a specific component instance later on to override this
     imageLoaderConfig.enableSpinner(false);
@@ -127,6 +127,9 @@ Set background repeat for images that are not using <img> tag.
 #### setFallbackUrl(fallbackUrl: string)
 Set fallback URL to use when image src is undefined or did not resolve.
 This image will not be cached. This should ideally be a locally saved image.
+
+#### setCacheDirectoryName(directoryName: string)
+Set a custom directory name to store the cached images in.
 
 
 # Contributing
