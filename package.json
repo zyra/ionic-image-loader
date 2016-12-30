@@ -1,6 +1,6 @@
 {
   "name": "ionic-image-loader",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Ionic 2 Component and Service to load images in a background thread and cache them for later use",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
