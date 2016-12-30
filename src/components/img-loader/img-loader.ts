@@ -26,7 +26,12 @@ export class ImgLoader implements OnInit {
   /**
    * Use <img> tag
    */
-  @Input() useImg: boolean;
+  @Input()
+  set useImg(val: boolean) {
+    this._useImg = (val != false);
+  }
+
+  private _useImg: boolean;
 
   /**
    * Width of the image. This will be ignored if using useImg.
@@ -127,7 +132,7 @@ export class ImgLoader implements OnInit {
 
     this.isLoading = false;
 
-    if (this.useImg) {
+    if (this._useImg) {
 
       // Using <img> tag
       this.renderer.createElement(this.element.nativeElement, 'img');
