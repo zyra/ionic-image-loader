@@ -131,6 +131,9 @@ This image will not be cached. This should ideally be a locally saved image.
 #### setCacheDirectoryName(directoryName: string)
 Set a custom directory name to store the cached images in.
 
+#### setConcurrency(concurrency: number)
+Set the maximum number of concurrent connections. Cached images will be loaded instantly, this limit is only for new images.
+
 
 # Contributing
 - **Having trouble?** Create an issue [here](https://github.com/zyramedia/ionic-image-loader/issues/new)
