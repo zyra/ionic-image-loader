@@ -53,6 +53,34 @@ export class ImageLoader {
   }
 
   /**
+   * Clears the cache
+   */
+  clearCache(): void {
+
+    const clear = () => {
+
+      if (!this.isInit) {
+        // do not run this method until our service is initialized
+        setTimeout(clear.bind(this), 500);
+        return;
+      }
+
+      // pause any operations
+      this.isInit = false;
+
+      File.removeRecursively(cordova.file.cacheDirectory, this.config.cacheDirectoryName)
+        .then(() => {
+          this.initCache(true);
+        })
+        .catch(this.throwError.bind(this));
+
+    };
+
+    clear();
+
+  }
+
+  /**
    * Downloads an image via cordova-plugin-file-transfer
    * @param imageUrl {string} The remote URL of the image
    * @param localPath {string} The local path to store the image at

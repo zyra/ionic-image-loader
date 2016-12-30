@@ -93,12 +93,15 @@ export class MyMainAppComponent {
     
     // disable spinners by default, you can add [spinner]="true" to a specific component instance later on to override this
     imageLoaderConfig.enableSpinner(false);
+    
+    // set the maximum concurrent connections to 10
+    imageLoaderConfig.setConcurrency(10);
   }
   
 }
 ```
 
-Below are all the methods that the provider has:
+Below are all the methods that the config provider has:
 
 #### enableDebugMode() 
 Enables debug mode to receive console logs, errors, warnings.
@@ -134,6 +137,21 @@ Set a custom directory name to store the cached images in.
 #### setConcurrency(concurrency: number)
 Set the maximum number of concurrent connections. Cached images will be loaded instantly, this limit is only for new images.
 
+# Clearing the cache
+```typescript
+
+import { ImageLoader } from 'ionic-image-loader';
+
+@Component(...)
+class MyComponent {
+  
+  constructor(imageLoader: ImageLoader) {
+    imageLoader.clearCache();
+  }
+  
+}
+
+```
 
 # Contributing
 - **Having trouble?** Create an issue [here](https://github.com/zyramedia/ionic-image-loader/issues/new)
