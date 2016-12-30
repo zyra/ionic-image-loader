@@ -21,6 +21,8 @@ export class ImageLoaderConfig {
 
   fallbackUrl: string;
 
+  concurrency: number = 5;
+
   private _cacheDirectoryName: string = 'image-loader-cache';
 
   set cacheDirectoryName(name: string) {
@@ -110,6 +112,14 @@ export class ImageLoaderConfig {
    */
   setFallbackUrl(fallbackUrl: string): void {
     this.fallbackUrl = fallbackUrl;
+  }
+
+  /**
+   * Set the maximum number of allowed connections at the same time.
+   * @param concurrency
+   */
+  setConcurrency(concurrency: number): void {
+    this.concurrency = concurrency;
   }
 
 }

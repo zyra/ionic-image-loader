@@ -21,6 +21,24 @@ export class ImageLoader {
    */
   private isInit: boolean = false;
 
+  /**
+   * Number of concurrent requests allowed
+   * @type {number}
+   */
+  private concurrency: number = 5;
+
+  /**
+   * Queue items
+   * @type {Array}
+   */
+  private queue: Array<{
+    imageUrl: string;
+    resolve: Function;
+    reject: Function;
+  }> = [];
+
+  private processing: number = 0;
+
   constructor(private config: ImageLoaderConfig) {
     if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
       // we are running on a browser, or using livereload
@@ -61,16 +79,9 @@ export class ImageLoader {
           })
           .catch(() => {
             // image doesn't exist in cache, lets fetch it and save it
-            let localPath = cordova.file.cacheDirectory + this.config.cacheDirectoryName + '/' + this.createFileName(imageUrl);
-            this.downloadImage(imageUrl, localPath)
-              .then(() => {
-                resolve(localPath);
-              })
-              .catch((e) => {
-                reject();
-                this.throwError(e);
-              });
+            this.addItemToQueue(imageUrl, resolve, reject);
           });
+
       };
 
       let check = () => {
@@ -93,10 +104,83 @@ export class ImageLoader {
   }
 
   /**
+   * Add an item to the queue
+   * @param imageUrl
+   * @param resolve
+   * @param reject
+   */
+  private addItemToQueue(imageUrl: string, resolve, reject): void {
+
+    this.queue.push({
+      imageUrl,
+      resolve,
+      reject
+    });
+
+    this.processQueue();
+
+  }
+
+  /**
+   * Check if we can process more items in the queue
+   * @returns {boolean}
+   */
+  private get canProcess(): boolean {
+    return (
+      this.queue.length > 0
+      && this.processing < this.concurrency
+    );
+  }
+
+  /**
+   * Processes one item from the queue
+   */
+  private processQueue() {
+
+    // make sure we can process items first
+    if (!this.canProcess) return;
+
+    // increase the processing number
+    this.processing++;
+
+    // take the first item from queue
+    const currentItem = this.queue.splice(0,1)[0];
+
+    // process more items concurrently if we can
+    if (this.canProcess) this.processQueue();
+
+    // function to call when done processing this item
+    // this will reduce the processing number
+    // then will execute this function again to process any remaining items
+    const done = () => {
+      this.processing--;
+      this.processQueue();
+    };
+
+    let localPath = cordova.file.cacheDirectory + this.config.cacheDirectoryName + '/' + this.createFileName(currentItem.imageUrl);
+    this.downloadImage(currentItem.imageUrl, localPath)
+      .then(() => {
+        currentItem.resolve(localPath);
+
+        done();
+      })
+      .catch((e) => {
+        currentItem.reject();
+        this.throwError(e);
+
+        done();
+      });
+
+  }
+
+  /**
    * Initialize the cache service
    * @param replace {boolean} Whether to replace the cache directory if it already exists
    */
   private initCache(replace?: boolean): void {
+
+    this.concurrency = this.config.concurrency;
+
     if (!this.filePluginExists) {
       this.isInit = true;
       return;
