@@ -28,7 +28,7 @@ export class ImgLoader implements OnInit {
    */
   @Input()
   set useImg(val: boolean) {
-    this._useImg = (val != false);
+    this._useImg = val !== false;
   }
 
   private _useImg: boolean;
@@ -81,7 +81,7 @@ export class ImgLoader implements OnInit {
       this.fallbackUrl = config.fallbackUrl;
     }
 
-    if (!this.useImg) {
+    if (typeof this._useImg !== 'boolean') {
       this.useImg = config.useImg;
     }
 
