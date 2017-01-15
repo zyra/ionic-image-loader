@@ -156,3 +156,7 @@ class MyComponent {
 # Contributing
 - **Having trouble?** Create an issue [here](https://github.com/zyramedia/ionic-image-loader/issues/new)
 - **New feature or bug fix?** PRs are welcome :)
+
+
+# Quirks
+- Using WkWebviewUI plugin? See this issue: https://github.com/zyramedia/ionic-image-loader/issues/11#issuecomment-271288789
