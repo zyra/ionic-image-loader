@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { File, FileEntry, Transfer } from 'ionic-native';
+import { File, FileEntry, FileReader, Transfer } from 'ionic-native';
 import { ImageLoaderConfig } from "./image-loader-config";
 
 declare var cordova: any;
@@ -268,7 +268,27 @@ export class ImageLoader {
       File.resolveLocalFilesystemUrl(dirPath + '/' + fileName)
         .then((fileEntry: FileEntry) => {
           // file exists in cache
-          resolve(fileEntry.nativeURL);
+
+          // now check if iOS device & using WKWebView Engine
+          if (cordova.device.platform === 'iOS' && (<any>window).webkit) {
+
+            // Read FileEntry and return as data url
+            fileEntry.file((file: Blob) => {
+              const reader = new FileReader();
+
+              reader.onloadend = function() {
+                resolve(this.result);
+              };
+
+              reader.readAsDataURL(file);
+            }, reject);
+
+          } else {
+
+            // return native path
+            resolve(fileEntry.nativeURL);
+
+          }
         })
         .catch(reject); // file doesn't exist
 
