@@ -57,6 +57,8 @@ export class ImageLoader {
    */
   clearCache(): void {
 
+    if (typeof cordova ===  'undefined') return;
+
     const clear = () => {
 
       if (!this.isInit) {
