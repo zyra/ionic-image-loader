@@ -1,3 +1,18 @@
+<a name="1.4.0"></a>
+# [1.4.0](https://github.com/zyramedia/ionic-image-loader/compare/v1.3.0...v1.4.0) (2017-02-07)
+
+
+### Bug Fixes
+
+* **image-loader:** only clear cache on Cordova platform ([61a5032](https://github.com/zyramedia/ionic-image-loader/commit/61a5032))
+
+
+### Features
+
+* **image-loader:** add preload method ([a83f143](https://github.com/zyramedia/ionic-image-loader/commit/a83f143)), closes [#16](https://github.com/zyramedia/ionic-image-loader/issues/16)
+
+
+
 <a name="1.3.0"></a>
 # [1.3.0](https://github.com/zyramedia/ionic-image-loader/compare/v1.2.1...v1.3.0) (2017-01-18)
 
