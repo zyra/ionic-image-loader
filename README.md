@@ -84,12 +84,9 @@ export class MyMainAppComponent {
   constructor(
     private imageLoaderConfig: ImageLoaderConfig // optional, if you wish to configure the service 
   ){
-    // enable debug mode to get console errors/warnings/logs
-    // this could be useful while trying to debug issues with the component
-    imageLoaderConfig.enableDebugMode();
     
-    // set a custom name for the cache directory. The default name is 'image-loader-cache'
-    imageLoaderConfig.setCacheDirectoryName('my-custom-cache-directory-name');
+    
+    
     
     // disable spinners by default, you can add [spinner]="true" to a specific component instance later on to override this
     imageLoaderConfig.enableSpinner(false);
@@ -106,36 +103,112 @@ Below are all the methods that the config provider has:
 #### enableDebugMode() 
 Enables debug mode to receive console logs, errors, warnings.
 
+Example:
+```typescript
+// enable debug mode to get console errors/warnings/logs
+// this could be useful while trying to debug issues with the component
+this.imageLoaderConfig.enableDebugMode();
+```
+---
 #### enableSpinner(enable: boolean)
-Sets the cache directory name. Defaults to 'image-loader-cache'.
+Sets the cache directory name. Defaults to 'image-loader-cache'. Defaults to `true`.
 
+Example:
+```typescript
+this.imageLoaderConfig.enableSpinner(false); // disable spinner by default
+```
+
+---
 #### setHeight(height: string)
-Set default height for images that are not using <img> tag.
+Set default height for images that are not using <img> tag. Defaults to `100%`.
 
+---
 #### setWidth(width: string)
-Set default width for images that are not using <img> tag.
+Set default width for images that are not using <img> tag. Defaults to `100%`.
 
+Example:
+```typescript
+this.imageLoaderConfig.setWidth('500px'); // set default width to 500px
+```
+
+---
 #### setDisplay(display: string)
-Enable display mode for images that are not using <img> tag.
+Enable display mode for images that are not using <img> tag. Defaults to `block`.
 
+Example:
+```typescript
+this.imageLoaderConfig.setDisplay('inline-block');
+```
+---
 #### useImageTag(use: boolean)
 Use <img> tag by default.
 
-#### setBackgroundSize(backgroundSize: string)
-Set default background size for images that are not using <img> tag.
+Example:
+```typescript
+this.imageLoaderConfig.useImageTag(true); // use `<img>` tag by default
+```
 
+---
+#### setBackgroundSize(backgroundSize: string)
+Set default background size for images that are not using <img> tag. Defaults to `contain`.
+
+Example:
+```typescript
+this.imageLoaderConfig.setBackgroundSize('cover');
+```
+---
 #### setBackgroundRepeat(backgroundRepeat: string)
-Set background repeat for images that are not using <img> tag.
+Set background repeat for images that are not using <img> tag. Defaults to `no-repeat`.
+
+Example:
+```typescript
+this.imageLoaderConfig.setBackgroundRepeat('repeat-x');
+```
+---
 
 #### setFallbackUrl(fallbackUrl: string)
 Set fallback URL to use when image src is undefined or did not resolve.
 This image will not be cached. This should ideally be a locally saved image.
 
+Example:
+```typescript
+this.imageLoaderConfig.setFallbackUrl('assets/fallback.png'); // if images fail to load, display this image instead
+```
+
+---
 #### setCacheDirectoryName(directoryName: string)
-Set a custom directory name to store the cached images in.
+Set a custom directory name to store the cached images in. The cache directory by default is named `image-loader-cache`.
+
+Example:
+```typescript 
+this.imageLoaderConfig.setCacheDirectoryName('my-custom-cache-directory-name');
+```
+---
 
 #### setConcurrency(concurrency: number)
 Set the maximum number of concurrent connections. Cached images will be loaded instantly, this limit is only for new images.
+
+Example:
+```typescript
+this.imageLoaderConfig.setConcurrency(5); // 5 concurrent connections
+```
+---
+#### setMaximumCacheSize(cacheSize: number)
+Sets the maximum cache size in bytes.
+
+Example: 
+```typescript
+this.imageLoaderConfig.setMaximumCacheSize(20 * 1024 * 1024); // set max size to 20MB
+```
+---
+#### setMaximumCacheAge(cacheAge: number)
+Sets the maximum allowed cache age in milliseconds
+
+Example:
+```typescript
+this.imageLoaderConfig.setMaximumCacheAge(7 * 24 * 60 * 60 * 1000); // 7 days
+```
+---
 
 # Preloading images
 ```typescript
