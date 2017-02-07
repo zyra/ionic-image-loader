@@ -1,3 +1,19 @@
+<a name="1.5.0"></a>
+# [1.5.0](https://github.com/zyramedia/ionic-image-loader/compare/v1.4.0...v1.5.0) (2017-02-07)
+
+
+### Bug Fixes
+
+* fixes code that prevents caching ([8476f6b](https://github.com/zyramedia/ionic-image-loader/commit/8476f6b)), closes [#13](https://github.com/zyramedia/ionic-image-loader/issues/13)
+
+
+### Features
+
+* **core:** maximum cache size and age ([d49f69a](https://github.com/zyramedia/ionic-image-loader/commit/d49f69a)), closes [#14](https://github.com/zyramedia/ionic-image-loader/issues/14)
+* **image-loader-config:** add setMaximumCacheSize and setMaximumCacheAge ([c9e5fae](https://github.com/zyramedia/ionic-image-loader/commit/c9e5fae))
+
+
+
 <a name="1.4.0"></a>
 # [1.4.0](https://github.com/zyramedia/ionic-image-loader/compare/v1.3.0...v1.4.0) (2017-02-07)
 
