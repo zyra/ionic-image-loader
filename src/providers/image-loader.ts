@@ -281,7 +281,7 @@ export class ImageLoader {
           // file exists in cache
 
           // now check if iOS device & using WKWebView Engine
-          if (cordova.device.platform === 'iOS' && (<any>window).webkit) {
+          if (cordova.platformId == 'ios' && (<any>window).webkit) {
 
             // Read FileEntry and return as data url
             fileEntry.file((file: Blob) => {
