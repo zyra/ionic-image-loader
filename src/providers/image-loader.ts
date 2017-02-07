@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { File, FileEntry, FileReader, Transfer } from 'ionic-native';
 import { ImageLoaderConfig } from "./image-loader-config";
+import * as _ from 'lodash';
 
 declare var cordova: any;
 
@@ -38,6 +39,20 @@ export class ImageLoader {
   }> = [];
 
   private processing: number = 0;
+
+  private cacheIndex: Array<{
+    name: string;
+    modificationTime: Date;
+    size: number;
+  }> = [];
+
+  private currentCacheSize: number = 0;
+
+  private indexed: boolean = false;
+
+  private get shouldIndex() {
+    return (this.config.maxCacheAge > -1) || (this.config.maxCacheSize > -1);
+  }
 
   constructor(private config: ImageLoaderConfig) {
     if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
@@ -113,9 +128,7 @@ export class ImageLoader {
 
       let getImage = () => {
         this.getCachedImagePath(imageUrl)
-          .then(imagePath => {
-            resolve(imagePath);
-          })
+          .then(resolve)
           .catch(() => {
             // image doesn't exist in cache, lets fetch it and save it
             this.addItemToQueue(imageUrl, resolve, reject);
@@ -198,9 +211,13 @@ export class ImageLoader {
 
     let localPath = cordova.file.cacheDirectory + this.config.cacheDirectoryName + '/' + this.createFileName(currentItem.imageUrl);
     this.downloadImage(currentItem.imageUrl, localPath)
-      .then(() => {
-        currentItem.resolve(localPath);
+      .then((file: FileEntry) => {
 
+        if (this.shouldIndex) {
+          this.addFileToIndex(file).then(this.maintainCacheSize.bind(this));
+        }
+
+        currentItem.resolve(localPath);
         done();
       })
       .catch((e) => {
@@ -226,33 +243,100 @@ export class ImageLoader {
     }
 
     this.cacheDirectoryExists
-      .then(() => {
-
-        // exists
-
-        this.isCacheReady = true;
-        this.isInit = true;
-
-      })
       .catch(() => {
-
         // doesn't exist
-
-        this.createCacheDirectory(replace)
-          .then(() => {
-
-            this.isCacheReady = true;
-            this.isInit = true;
-
-          })
+        return this.createCacheDirectory(replace)
           .catch(e => {
 
             this.throwError(e);
             this.isInit = true;
 
           });
+      })
+      .then(() => this.indexCache())
+      .then(() => {
+        this.isCacheReady = true;
+        this.isInit = true;
+      });
+
+  }
+
+  /**
+   * Adds a file to index.
+   * Also deletes any files if they are older than the set maximum cache age.
+   * @param file {FileEntry} File to index
+   * @returns {Promise<any>}
+   */
+  private addFileToIndex(file: FileEntry): Promise<any> {
+    return new Promise<any>((resolve, reject) => file.getMetadata(resolve, reject))
+      .then(metadata => {
+
+        if (
+          this.config.maxCacheAge > -1
+          && (Date.now() - metadata.modificationTime.getTime()) > this.config.maxCacheAge
+        ) {
+          // file age exceeds maximum cache age
+          return File.removeFile(cordova.file.cacheDirectory + this.config.cacheDirectoryName, file.name);
+        } else {
+
+          // file age doesn't exceed maximum cache age, or maximum cache age isn't set
+          this.currentCacheSize += metadata.size;
+
+          // add item to index
+          this.cacheIndex.push({
+            name: file.name,
+            modificationTime: metadata.modificationTime,
+            size: metadata.size
+          });
+
+          return Promise.resolve();
+
+        }
 
       });
+  }
+
+  /**
+   * Indexes the cache if necessary
+   * @returns {any}
+   */
+  private indexCache(): Promise<void> {
+
+    // only index if needed, to save resources
+    if (!this.shouldIndex) return Promise.resolve();
+
+    this.cacheIndex = [];
+
+    return File.listDir(cordova.file.cacheDirectory, this.config.cacheDirectoryName)
+      .then(files => Promise.all(files.map(this.addFileToIndex.bind(this))))
+      .then(() => {
+        this.cacheIndex = _.sortBy(this.cacheIndex, 'modificationTime');
+        this.indexed = true;
+        return Promise.resolve();
+      })
+      .catch(e => {
+        this.throwError(e);
+        return Promise.resolve();
+      });
+  }
+
+  /**
+   * This method runs every time a new file is added.
+   * It checks the cache size and ensures that it doesn't exceed the maximum cache size set in the config.
+   * If the limit is reached, it will delete old images to create free space.
+   */
+  private maintainCacheSize(): void {
+
+    if (this.config.maxCacheSize > -1 && this.indexed) {
+
+      // we exceeded max cache size
+      while (this.currentCacheSize > this.config.maxCacheSize) {
+        let file = this.cacheIndex.splice(0,1)[0];
+        File.removeFile(cordova.file.cacheDirectory + this.config.cacheDirectoryName, file.name);
+        this.currentCacheSize -= file.size;
+      }
+
+    }
 
   }
 

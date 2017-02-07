@@ -23,6 +23,10 @@ export class ImageLoaderConfig {
 
   concurrency: number = 5;
 
+  maxCacheSize: number = -1;
+
+  maxCacheAge: number = -1;
+
   private _cacheDirectoryName: string = 'image-loader-cache';
 
   set cacheDirectoryName(name: string) {
