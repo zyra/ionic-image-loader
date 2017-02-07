@@ -126,4 +126,20 @@ export class ImageLoaderConfig {
     this.concurrency = concurrency;
   }
 
+  /**
+   * Sets the maximum allowed cache size
+   * @param cacheSize {number} Cache size in bytes
+   */
+  setMaximumCacheSize(cacheSize: number): void {
+    this.maxCacheSize = cacheSize;
+  }
+
+  /**
+   * Sets the maximum allowed cache age
+   * @param cacheAge {number} Maximum cache age in milliseconds
+   */
+  setMaximumCacheAge(cacheAge: number): void {
+    this.maxCacheAge = cacheAge;
+  }
+
 }
