@@ -16,12 +16,12 @@ export class ImgLoader implements OnInit {
   /**
    * Fallback URL to load when the image url fails to load or does not exist.
    */
-  @Input('fallback') fallbackUrl: string;
+  @Input('fallback') fallbackUrl: string = this.config.fallbackUrl;
 
   /**
    * Whether to show a spinner while the image loads
    */
-  @Input() spinner: boolean;
+  @Input() spinner: boolean = this.config.spinnerEnabled;
 
   /**
    * Use <img> tag
@@ -31,32 +31,32 @@ export class ImgLoader implements OnInit {
     this._useImg = val !== false;
   }
 
-  private _useImg: boolean;
+  private _useImg: boolean = this.config.useImg;
 
   /**
    * Width of the image. This will be ignored if using useImg.
    */
-  @Input() width: string;
+  @Input() width: string = this.config.width;
 
   /**
    * Height of the image. This will be ignored if using useImg.
    */
-  @Input() height: string;
+  @Input() height: string = this.config.height;
 
   /**
    * Display type of the image. This will be ignored if using useImg.
    */
-  @Input() display: string;
+  @Input() display: string = this.config.display;
 
   /**
    * Background size. This will be ignored if using useImg.
    */
-  @Input() backgroundSize: string;
+  @Input() backgroundSize: string = this.config.backgroundSize;
 
   /**
    * Background repeat. This will be ignored if using useImg.
    */
-  @Input() backgroundRepeat: string;
+  @Input() backgroundRepeat: string = this.config.backgroundRepeat;
 
   /**
    * Indicates if the image is still loading
@@ -69,43 +69,7 @@ export class ImgLoader implements OnInit {
     , private renderer: Renderer
     , private imageLoader: ImageLoader
     , private config: ImageLoaderConfig
-  ) {
-
-    // if any config item was not provided, it will be replaced by the global config
-
-    if (!this.spinner && config.spinnerEnabled) {
-      this.spinner = true;
-    }
-
-    if (!this.fallbackUrl) {
-      this.fallbackUrl = config.fallbackUrl;
-    }
-
-    if (typeof this._useImg !== 'boolean') {
-      this.useImg = config.useImg;
-    }
-
-    if (!this.width) {
-      this.width = config.width;
-    }
-
-    if (!this.height) {
-      this.height = config.height;
-    }
-
-    if (!this.display) {
-      this.display = config.display;
-    }
-
-    if (!this.backgroundSize) {
-      this.backgroundSize = config.backgroundSize;
-    }
-
-    if (!this.backgroundRepeat) {
-      this.backgroundRepeat = config.backgroundRepeat;
-    }
-
-  }
+  ) { }
 
   ngOnInit(): void {
     if (!this.imageUrl) {
