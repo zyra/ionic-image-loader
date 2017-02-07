@@ -6,7 +6,8 @@
   "typings": "dist/index.d.ts",
   "scripts": {
     "build": "rm -rf aot dist && ngc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0"
   },
   "repository": {
     "type": "git",
@@ -31,6 +32,7 @@
     "@angular/compiler-cli": "2.2.1",
     "@angular/core": "2.2.1",
     "@angular/platform-browser": "2.2.1",
+    "conventional-changelog-cli": "^1.2.0",
     "ionic-native": "^2.4.1",
     "rxjs": "5.0.0-beta.12",
     "typescript": "2.0.9",
