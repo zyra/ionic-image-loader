@@ -53,6 +53,15 @@ export class ImageLoader {
   }
 
   /**
+   * Preload an image
+   * @param imageUrl {string} Image URL
+   * @returns {Promise<string>} returns a promise that resolves with the cached image URL
+   */
+  preload(imageUrl: string): Promise<string> {
+    return this.getImagePath(imageUrl);
+  }
+
+  /**
    * Clears the cache
    */
   clearCache(): void {
