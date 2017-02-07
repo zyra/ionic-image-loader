@@ -137,6 +137,20 @@ Set a custom directory name to store the cached images in.
 #### setConcurrency(concurrency: number)
 Set the maximum number of concurrent connections. Cached images will be loaded instantly, this limit is only for new images.
 
+# Preloading images
+```typescript
+import { ImageLoader } from 'ionic-image-loader';
+
+class MyComponent {
+  
+  constructor(imageLoader: ImageLoader) {
+    imageLoader.preload('http://path.to/image.jpg');
+  }
+  
+}
+
+```
+
 # Clearing the cache
 ```typescript
 
