@@ -10,6 +10,7 @@
 - Shows a **loading spinner** while the images are loading. (can be disabled)
 - Allows setting **maximum cache age** to delete old images automatically. (optional)
 - Allows setting **maximum cache size** to control how much space your app takes out of the users' phones. (optional)
+- Allows setting a **fallback image** to be displayed in case the image you're trying to show doesn't exist on the web. (optional)
 
 ![Gif](https://github.com/ihadeed/ionic-image-loader-example/blob/master/gif.gif?raw=true)
 
