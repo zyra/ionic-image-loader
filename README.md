@@ -6,6 +6,8 @@
 
 ![Gif](https://github.com/ihadeed/ionic-image-loader-example/blob/master/gif.gif?raw=true)
 
+View our example project here: https://github.com/zyramedia/ionic-image-loader-example
+
 - [Installation](https://github.com/zyramedia/ionic-image-loader#installation)
 - [Usage](https://github.com/zyramedia/ionic-image-loader#usage)
   - [Basic usage](https://github.com/zyramedia/ionic-image-loader#basic-usage)
