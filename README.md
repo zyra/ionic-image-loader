@@ -8,8 +8,8 @@
 - Downloads images via a **native thread**. Images will download faster and they will not use the Webview's resources.
 - **Caches images** for later use. Images will be show up instantly the next time you display them since they're already saved on the local storage.
 - Shows a **loading spinner** while the images are loading. (can be disabled)
-- Allows setting **maximum cache age** to delete old images automatically. (optional)
-- Allows setting **maximum cache size** to control how much space your app takes out of the users' phones. (optional)
+- Allows setting **maximum cache age** to delete old images automatically. This is optional and **disabled by default**.
+- Allows setting **maximum cache size** to control how much space your app takes out of the users' phones. This is optional and **disabled by default**.
 - Allows setting a **fallback image** to be displayed in case the image you're trying to show doesn't exist on the web. (optional)
 
 ![Gif](https://github.com/ihadeed/ionic-image-loader-example/blob/master/gif.gif?raw=true)
