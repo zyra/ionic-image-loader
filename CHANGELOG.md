@@ -1,3 +1,13 @@
+<a name="1.6.0"></a>
+# [1.6.0](https://github.com/zyramedia/ionic-image-loader/compare/v1.5.0...v1.6.0) (2017-02-17)
+
+
+### Features
+
+* **img-loader:** ability to disable caching and update images ([0cc2c22](https://github.com/zyramedia/ionic-image-loader/commit/0cc2c22))
+
+
+
 <a name="1.5.0"></a>
 # [1.5.0](https://github.com/zyramedia/ionic-image-loader/compare/v1.4.0...v1.5.0) (2017-02-07)
 
