@@ -114,7 +114,7 @@ export class ImageLoader {
    */
   private downloadImage(imageUrl: string, localPath: string): Promise<any> {
     let transfer = new Transfer();
-    return transfer.download(imageUrl, localPath);
+    return transfer.download(imageUrl, localPath, true);
   }
 
   /**
