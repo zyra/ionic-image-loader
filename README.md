@@ -63,6 +63,20 @@ By default, the module sets the image as the background of the `<img-loader>` el
 <img-loader src="https://path.to/my/image.jpg" useImg></img-loader>
 ```
 
+You can also listen to the load event to be notified when the image has been loaded:
+```html
+<img-loader src="path/to/image" (load)="onImageLoad($event)></img-loader>
+```
+```typescript
+import { ImgLoader } from 'ionic-image-loader';
+
+...
+
+onImageLoad(imgLoader: ImgLoader) {
+  // do something with the loader
+}
+```
+
 ## Advanced Usage
 The `<img-loader>` component takes many attributes that allows you to customize the image. You can use the following table as a reference:
 
@@ -94,9 +108,6 @@ export class MyMainAppComponent {
   constructor(
     private imageLoaderConfig: ImageLoaderConfig // optional, if you wish to configure the service 
   ){
-    
-    
-    
     
     // disable spinners by default, you can add [spinner]="true" to a specific component instance later on to override this
     imageLoaderConfig.enableSpinner(false);

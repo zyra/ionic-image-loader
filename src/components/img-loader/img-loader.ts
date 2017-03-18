@@ -1,6 +1,6 @@
-import { Component, Input, ElementRef, Renderer, OnInit } from '@angular/core';
-import { ImageLoader } from "../../providers/image-loader";
-import { ImageLoaderConfig } from "../../providers/image-loader-config";
+import { Component, Input, Output, ElementRef, Renderer, OnInit, EventEmitter } from '@angular/core';
+import { ImageLoader } from '../../providers/image-loader';
+import { ImageLoaderConfig } from '../../providers/image-loader-config';
 
 @Component({
   selector: 'img-loader',
@@ -26,12 +26,12 @@ export class ImgLoader implements OnInit {
   /**
    * Fallback URL to load when the image url fails to load or does not exist.
    */
-  @Input('fallback') fallbackUrl: string = this.config.fallbackUrl;
+  @Input('fallback') fallbackUrl: string = this._config.fallbackUrl;
 
   /**
    * Whether to show a spinner while the image loads
    */
-  @Input() spinner: boolean = this.config.spinnerEnabled;
+  @Input() spinner: boolean = this._config.spinnerEnabled;
 
   /**
    * Use <img> tag
@@ -41,7 +41,7 @@ export class ImgLoader implements OnInit {
     this._useImg = val !== false;
   }
 
-  private _useImg: boolean = this.config.useImg;
+  private _useImg: boolean = this._config.useImg;
 
   /**
    * Convenience attribute to disable caching
@@ -61,27 +61,33 @@ export class ImgLoader implements OnInit {
   /**
    * Width of the image. This will be ignored if using useImg.
    */
-  @Input() width: string = this.config.width;
+  @Input() width: string = this._config.width;
 
   /**
    * Height of the image. This will be ignored if using useImg.
    */
-  @Input() height: string = this.config.height;
+  @Input() height: string = this._config.height;
 
   /**
    * Display type of the image. This will be ignored if using useImg.
    */
-  @Input() display: string = this.config.display;
+  @Input() display: string = this._config.display;
 
   /**
    * Background size. This will be ignored if using useImg.
    */
-  @Input() backgroundSize: string = this.config.backgroundSize;
+  @Input() backgroundSize: string = this._config.backgroundSize;
 
   /**
    * Background repeat. This will be ignored if using useImg.
    */
-  @Input() backgroundRepeat: string = this.config.backgroundRepeat;
+  @Input() backgroundRepeat: string = this._config.backgroundRepeat;
+
+  /**
+   * Notify on image load..
+   */
+  @Output()
+  load: EventEmitter<ImgLoader> = new EventEmitter<ImgLoader>();
 
   /**
    * Indicates if the image is still loading
@@ -89,13 +95,13 @@ export class ImgLoader implements OnInit {
    */
   isLoading: boolean = true;
 
-  private imgElement: HTMLImageElement;
+  element: HTMLElement;
 
   constructor(
-    private element: ElementRef
-    , private renderer: Renderer
-    , private imageLoader: ImageLoader
-    , private config: ImageLoaderConfig
+    private _element: ElementRef
+    , private _renderer: Renderer
+    , private _imageLoader: ImageLoader
+    , private _config: ImageLoaderConfig
   ) { }
 
   ngOnInit(): void {
@@ -114,7 +120,7 @@ export class ImgLoader implements OnInit {
   }
 
   private updateImage(imageUrl: string) {
-    this.imageLoader.getImagePath(imageUrl)
+    this._imageLoader.getImagePath(imageUrl)
       .then((imageUrl: string) => this.setImage(imageUrl))
       .catch((error: any) => this.setImage(this.fallbackUrl || imageUrl));
   }
@@ -152,42 +158,46 @@ export class ImgLoader implements OnInit {
     if (this._useImg) {
 
       // Using <img> tag
-      if (!this.imgElement) {
+      if (!this.element) {
         // create img element if we dont have one
-        this.imgElement = this.renderer.createElement(this.element.nativeElement, 'img');
+        this.element = this._renderer.createElement(this._element.nativeElement, 'img');
       }
 
       // set it's src
-      this.renderer.setElementAttribute(this.imgElement, 'src', imageUrl);
+      this._renderer.setElementAttribute(this.element, 'src', imageUrl);
 
     } else {
 
       // Not using <img> tag
 
-      const element = this.element.nativeElement;
+      this.element = this._element.nativeElement;
 
       if (this.display) {
-        this.renderer.setElementStyle(element, 'display', this.display);
+        this._renderer.setElementStyle(this.element, 'display', this.display);
       }
 
       if (this.height) {
-        this.renderer.setElementStyle(element, 'height', this.height);
+        this._renderer.setElementStyle(this.element, 'height', this.height);
       }
 
       if (this.width) {
-        this.renderer.setElementStyle(element, 'width', this.width);
+        this._renderer.setElementStyle(this.element, 'width', this.width);
       }
 
       if (this.backgroundSize) {
-        this.renderer.setElementStyle(element, 'background-size', this.backgroundSize);
+        this._renderer.setElementStyle(this.element, 'background-size', this.backgroundSize);
       }
 
       if (this.backgroundRepeat) {
-        this.renderer.setElementStyle(element, 'background-repeat', this.backgroundRepeat);
+        this._renderer.setElementStyle(this.element, 'background-repeat', this.backgroundRepeat);
       }
 
-      this.renderer.setElementStyle(element, 'background-image', 'url(\'' + imageUrl + '\')');
+      this._renderer.setElementStyle(this.element, 'background-image', 'url(\'' + imageUrl + '\')');
+
     }
+
+    this.load.emit(this);
+
   }
 
 }
