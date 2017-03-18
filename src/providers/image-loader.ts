@@ -216,9 +216,10 @@ export class ImageLoader {
         if (this.shouldIndex) {
           this.addFileToIndex(file).then(this.maintainCacheSize.bind(this));
         }
-
-        currentItem.resolve(localPath);
-        done();
+        this.getCachedImagePath(currentItem.imageUrl).then((localUrl) => {
+          currentItem.resolve(localUrl);
+          done();
+        });
       })
       .catch((e) => {
         currentItem.reject();
