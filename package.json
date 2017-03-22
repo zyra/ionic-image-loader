@@ -27,17 +27,17 @@
   },
   "homepage": "https://github.com/zyramedia/ionic-image-loader#readme",
   "devDependencies": {
-    "@angular/common": "2.2.1",
-    "@angular/compiler": "2.2.1",
-    "@angular/compiler-cli": "2.2.1",
-    "@angular/core": "2.2.1",
-    "@angular/platform-browser": "2.2.1",
+    "@angular/common": "2.4.8",
+    "@angular/compiler": "2.4.8",
+    "@angular/compiler-cli": "2.4.8",
+    "@angular/core": "2.4.8",
+    "@angular/platform-browser": "2.4.8",
     "@types/lodash": "4.14.50",
     "conventional-changelog-cli": "1.2.0",
     "ionic-native": "2.4.1",
-    "rxjs": "5.0.0-beta.12",
+    "rxjs": "5.0.1",
     "typescript": "2.0.9",
-    "zone.js": "0.6.26"
+    "zone.js": "0.7.2"
   },
   "dependencies": {
     "lodash": "^4.17.4"
