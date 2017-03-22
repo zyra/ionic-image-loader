@@ -4,7 +4,7 @@ import { ImageLoaderConfig } from '../../providers/image-loader-config';
 
 @Component({
   selector: 'img-loader',
-  template: '<image-loader-spinner *ngIf="spinner && isLoading"></image-loader-spinner>'
+  template: '<ion-spinner *ngIf="spinner && isLoading"></ion-spinner>'
 })
 export class ImgLoader implements OnInit {
 

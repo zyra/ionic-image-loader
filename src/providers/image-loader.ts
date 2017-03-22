@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { File, FileEntry, FileReader, Transfer } from 'ionic-native';
+import { File, FileEntry, FileReader } from '@ionic-native/file';
+import { Transfer } from '@ionic-native/transfer';
 import { ImageLoaderConfig } from "./image-loader-config";
+import { Platform } from 'ionic-angular';
 import * as _ from 'lodash';
-
-declare var cordova: any;
 
 @Injectable()
 export class ImageLoader {
@@ -50,20 +50,28 @@ export class ImageLoader {
 
   private indexed: boolean = false;
 
-  private get shouldIndex() {
+  private get shouldIndex(): boolean {
     return (this.config.maxCacheAge > -1) || (this.config.maxCacheSize > -1);
   }
 
-  constructor(private config: ImageLoaderConfig) {
+  private get isWKWebView(): boolean {
+    return this.platform.is('ios') && (<any>window).webkit;
+  }
+
+  constructor(
+    private config: ImageLoaderConfig,
+    private file: File,
+    private transfer: Transfer,
+    private platform: Platform
+  ) {
     if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
       // we are running on a browser, or using livereload
       // plugin will not function in this case
       this.isInit = true;
       this.throwWarning('You are running on a browser or using livereload, IonicImageLoader will not function, falling back to browser loading.');
     } else {
-      document.addEventListener('deviceready', () => {
-        this.initCache();
-      }, false);
+      this.platform.ready()
+        .then(() => this.initCache());
     }
   }
 
@@ -81,7 +89,7 @@ export class ImageLoader {
    */
   clearCache(): void {
 
-    if (typeof cordova ===  'undefined') return;
+    if (!this.platform.is('cordova')) return;
 
     const clear = () => {
 
@@ -94,7 +102,7 @@ export class ImageLoader {
       // pause any operations
       this.isInit = false;
 
-      File.removeRecursively(cordova.file.cacheDirectory, this.config.cacheDirectoryName)
+      this.file.removeRecursively(this.file.cacheDirectory, this.config.cacheDirectoryName)
         .then(() => {
           this.initCache(true);
         })
@@ -113,7 +121,7 @@ export class ImageLoader {
    * @returns {Promise<any>} Returns a promise that resolves when the download is complete, or rejects on error.
    */
   private downloadImage(imageUrl: string, localPath: string): Promise<any> {
-    let transfer = new Transfer();
+    const transfer = this.transfer.create();
     return transfer.download(imageUrl, localPath, true);
   }
 
@@ -209,7 +217,7 @@ export class ImageLoader {
       this.processQueue();
     };
 
-    let localPath = cordova.file.cacheDirectory + this.config.cacheDirectoryName + '/' + this.createFileName(currentItem.imageUrl);
+    let localPath = this.file.cacheDirectory + this.config.cacheDirectoryName + '/' + this.createFileName(currentItem.imageUrl);
     this.downloadImage(currentItem.imageUrl, localPath)
       .then((file: FileEntry) => {
 
@@ -237,11 +245,6 @@ export class ImageLoader {
   private initCache(replace?: boolean): void {
 
     this.concurrency = this.config.concurrency;
-
-    if (!this.filePluginExists) {
-      this.isInit = true;
-      return;
-    }
 
     this.cacheDirectoryExists
       .catch(() => {
@@ -277,7 +280,7 @@ export class ImageLoader {
           && (Date.now() - metadata.modificationTime.getTime()) > this.config.maxCacheAge
         ) {
           // file age exceeds maximum cache age
-          return File.removeFile(cordova.file.cacheDirectory + this.config.cacheDirectoryName, file.name);
+          return this.file.removeFile(this.file.cacheDirectory + this.config.cacheDirectoryName, file.name);
         } else {
 
           // file age doesn't exceed maximum cache age, or maximum cache age isn't set
@@ -308,7 +311,7 @@ export class ImageLoader {
 
     this.cacheIndex = [];
 
-    return File.listDir(cordova.file.cacheDirectory, this.config.cacheDirectoryName)
+    return this.file.listDir(this.file.cacheDirectory, this.config.cacheDirectoryName)
       .then(files => Promise.all(files.map(this.addFileToIndex.bind(this))))
       .then(() => {
         this.cacheIndex = _.sortBy(this.cacheIndex, 'modificationTime');
@@ -333,7 +336,7 @@ export class ImageLoader {
       // we exceeded max cache size
       while (this.currentCacheSize > this.config.maxCacheSize) {
         let file = this.cacheIndex.splice(0,1)[0];
-        File.removeFile(cordova.file.cacheDirectory + this.config.cacheDirectoryName, file.name);
+        this.file.removeFile(this.file.cacheDirectory + this.config.cacheDirectoryName, file.name);
         this.currentCacheSize -= file.size;
       }
 
@@ -358,18 +361,18 @@ export class ImageLoader {
       let fileName = this.createFileName(url);
 
       // get full path
-      let dirPath = cordova.file.cacheDirectory + this.config.cacheDirectoryName;
+      let dirPath = this.file.cacheDirectory + this.config.cacheDirectoryName;
 
       // check if exists
-      File.resolveLocalFilesystemUrl(dirPath + '/' + fileName)
+      this.file.resolveLocalFilesystemUrl(dirPath + '/' + fileName)
         .then((fileEntry: FileEntry) => {
           // file exists in cache
 
           // now check if iOS device & using WKWebView Engine
-          if (cordova.platformId == 'ios' && (<any>window).webkit) {
+          if (this.isWKWebView) {
 
             // Read FileEntry and return as data url
-            fileEntry.file((file: Blob) => {
+            fileEntry.file((file: any) => {
               const reader = new FileReader();
 
               reader.onloadend = function() {
@@ -412,23 +415,11 @@ export class ImageLoader {
   }
 
   /**
-   * Check if file plugin exists
-   * @returns {boolean} returns a boolean that indicates whether the plugin exists
-   */
-  private get filePluginExists(): boolean {
-    if (!cordova || !cordova.file) {
-      this.throwWarning('Unable to find the cordova file plugin. ImageLoader will not cache images.');
-      return false;
-    }
-    return true;
-  }
-
-  /**
    * Check if the cache directory exists
    * @returns {Promise<boolean|FileError>} Returns a promise that resolves if exists, and rejects if it doesn't
    */
   private get cacheDirectoryExists(): Promise<boolean> {
-    return <Promise<boolean>>File.checkDir(cordova.file.cacheDirectory, this.config.cacheDirectoryName);
+    return this.file.checkDir(this.file.cacheDirectory, this.config.cacheDirectoryName);
   }
 
   /**
@@ -437,7 +428,7 @@ export class ImageLoader {
    * @returns {Promise<DirectoryEntry|FileError>} Returns a promise that resolves if the directory was created, and rejects on error
    */
   private createCacheDirectory(replace: boolean = false): Promise<any> {
-    return File.createDir(cordova.file.cacheDirectory, this.config.cacheDirectoryName, replace);
+    return this.file.createDir(this.file.cacheDirectory, this.config.cacheDirectoryName, replace);
   }
 
   /**

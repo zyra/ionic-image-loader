@@ -4,6 +4,7 @@ import { ImageLoader } from './providers/image-loader';
 import { ImageLoaderConfig } from './providers/image-loader-config';
 import { ImageLoaderSpinner } from './components/image-loader-spinner/image-loader-spinner';
 import { BrowserModule } from '@angular/platform-browser';
+import { IonicModule } from 'ionic-angular';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import { BrowserModule } from '@angular/platform-browser';
     ImageLoader
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    IonicModule
   ],
   exports: [
     ImgLoader
