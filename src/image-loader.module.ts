@@ -1,19 +1,21 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { ImgLoader } from './components/img-loader/img-loader';
+import { ImgLoader } from './components/img-loader';
 import { ImageLoader } from './providers/image-loader';
 import { ImageLoaderConfig } from './providers/image-loader-config';
-import { ImageLoaderSpinner } from './components/image-loader-spinner/image-loader-spinner';
 import { BrowserModule } from '@angular/platform-browser';
 import { IonicModule } from 'ionic-angular';
+import { File } from '@ionic-native/file';
+import { Transfer } from '@ionic-native/transfer';
 
 @NgModule({
   declarations: [
-    ImgLoader,
-    ImageLoaderSpinner
+    ImgLoader
   ],
   providers: [
     ImageLoaderConfig,
-    ImageLoader
+    ImageLoader,
+    File,
+    Transfer
   ],
   imports: [
     BrowserModule,

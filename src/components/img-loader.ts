@@ -1,6 +1,6 @@
 import { Component, Input, Output, ElementRef, Renderer, OnInit, EventEmitter } from '@angular/core';
-import { ImageLoader } from '../../providers/image-loader';
-import { ImageLoaderConfig } from '../../providers/image-loader-config';
+import { ImageLoader } from '../providers/image-loader';
+import { ImageLoaderConfig } from '../providers/image-loader-config';
 
 @Component({
   selector: 'img-loader',
