@@ -1,3 +1,61 @@
+<a name="2.0.2"></a>
+## [2.0.2](https://github.com/zyramedia/ionic-image-loader/compare/v2.0.1...v2.0.2) (2017-03-22)
+
+
+### Bug Fixes
+
+* **image-loader:** delete one file at once to maintain cache size ([f37f1e9](https://github.com/zyramedia/ionic-image-loader/commit/f37f1e9))
+* **image-loader:** delete one file at once to maintain cache size ([09871bd](https://github.com/zyramedia/ionic-image-loader/commit/09871bd))
+* **image-loader:** ignore errors when maintaining cache size ([4c14ee6](https://github.com/zyramedia/ionic-image-loader/commit/4c14ee6))
+* **img-loader:** center align spinner ([8655454](https://github.com/zyramedia/ionic-image-loader/commit/8655454))
+
+
+
+<a name="2.0.1"></a>
+## [2.0.1](https://github.com/zyramedia/ionic-image-loader/compare/v2.0.0...v2.0.1) (2017-03-22)
+
+
+
+<a name="2.0.0"></a>
+# [2.0.0](https://github.com/zyramedia/ionic-image-loader/compare/v1.7.2...v2.0.0) (2017-03-22)
+
+
+### Features
+
+* use ion-spinner and ionic native v3 ([50b6b7b](https://github.com/zyramedia/ionic-image-loader/commit/50b6b7b))
+
+
+
+<a name="1.7.2"></a>
+## [1.7.2](https://github.com/zyramedia/ionic-image-loader/compare/v1.7.1...v1.7.2) (2017-03-18)
+
+
+### Bug Fixes
+
+* always use getCachedImagePath to get image path ([#25](https://github.com/zyramedia/ionic-image-loader/issues/25)) ([09ed878](https://github.com/zyramedia/ionic-image-loader/commit/09ed878))
+
+
+
+<a name="1.7.1"></a>
+## [1.7.1](https://github.com/zyramedia/ionic-image-loader/compare/v1.7.0...v1.7.1) (2017-03-18)
+
+
+### Bug Fixes
+
+* **image-loader:** trust all hosts ([6411b1c](https://github.com/zyramedia/ionic-image-loader/commit/6411b1c)), closes [#23](https://github.com/zyramedia/ionic-image-loader/issues/23)
+
+
+
+<a name="1.7.0"></a>
+# [1.7.0](https://github.com/zyramedia/ionic-image-loader/compare/v1.6.0...v1.7.0) (2017-03-18)
+
+
+### Features
+
+* **img-loader:** add load output ([981dc69](https://github.com/zyramedia/ionic-image-loader/commit/981dc69)), closes [#24](https://github.com/zyramedia/ionic-image-loader/issues/24)
+
+
+
 <a name="1.6.0"></a>
 # [1.6.0](https://github.com/zyramedia/ionic-image-loader/compare/v1.5.0...v1.6.0) (2017-02-17)
 
