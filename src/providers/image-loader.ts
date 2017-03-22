@@ -1,9 +1,21 @@
 import { Injectable } from '@angular/core';
-import { File, FileEntry, FileReader } from '@ionic-native/file';
+import { File, FileEntry, FileReader, FileError } from '@ionic-native/file';
 import { Transfer } from '@ionic-native/transfer';
 import { ImageLoaderConfig } from "./image-loader-config";
 import { Platform } from 'ionic-angular';
 import * as _ from 'lodash';
+
+interface IndexItem {
+  name: string;
+  modificationTime: Date;
+  size: number;
+}
+
+interface QueueItem {
+  imageUrl: string;
+  resolve: Function;
+  reject: Function;
+}
 
 @Injectable()
 export class ImageLoader {
@@ -32,19 +44,11 @@ export class ImageLoader {
    * Queue items
    * @type {Array}
    */
-  private queue: Array<{
-    imageUrl: string;
-    resolve: Function;
-    reject: Function;
-  }> = [];
+  private queue: QueueItem[] = [];
 
   private processing: number = 0;
 
-  private cacheIndex: Array<{
-    name: string;
-    modificationTime: Date;
-    size: number;
-  }> = [];
+  private cacheIndex: IndexItem[] = [];
 
   private currentCacheSize: number = 0;
 
@@ -134,7 +138,7 @@ export class ImageLoader {
   getImagePath(imageUrl: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
 
-      let getImage = () => {
+      const getImage = () => {
         this.getCachedImagePath(imageUrl)
           .then(resolve)
           .catch(() => {
@@ -144,7 +148,7 @@ export class ImageLoader {
 
       };
 
-      let check = () => {
+      const check = () => {
         if (this.isInit) {
           if (this.isCacheReady) {
             getImage();
@@ -204,7 +208,7 @@ export class ImageLoader {
     this.processing++;
 
     // take the first item from queue
-    const currentItem = this.queue.splice(0,1)[0];
+    const currentItem: QueueItem = this.queue.splice(0,1)[0];
 
     // process more items concurrently if we can
     if (this.canProcess) this.processQueue();
@@ -217,7 +221,7 @@ export class ImageLoader {
       this.processQueue();
     };
 
-    let localPath = this.file.cacheDirectory + this.config.cacheDirectoryName + '/' + this.createFileName(currentItem.imageUrl);
+    const localPath = this.file.cacheDirectory + this.config.cacheDirectoryName + '/' + this.createFileName(currentItem.imageUrl);
     this.downloadImage(currentItem.imageUrl, localPath)
       .then((file: FileEntry) => {
 
@@ -333,12 +337,31 @@ export class ImageLoader {
 
     if (this.config.maxCacheSize > -1 && this.indexed) {
 
-      // we exceeded max cache size
-      while (this.currentCacheSize > this.config.maxCacheSize) {
-        let file = this.cacheIndex.splice(0,1)[0];
-        this.file.removeFile(this.file.cacheDirectory + this.config.cacheDirectoryName, file.name);
-        this.currentCacheSize -= file.size;
-      }
+      const maintain = () => {
+        if (this.currentCacheSize > this.config.maxCacheSize) {
+
+          // called when item is done processing
+          const next: Function = () => {
+            this.currentCacheSize -= file.size;
+            maintain();
+          };
+
+          // grab the first item in index since it's the oldest one
+          const file: IndexItem = this.cacheIndex.splice(0,1)[0];
+
+          // delete the file then process next file if necessary
+          this.file.removeFile(this.file.cacheDirectory + this.config.cacheDirectoryName, file.name)
+            .then(() => next())
+            .catch((e: FileError) => {
+              next();
+              if (e.code != 1) { // ignore File not found error
+                this.throwError('Error deleting file from cache to maintain size. ', e)
+              }
+            });
+        }
+      };
+
+      maintain();
 
     }
 
@@ -358,10 +381,10 @@ export class ImageLoader {
       }
 
       // get file name
-      let fileName = this.createFileName(url);
+      const fileName = this.createFileName(url);
 
       // get full path
-      let dirPath = this.file.cacheDirectory + this.config.cacheDirectoryName;
+      const dirPath = this.file.cacheDirectory + this.config.cacheDirectoryName;
 
       // check if exists
       this.file.resolveLocalFilesystemUrl(dirPath + '/' + fileName)
@@ -396,21 +419,23 @@ export class ImageLoader {
 
   /**
    * Throws a console error if debug mode is enabled
-   * @param error {string} Error message
+   * @param args {any[]} Error message
    */
-  private throwError(error: any): void {
+  private throwError(...args: any[]): void {
     if (this.config.debugMode) {
-      console.error('ImageLoader Error', error);
+      args.unshift('ImageLoader Error: ');
+      console.error.apply(console, args);
     }
   }
 
   /**
    * Throws a console warning if debug mode is enabled
-   * @param error {string} Error message
+   * @param args {any[]} Error message
    */
-  private throwWarning(error: any): void {
+  private throwWarning(...args: any[]): void {
     if (this.config.debugMode) {
-      console.warn('ImageLoader Warning', error);
+      args.unshift('ImageLoader Warning: ');
+      console.warn.apply(console, args);
     }
   }
 
