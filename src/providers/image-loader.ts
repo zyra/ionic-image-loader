@@ -354,12 +354,7 @@ export class ImageLoader {
           // delete the file then process next file if necessary
           this.file.removeFile(this.file.cacheDirectory + this.config.cacheDirectoryName, file.name)
             .then(() => next())
-            .catch((e: FileError) => {
-              next();
-              if (e.code != 1) { // ignore File not found error
-                this.throwError('Error deleting file from cache to maintain size. ', e)
-              }
-            });
+            .catch(() => next()); // ignore errors, nothing we can do about it
         }
       };
 
