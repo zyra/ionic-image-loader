@@ -1,4 +1,4 @@
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { ImgLoader } from './components/img-loader';
 import { ImageLoader } from './providers/image-loader';
 import { ImageLoaderConfig } from './providers/image-loader-config';
@@ -23,9 +23,6 @@ import { Transfer } from '@ionic-native/transfer';
   ],
   exports: [
     ImgLoader
-  ],
-  schemas: [
-    CUSTOM_ELEMENTS_SCHEMA
   ]
 })
 export class IonicImageLoader {}
