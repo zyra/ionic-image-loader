@@ -349,6 +349,8 @@ export class ImageLoader {
           // grab the first item in index since it's the oldest one
           const file: IndexItem = this.cacheIndex.splice(0,1)[0];
 
+          if (typeof file == 'undefined') return maintain();
+
           // delete the file then process next file if necessary
           this.file.removeFile(this.file.cacheDirectory + this.config.cacheDirectoryName, file.name)
             .then(() => next())
