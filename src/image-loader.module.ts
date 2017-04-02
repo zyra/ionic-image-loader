@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { ImgLoader } from './components/img-loader';
 import { ImageLoader } from './providers/image-loader';
 import { ImageLoaderConfig } from './providers/image-loader-config';
-import { BrowserModule } from '@angular/platform-browser';
 import { IonicModule } from 'ionic-angular';
 import { File } from '@ionic-native/file';
 import { Transfer } from '@ionic-native/transfer';
@@ -18,7 +17,6 @@ import { Transfer } from '@ionic-native/transfer';
     Transfer
   ],
   imports: [
-    BrowserModule,
     IonicModule
   ],
   exports: [
