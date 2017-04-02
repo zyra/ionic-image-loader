@@ -1,3 +1,13 @@
+<a name="2.0.3"></a>
+## [2.0.3](https://github.com/zyramedia/ionic-image-loader/compare/v2.0.2...v2.0.3) (2017-04-02)
+
+
+### Bug Fixes
+
+* remove BrowserModule import ([508e8cc](https://github.com/zyramedia/ionic-image-loader/commit/508e8cc))
+
+
+
 <a name="2.0.2"></a>
 ## [2.0.2](https://github.com/zyramedia/ionic-image-loader/compare/v2.0.1...v2.0.2) (2017-03-22)
 
