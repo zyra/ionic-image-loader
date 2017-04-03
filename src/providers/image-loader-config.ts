@@ -7,6 +7,8 @@ export class ImageLoaderConfig {
 
   spinnerEnabled: boolean = true;
 
+  fallbackAsPlaceholder: boolean = false;
+
   backgroundSize: string = 'contain';
 
   backgroundRepeat: string = 'no-repeat';
@@ -51,6 +53,14 @@ export class ImageLoaderConfig {
    */
   enableSpinner(enable: boolean): void {
     this.spinnerEnabled = enable;
+  }
+
+  /**
+   * Enable/Disable the fallback image as placeholder instead of the spinner. Defaults to false.
+   * @param enable {boolean} set to true to enable
+   */
+  enableFallbackAsPlaceholder(enable: boolean): void {
+    this.fallbackAsPlaceholder = enable;
   }
 
   /**

@@ -4,7 +4,7 @@ import { ImageLoaderConfig } from '../providers/image-loader-config';
 
 @Component({
   selector: 'img-loader',
-  template: '<ion-spinner *ngIf="spinner && isLoading"></ion-spinner>',
+  template: '<ion-spinner *ngIf="spinner && isLoading && !fallbackAsPlaceholder"></ion-spinner>',
   styles: ['ion-spinner { float: none; margin-left: auto; margin-right: auto; display: block; }']
 })
 export class ImgLoader implements OnInit {
@@ -33,6 +33,11 @@ export class ImgLoader implements OnInit {
    * Whether to show a spinner while the image loads
    */
   @Input() spinner: boolean = this._config.spinnerEnabled;
+
+  /**
+   * Whether to show the fallback image instead of a spinner while the image loads
+   */
+  @Input() fallbackAsPlaceholder: boolean = this._config.fallbackAsPlaceholder;
 
   /**
    * Use <img> tag
@@ -106,15 +111,22 @@ export class ImgLoader implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    if(this.fallbackAsPlaceholder && this.fallbackUrl) {
+      this.setImage(this.fallbackUrl, false);
+    }
+
     if (!this.src) {
       // image url was not passed
       // this can happen when [src] is set to a variable that turned out to be undefined
       // one example could be a list of users with their profile pictures
       // in this case, it would be useful to use the fallback image instead
-      if (this.fallbackUrl) {
+      this.isLoading = false;
+      // if fallbackUrl was used as placeholder we do not need to set it again
+      if (!this.fallbackAsPlaceholder && this.fallbackUrl) {
         // we're not going to cache the fallback image since it should be locally saved
         this.setImage(this.fallbackUrl);
-      } else {
+      }
+      else {
         this.isLoading = false;
       }
     }
@@ -153,8 +165,8 @@ export class ImgLoader implements OnInit {
    * Set the image to be displayed
    * @param imageUrl
    */
-  private setImage(imageUrl: string): void {
-    this.isLoading = false;
+  private setImage(imageUrl: string, stopLoading: boolean = true): void {
+    this.isLoading = !stopLoading;
 
     if (this._useImg) {
 
