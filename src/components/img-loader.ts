@@ -120,13 +120,11 @@ export class ImgLoader implements OnInit {
       // this can happen when [src] is set to a variable that turned out to be undefined
       // one example could be a list of users with their profile pictures
       // in this case, it would be useful to use the fallback image instead
-      
       // if fallbackUrl was used as placeholder we do not need to set it again
       if (!this.fallbackAsPlaceholder && this.fallbackUrl) {
         // we're not going to cache the fallback image since it should be locally saved
         this.setImage(this.fallbackUrl);
-      }
-      else {
+      } else {
         this.isLoading = false;
       }
     }
