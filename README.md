@@ -41,8 +41,9 @@ npm i --save @ionic-native/transfer
 ionic plugin add cordova-plugin-file-transfer --save
 ```
 
-#### 3. Import `IonicImageLoader` module into your app's module.
+#### 3. Import `IonicImageLoader` module
 
+**Add `IonicImageLoader.forRoot()` in your app's root module**
 ```typescript
 import { IonicImageLoader } from 'ionic-image-loader';
 
@@ -50,9 +51,23 @@ import { IonicImageLoader } from 'ionic-image-loader';
 @NgModule({
   ...
   imports: [
+    IonicImageLoader.forRoot()
+  ]
+})
+export class AppModule {}
+```
+
+Then **add `IonicImageLoader` in your child/shared module(s)
+```typescript
+import { IonicImageLoader } from 'ionic-image-loader';
+
+@NgModule({
+  ...
+  imports: [
     IonicImageLoader
   ]
 })
+export class SharedModule {}
 ```
 
 # Usage

@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, ModuleWithProviders } from '@angular/core';
 import { ImgLoader } from './components/img-loader';
 import { ImageLoader } from './providers/image-loader';
 import { ImageLoaderConfig } from './providers/image-loader-config';
@@ -10,12 +10,6 @@ import { Transfer } from '@ionic-native/transfer';
   declarations: [
     ImgLoader
   ],
-  providers: [
-    ImageLoaderConfig,
-    ImageLoader,
-    File,
-    Transfer
-  ],
   imports: [
     IonicModule
   ],
@@ -23,4 +17,16 @@ import { Transfer } from '@ionic-native/transfer';
     ImgLoader
   ]
 })
-export class IonicImageLoader {}
+export class IonicImageLoader {
+  static forRoot(): ModuleWithProviders {
+    return {
+      ngModule: IonicImageLoader,
+      providers: [
+        ImageLoaderConfig,
+        ImageLoader,
+        File,
+        Transfer
+      ]
+    };
+  }
+}
