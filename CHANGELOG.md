@@ -1,3 +1,13 @@
+<a name="3.0.0"></a>
+# [3.0.0](https://github.com/zyramedia/ionic-image-loader/compare/v2.0.3...v3.0.0) (2017-04-04)
+
+
+### Features
+
+* add forRoot method for module ([6881a1f](https://github.com/zyramedia/ionic-image-loader/commit/6881a1f))
+
+
+
 <a name="2.0.3"></a>
 ## [2.0.3](https://github.com/zyramedia/ionic-image-loader/compare/v2.0.2...v2.0.3) (2017-04-02)
 
