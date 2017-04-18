@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { File, FileEntry, FileError } from '@ionic-native/file';
+import { File, FileEntry, FileReader, FileError } from '@ionic-native/file';
 import { Transfer } from '@ionic-native/transfer';
 import { ImageLoaderConfig } from "./image-loader-config";
 import { Platform } from 'ionic-angular';
@@ -58,6 +58,10 @@ export class ImageLoader {
     return (this.config.maxCacheAge > -1) || (this.config.maxCacheSize > -1);
   }
 
+  private get isWKWebView(): boolean {
+    return this.platform.is('ios') && (<any>window).webkit;
+  }
+
   constructor(
     private config: ImageLoaderConfig,
     private file: File,
@@ -102,7 +106,7 @@ export class ImageLoader {
       // pause any operations
       this.isInit = false;
 
-      this.file.removeRecursively(this.platform.is('ios') ? this.file.tempDirectory : this.file.cacheDirectory, this.config.cacheDirectoryName)
+      this.file.removeRecursively(this.file.cacheDirectory, this.config.cacheDirectoryName)
         .then(() => {
           this.initCache(true);
         })
@@ -217,7 +221,7 @@ export class ImageLoader {
       this.processQueue();
     };
 
-    const localPath = (this.platform.is('ios') ? this.file.tempDirectory : this.file.cacheDirectory) + this.config.cacheDirectoryName + '/' + this.createFileName(currentItem.imageUrl);
+    const localPath = this.file.cacheDirectory + this.config.cacheDirectoryName + '/' + this.createFileName(currentItem.imageUrl);
     this.downloadImage(currentItem.imageUrl, localPath)
       .then((file: FileEntry) => {
 
@@ -280,7 +284,7 @@ export class ImageLoader {
           && (Date.now() - metadata.modificationTime.getTime()) > this.config.maxCacheAge
         ) {
           // file age exceeds maximum cache age
-          return this.file.removeFile((this.platform.is('ios') ? this.file.tempDirectory : this.file.cacheDirectory) + this.config.cacheDirectoryName, file.name);
+          return this.file.removeFile(this.file.cacheDirectory + this.config.cacheDirectoryName, file.name);
         } else {
 
           // file age doesn't exceed maximum cache age, or maximum cache age isn't set
@@ -311,7 +315,7 @@ export class ImageLoader {
 
     this.cacheIndex = [];
 
-    return this.file.listDir(this.platform.is('ios') ? this.file.tempDirectory : this.file.cacheDirectory, this.config.cacheDirectoryName)
+    return this.file.listDir(this.file.cacheDirectory, this.config.cacheDirectoryName)
       .then(files => Promise.all(files.map(this.addFileToIndex.bind(this))))
       .then(() => {
         this.cacheIndex = _.sortBy(this.cacheIndex, 'modificationTime');
@@ -348,7 +352,7 @@ export class ImageLoader {
           if (typeof file == 'undefined') return maintain();
 
           // delete the file then process next file if necessary
-          this.file.removeFile((this.platform.is('ios') ? this.file.tempDirectory : this.file.cacheDirectory) + this.config.cacheDirectoryName, file.name)
+          this.file.removeFile(this.file.cacheDirectory + this.config.cacheDirectoryName, file.name)
             .then(() => next())
             .catch(() => next()); // ignore errors, nothing we can do about it
         }
@@ -377,14 +381,33 @@ export class ImageLoader {
       const fileName = this.createFileName(url);
 
       // get full path
-      const dirPath = (this.platform.is('ios') ? this.file.tempDirectory : this.file.cacheDirectory) + this.config.cacheDirectoryName;
+      const dirPath = this.file.cacheDirectory + this.config.cacheDirectoryName;
 
       // check if exists
       this.file.resolveLocalFilesystemUrl(dirPath + '/' + fileName)
         .then((fileEntry: FileEntry) => {
           // file exists in cache
-          // return native path
-          resolve(fileEntry.nativeURL);
+
+          // now check if iOS device & using WKWebView Engine
+          if (this.isWKWebView) {
+
+            // Read FileEntry and return as data url
+            fileEntry.file((file: any) => {
+              const reader = new FileReader();
+
+              reader.onloadend = function() {
+                resolve(this.result);
+              };
+
+              reader.readAsDataURL(file);
+            }, reject);
+
+          } else {
+
+            // return native path
+            resolve(fileEntry.nativeURL);
+
+          }
         })
         .catch(reject); // file doesn't exist
 
@@ -418,7 +441,7 @@ export class ImageLoader {
    * @returns {Promise<boolean|FileError>} Returns a promise that resolves if exists, and rejects if it doesn't
    */
   private get cacheDirectoryExists(): Promise<boolean> {
-    return this.file.checkDir(this.platform.is('ios') ? this.file.tempDirectory : this.file.cacheDirectory, this.config.cacheDirectoryName);
+    return this.file.checkDir(this.file.cacheDirectory, this.config.cacheDirectoryName);
   }
 
   /**
@@ -427,7 +450,7 @@ export class ImageLoader {
    * @returns {Promise<DirectoryEntry|FileError>} Returns a promise that resolves if the directory was created, and rejects on error
    */
   private createCacheDirectory(replace: boolean = false): Promise<any> {
-    return this.file.createDir(this.platform.is('ios') ? this.file.tempDirectory : this.file.cacheDirectory, this.config.cacheDirectoryName, replace);
+    return this.file.createDir(this.file.cacheDirectory, this.config.cacheDirectoryName, replace);
   }
 
   /**
