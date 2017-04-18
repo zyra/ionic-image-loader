@@ -27,6 +27,8 @@ export class ImageLoaderConfig {
 
   maxCacheAge: number = -1;
 
+  imageReturnType: string = 'uri';
+
   private _cacheDirectoryName: string = 'image-loader-cache';
 
   set cacheDirectoryName(name: string) {
@@ -140,6 +142,14 @@ export class ImageLoaderConfig {
    */
   setMaximumCacheAge(cacheAge: number): void {
     this.maxCacheAge = cacheAge;
+  }
+
+  /**
+   * Set the return type of cached images
+   * @param imageReturnType {string} The return type; either 'base64' or 'uri'
+   */
+  setImageReturnType(imageReturnType: string): void {
+    this.imageReturnType = imageReturnType;
   }
 
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { File, FileEntry, FileReader, FileError } from '@ionic-native/file';
+import { File, FileEntry, FileError, DirectoryEntry } from '@ionic-native/file';
 import { Transfer } from '@ionic-native/transfer';
 import { ImageLoaderConfig } from "./image-loader-config";
 import { Platform } from 'ionic-angular';
@@ -108,7 +108,23 @@ export class ImageLoader {
 
       this.file.removeRecursively(this.file.cacheDirectory, this.config.cacheDirectoryName)
         .then(() => {
-          this.initCache(true);
+          if (this.isWKWebView) {
+
+            // also clear the temp files
+            this.file.removeRecursively(this.file.tempDirectory, this.config.cacheDirectoryName)
+              .catch((error) => {
+                // Noop catch. Removing the tempDirectory might fail,
+                // as it is not persistent.
+              })
+              .then(() => {
+                this.initCache(true);
+              });
+
+          } else {
+
+            this.initCache(true);
+
+          }
         })
         .catch(this.throwError.bind(this));
 
@@ -284,7 +300,7 @@ export class ImageLoader {
           && (Date.now() - metadata.modificationTime.getTime()) > this.config.maxCacheAge
         ) {
           // file age exceeds maximum cache age
-          return this.file.removeFile(this.file.cacheDirectory + this.config.cacheDirectoryName, file.name);
+          return this.removeFile(file.name);
         } else {
 
           // file age doesn't exceed maximum cache age, or maximum cache age isn't set
@@ -352,7 +368,7 @@ export class ImageLoader {
           if (typeof file == 'undefined') return maintain();
 
           // delete the file then process next file if necessary
-          this.file.removeFile(this.file.cacheDirectory + this.config.cacheDirectoryName, file.name)
+          this.removeFile(file.name)
             .then(() => next())
             .catch(() => next()); // ignore errors, nothing we can do about it
         }
@@ -362,6 +378,24 @@ export class ImageLoader {
 
     }
 
+  }
+
+  /**
+   * Remove a file
+   * @param file {string} The name of the file to remove
+   */
+  private removeFile(file: string): Promise<any> {
+    return this.file
+      .removeFile(this.file.cacheDirectory + this.config.cacheDirectoryName, file)
+      .then(() => {
+        if (this.isWKWebView) {
+          return this.file
+            .removeFile(this.file.tempDirectory + this.config.cacheDirectoryName, file)
+            .catch(() => {
+              // Noop catch. Removing the files from tempDirectory might fail, as it is not persistent.
+            });
+        }
+      });
   }
 
   /**
@@ -381,32 +415,58 @@ export class ImageLoader {
       const fileName = this.createFileName(url);
 
       // get full path
-      const dirPath = this.file.cacheDirectory + this.config.cacheDirectoryName;
+      const dirPath = this.file.cacheDirectory + this.config.cacheDirectoryName,
+            tempDirPath = this.file.tempDirectory + this.config.cacheDirectoryName;
 
       // check if exists
       this.file.resolveLocalFilesystemUrl(dirPath + '/' + fileName)
         .then((fileEntry: FileEntry) => {
           // file exists in cache
 
-          // now check if iOS device & using WKWebView Engine
-          if (this.isWKWebView) {
+          if (this.config.imageReturnType === 'base64') {
 
-            // Read FileEntry and return as data url
-            fileEntry.file((file: any) => {
-              const reader = new FileReader();
+            // read the file as data url and return the base64 string.
+            // should always be successful as the existence of the file
+            // is alreay ensured
+            this.file
+              .readAsDataURL(dirPath, fileName)
+              .then((base64: string) => {
+                resolve(base64);
+              })
+              .catch(reject);
 
-              reader.onloadend = function() {
-                resolve(this.result);
-              };
+          } else if (this.config.imageReturnType === 'uri') {
 
-              reader.readAsDataURL(file);
-            }, reject);
+            // now check if iOS device & using WKWebView Engine.
+            // in this case only the tempDirectory is accessible,
+            // therefore the file needs to be copied into that directory first!
+            if (this.isWKWebView) {
 
-          } else {
+              // check if file already exists in temp directory
+              this.file.resolveLocalFilesystemUrl(tempDirPath + '/' + fileName)
+                .then((tempFileEntry: FileEntry) => {
+                  // file exists in temp directory
+                  // return native path
+                  resolve(tempFileEntry.nativeURL);
+                })
+                .catch(() => {
+                  // file does not yet exist in the temp directory.
+                  // copy it!
+                  this.file.copyFile(dirPath, fileName, tempDirPath, fileName)
+                    .then((tempFileEntry: FileEntry) => {
+                      // now the file exists in the temp directory
+                      // return native path
+                      resolve(tempFileEntry.nativeURL);
+                    })
+                    .catch(reject);
+                });
 
-            // return native path
-            resolve(fileEntry.nativeURL);
+            } else {
 
+              // return native path
+              resolve(fileEntry.nativeURL);
+
+            }
           }
         })
         .catch(reject); // file doesn't exist
@@ -441,7 +501,11 @@ export class ImageLoader {
    * @returns {Promise<boolean|FileError>} Returns a promise that resolves if exists, and rejects if it doesn't
    */
   private get cacheDirectoryExists(): Promise<boolean> {
-    return this.file.checkDir(this.file.cacheDirectory, this.config.cacheDirectoryName);
+    return this.file
+      .checkDir(this.file.cacheDirectory, this.config.cacheDirectoryName)
+      .then(() => {
+        return (this.isWKWebView ? this.file.checkDir(this.file.tempDirectory, this.config.cacheDirectoryName) : Promise.resolve());
+      });
   }
 
   /**
@@ -450,7 +514,11 @@ export class ImageLoader {
    * @returns {Promise<DirectoryEntry|FileError>} Returns a promise that resolves if the directory was created, and rejects on error
    */
   private createCacheDirectory(replace: boolean = false): Promise<any> {
-    return this.file.createDir(this.file.cacheDirectory, this.config.cacheDirectoryName, replace);
+    return this.file
+      .createDir(this.file.cacheDirectory, this.config.cacheDirectoryName, replace)
+      .then(() => {
+        return this.isWKWebView ? this.file.createDir(this.file.tempDirectory, this.config.cacheDirectoryName, replace) : Promise.resolve();
+      });
   }
 
   /**
