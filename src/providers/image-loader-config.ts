@@ -31,6 +31,10 @@ export class ImageLoaderConfig {
 
   imageReturnType: string = 'uri';
 
+  spinnerName: string;
+
+  spinnerColor: string;
+
   private _cacheDirectoryName: string = 'image-loader-cache';
 
   set cacheDirectoryName(name: string) {
@@ -160,6 +164,22 @@ export class ImageLoaderConfig {
    */
   setImageReturnType(imageReturnType: string): void {
     this.imageReturnType = imageReturnType;
+  }
+
+  /**
+   * Set the default spinnern ame
+   * @param name
+   */
+  setSpinnerName(name: string): void {
+    this.spinnerName = name;
+  }
+
+  /**
+   * Set the default spinner color
+   * @param color
+   */
+  setSpinnerColor(color: string): void {
+    this.spinnerColor = color;
   }
 
 }

@@ -68,15 +68,19 @@ export class ImageLoader {
     private transfer: Transfer,
     private platform: Platform
   ) {
-    if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-      // we are running on a browser, or using livereload
-      // plugin will not function in this case
-      this.isInit = true;
-      this.throwWarning('You are running on a browser or using livereload, IonicImageLoader will not function, falling back to browser loading.');
-    } else {
-      this.platform.ready()
-        .then(() => this.initCache());
-    }
+    platform.ready().then(() => {
+
+      if ((<any> File).installed()) {
+        this.platform.ready()
+          .then(() => this.initCache());
+      } else {
+        // we are running on a browser, or using livereload
+        // plugin will not function in this case
+        this.isInit = true;
+        this.throwWarning('You are running on a browser or using livereload, IonicImageLoader will not function, falling back to browser loading.');
+      }
+
+    });
   }
 
   /**

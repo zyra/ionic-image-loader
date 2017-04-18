@@ -4,7 +4,7 @@ import { ImageLoaderConfig } from '../providers/image-loader-config';
 
 @Component({
   selector: 'img-loader',
-  template: '<ion-spinner *ngIf="spinner && isLoading && !fallbackAsPlaceholder"></ion-spinner>',
+  template: '<ion-spinner *ngIf="spinner && isLoading && !fallbackAsPlaceholder" [name]="spinnerName" [color]="spinnerColor"></ion-spinner>',
   styles: ['ion-spinner { float: none; margin-left: auto; margin-right: auto; display: block; }']
 })
 export class ImgLoader implements OnInit {
@@ -88,6 +88,16 @@ export class ImgLoader implements OnInit {
    * Background repeat. This will be ignored if using useImg.
    */
   @Input() backgroundRepeat: string = this._config.backgroundRepeat;
+
+  /**
+   * Name of the spinner
+   */
+  @Input() spinnerName: string = this._config.spinnerName;
+
+  /**
+   * Color of the spinner
+   */
+  @Input() spinnerColor: string = this._config.spinnerColor;
 
   /**
    * Notify on image load..
