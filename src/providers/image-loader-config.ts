@@ -29,7 +29,7 @@ export class ImageLoaderConfig {
 
   maxCacheAge: number = -1;
 
-  imageReturnType: string = 'uri';
+  imageReturnType: 'base64' | 'uri' = 'uri';
 
   spinnerName: string;
 
