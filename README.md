@@ -58,7 +58,7 @@ import { IonicImageLoader } from 'ionic-image-loader';
 export class AppModule {}
 ```
 
-Then **add `IonicImageLoader` in your child/shared module(s)
+**Then add `IonicImageLoader` in your child/shared module(s)**
 ```typescript
 import { IonicImageLoader } from 'ionic-image-loader';
 
