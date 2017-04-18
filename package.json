@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zyramedia/ionic-image-loader.git"
+    "url": "git+https://github.com/zyra/ionic-image-loader.git"
   },
   "keywords": [
     "ionic2",
@@ -23,9 +23,9 @@
   "author": "Zyra Media Inc.",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/zyramedia/ionic-image-loader/issues"
+    "url": "https://github.com/zyra/ionic-image-loader/issues"
   },
-  "homepage": "https://github.com/zyramedia/ionic-image-loader#readme",
+  "homepage": "https://github.com/zyra/ionic-image-loader#readme",
   "devDependencies": {
     "@angular/common": "2.4.8",
     "@angular/compiler": "2.4.8",
