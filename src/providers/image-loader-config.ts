@@ -162,7 +162,7 @@ export class ImageLoaderConfig {
    * Set the return type of cached images
    * @param imageReturnType {string} The return type; either 'base64' or 'uri'
    */
-  setImageReturnType(imageReturnType: string): void {
+  setImageReturnType(imageReturnType: 'base64' | 'uri'): void {
     this.imageReturnType = imageReturnType;
   }
 
