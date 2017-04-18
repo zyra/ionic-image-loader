@@ -508,7 +508,7 @@ export class ImageLoader {
     return this.file
       .checkDir(this.file.cacheDirectory, this.config.cacheDirectoryName)
       .then(() => {
-        return (this.isWKWebView ? this.file.checkDir(this.file.tempDirectory, this.config.cacheDirectoryName) : Promise.resolve());
+        return (this.isWKWebView ? this.file.checkDir(this.file.tempDirectory, this.config.cacheDirectoryName) : Promise.resolve(true));
       });
   }
 
@@ -517,11 +517,11 @@ export class ImageLoader {
    * @param replace {boolean} override directory if exists
    * @returns {Promise<DirectoryEntry|FileError>} Returns a promise that resolves if the directory was created, and rejects on error
    */
-  private createCacheDirectory(replace: boolean = false): Promise<any> {
+  private createCacheDirectory(replace: boolean = false): Promise<DirectoryEntry> {
     return this.file
       .createDir(this.file.cacheDirectory, this.config.cacheDirectoryName, replace)
-      .then(() => {
-        return this.isWKWebView ? this.file.createDir(this.file.tempDirectory, this.config.cacheDirectoryName, replace) : Promise.resolve();
+      .then((res: DirectoryEntry) => {
+        return this.isWKWebView ? this.file.createDir(this.file.tempDirectory, this.config.cacheDirectoryName, replace) : Promise.resolve(res);
       });
   }
 
