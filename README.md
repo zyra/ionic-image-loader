@@ -13,6 +13,7 @@
 - Allows setting **maximum cache age** to delete old images automatically. This is optional and **disabled by default**.
 - Allows setting **maximum cache size** to control how much space your app takes out of the users' phones. This is optional and **disabled by default**.
 - Allows setting a **fallback image** to be displayed in case the image you're trying to show doesn't exist on the web. (optional)
+- Works with the **[WKWebView Engine](https://github.com/apache/cordova-plugin-wkwebview-engine)** (iOS), as the images are copied to the temporary directory, which is accessible form within the WebView
 
 ![Gif](https://github.com/ihadeed/ionic-image-loader-example/blob/master/gif.gif?raw=true)
 
@@ -248,6 +249,14 @@ Sets the maximum allowed cache age in milliseconds
 Example:
 ```typescript
 this.imageLoaderConfig.setMaximumCacheAge(7 * 24 * 60 * 60 * 1000); // 7 days
+```
+---
+#### setImageReturnType(imageReturnType: string)
+Set the return type of cached images. By default this option is set to 'uri', which will return the native file URL. If you want to get a base64-encoded representation of the file set the return type to 'base64'.
+
+Example:
+```typescript
+this.imageLoaderConfig.setImageReturnType('base64');
 ```
 ---
 
