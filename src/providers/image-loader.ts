@@ -270,16 +270,11 @@ export class ImageLoader {
 
     this.concurrency = this.config.concurrency;
 
-    this.cacheDirectoryExists
-      .catch(() => {
-        // doesn't exist
-        return this.createCacheDirectory(replace)
-          .catch(e => {
-
-            this.throwError(e);
-            this.isInit = true;
-
-          });
+    // create cache directories if they do not exist
+    this.createCacheDirectory(replace)
+      .catch(e => {
+        this.throwError(e);
+        this.isInit = true;
       })
       .then(() => this.indexCache())
       .then(() => {
@@ -502,27 +497,51 @@ export class ImageLoader {
 
   /**
    * Check if the cache directory exists
+   * @param directory {string} The directory to check. Either this.file.tempDirectory or this.file.cacheDirectory
    * @returns {Promise<boolean|FileError>} Returns a promise that resolves if exists, and rejects if it doesn't
    */
-  private get cacheDirectoryExists(): Promise<boolean> {
-    return this.file
-      .checkDir(this.file.cacheDirectory, this.config.cacheDirectoryName)
-      .then(() => {
-        return (this.isWKWebView ? this.file.checkDir(this.file.tempDirectory, this.config.cacheDirectoryName) : Promise.resolve(true));
-      });
+  private cacheDirectoryExists(directory: string): Promise<boolean> {
+    return this.file.checkDir(directory, this.config.cacheDirectoryName);
   }
 
   /**
-   * Creates the cache directory
+   * Create the cache directories
    * @param replace {boolean} override directory if exists
-   * @returns {Promise<DirectoryEntry|FileError>} Returns a promise that resolves if the directory was created, and rejects on error
+   * @returns {Promise<DirectoryEntry|FileError>} Returns a promise that resolves if the directories were created, and rejects on error
    */
-  private createCacheDirectory(replace: boolean = false): Promise<DirectoryEntry> {
-    return this.file
-      .createDir(this.file.cacheDirectory, this.config.cacheDirectoryName, replace)
-      .then((res: DirectoryEntry) => {
-        return this.isWKWebView ? this.file.createDir(this.file.tempDirectory, this.config.cacheDirectoryName, replace) : Promise.resolve(res);
+  private createCacheDirectory(replace: boolean = false): Promise<any> {
+    let cacheDirectoryPromise: Promise<any>,
+        tempDirectoryPromise: Promise<any>;
+
+    cacheDirectoryPromise = this.cacheDirectoryExists(this.file.cacheDirectory)
+      .then(() => {
+        // replace the existing cache directory if wanted
+        if (replace) {
+          return this.file.createDir(this.file.cacheDirectory, this.config.cacheDirectoryName, replace);
+        }
+      })
+      .catch(() => {
+        // the cache directory does not exist, create it
+        return this.file.createDir(this.file.cacheDirectory, this.config.cacheDirectoryName, replace);
       });
+
+    if (this.isWKWebView) {
+      tempDirectoryPromise = this.cacheDirectoryExists(this.file.tempDirectory)
+        .then(() => {
+          // replace the existing temp directory if wanted
+          if (replace) {
+            return this.file.createDir(this.file.tempDirectory, this.config.cacheDirectoryName, replace);
+          }
+        })
+        .catch(() => {
+          // the temp directory does not exist, create it
+          return this.file.createDir(this.file.tempDirectory, this.config.cacheDirectoryName, replace);
+        });
+    } else {
+      tempDirectoryPromise = Promise.resolve();
+    }
+
+    return Promise.all([cacheDirectoryPromise, tempDirectoryPromise]);
   }
 
   /**
