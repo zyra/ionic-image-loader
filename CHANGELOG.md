@@ -1,3 +1,13 @@
+<a name="3.1.1"></a>
+## [3.1.1](https://github.com/zyra/ionic-image-loader/compare/v3.1.0...v3.1.1) (2017-04-20)
+
+
+### Bug Fixes
+
+* **image-loader:** create both cache directories independently ([#40](https://github.com/zyra/ionic-image-loader/issues/40)) ([a9c330f](https://github.com/zyra/ionic-image-loader/commit/a9c330f))
+
+
+
 <a name="3.1.0"></a>
 # [3.1.0](https://github.com/zyra/ionic-image-loader/compare/v3.0.0...v3.1.0) (2017-04-18)
 
