@@ -521,9 +521,7 @@ export class ImageLoader {
       // check if the cache directory exists.
       // if it does not exist create it!
       cacheDirectoryPromise = this.cacheDirectoryExists(this.file.cacheDirectory)
-        .catch(() => {
-          return this.file.createDir(this.file.cacheDirectory, this.config.cacheDirectoryName);
-        });
+        .catch(() => this.file.createDir(this.file.cacheDirectory, this.config.cacheDirectoryName, false));
     }
 
     if (this.isWKWebView) {
@@ -534,9 +532,7 @@ export class ImageLoader {
         // check if the temp directory exists.
         // if it does not exist create it!
         tempDirectoryPromise = this.cacheDirectoryExists(this.file.tempDirectory)
-          .catch(() => {
-            return this.file.createDir(this.file.tempDirectory, this.config.cacheDirectoryName);
-          });
+          .catch(() => this.file.createDir(this.file.tempDirectory, this.config.cacheDirectoryName, false));
       }
     } else {
       tempDirectoryPromise = Promise.resolve();
@@ -561,8 +557,7 @@ export class ImageLoader {
    * @returns {number} 32-bit int
    */
   private hashString(string: string): number {
-    let hash = 0;
-    let char;
+    let hash = 0, char;
     if (string.length === 0) return hash;
     for (let i = 0; i < string.length; i++) {
       char = string.charCodeAt(i);
