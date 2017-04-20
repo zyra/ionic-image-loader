@@ -513,30 +513,31 @@ export class ImageLoader {
     let cacheDirectoryPromise: Promise<any>,
         tempDirectoryPromise: Promise<any>;
 
-    cacheDirectoryPromise = this.cacheDirectoryExists(this.file.cacheDirectory)
-      .then(() => {
-        // replace the existing cache directory if wanted
-        if (replace) {
-          return this.file.createDir(this.file.cacheDirectory, this.config.cacheDirectoryName, replace);
-        }
-      })
-      .catch(() => {
-        // the cache directory does not exist, create it
-        return this.file.createDir(this.file.cacheDirectory, this.config.cacheDirectoryName, replace);
-      });
+
+    if (replace) {
+      // create or replace the cache directory
+      cacheDirectoryPromise = this.file.createDir(this.file.cacheDirectory, this.config.cacheDirectoryName, replace);
+    } else {
+      // check if the cache directory exists.
+      // if it does not exist create it!
+      cacheDirectoryPromise = this.cacheDirectoryExists(this.file.cacheDirectory)
+        .catch(() => {
+          return this.file.createDir(this.file.cacheDirectory, this.config.cacheDirectoryName);
+        });
+    }
 
     if (this.isWKWebView) {
-      tempDirectoryPromise = this.cacheDirectoryExists(this.file.tempDirectory)
-        .then(() => {
-          // replace the existing temp directory if wanted
-          if (replace) {
-            return this.file.createDir(this.file.tempDirectory, this.config.cacheDirectoryName, replace);
-          }
-        })
-        .catch(() => {
-          // the temp directory does not exist, create it
-          return this.file.createDir(this.file.tempDirectory, this.config.cacheDirectoryName, replace);
-        });
+      if (replace) {
+        // create or replace the temp directory
+        tempDirectoryPromise = this.file.createDir(this.file.tempDirectory, this.config.cacheDirectoryName, replace);
+      } else {
+        // check if the temp directory exists.
+        // if it does not exist create it!
+        tempDirectoryPromise = this.cacheDirectoryExists(this.file.tempDirectory)
+          .catch(() => {
+            return this.file.createDir(this.file.tempDirectory, this.config.cacheDirectoryName);
+          });
+      }
     } else {
       tempDirectoryPromise = Promise.resolve();
     }
