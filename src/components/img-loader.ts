@@ -171,7 +171,8 @@ export class ImgLoader implements OnInit {
 
   /**
    * Set the image to be displayed
-   * @param imageUrl
+   * @param imageUrl {string} image src
+   * @param stopLoading {boolean} set to true to mark the image as loaded
    */
   private setImage(imageUrl: string, stopLoading: boolean = true): void {
     this.isLoading = !stopLoading;
