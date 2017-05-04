@@ -188,8 +188,8 @@ export class ImgLoader implements OnInit {
       // set it's src
       this._renderer.setElementAttribute(this.element, 'src', imageUrl);
 
-      if (this.fallbackUrl) {
-        this._renderer.setElementAttribute(this.element, 'onerror', 'this.src=\'' + this.fallbackUrl + '\'');
+      if (this.fallbackUrl && !this._imageLoader.nativeAvailable) {
+        this._renderer.setElementAttribute(this.element, 'onerror', `this.src="${ this.fallbackUrl }"`);
       }
 
     } else {

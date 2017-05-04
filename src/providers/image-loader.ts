@@ -20,6 +20,10 @@ interface QueueItem {
 @Injectable()
 export class ImageLoader {
 
+  get nativeAvailable(): boolean {
+    return File.installed() && Transfer.installed();
+  }
+
   /**
    * Indicates if the cache service is ready.
    * When the cache service isn't ready, images are loaded via browser instead.
@@ -70,9 +74,8 @@ export class ImageLoader {
   ) {
     platform.ready().then(() => {
 
-      if ((<any> File).installed()) {
-        this.platform.ready()
-          .then(() => this.initCache());
+      if (this.nativeAvailable) {
+        this.initCache();
       } else {
         // we are running on a browser, or using livereload
         // plugin will not function in this case
