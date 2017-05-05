@@ -1,3 +1,13 @@
+<a name="3.2.0"></a>
+# [3.2.0](https://github.com/zyra/ionic-image-loader/compare/v3.1.1...v3.2.0) (2017-05-05)
+
+
+### Features
+
+* add fallback to img tag when loaded in browser ([#45](https://github.com/zyra/ionic-image-loader/issues/45)) ([ad049a9](https://github.com/zyra/ionic-image-loader/commit/ad049a9))
+
+
+
 <a name="3.1.1"></a>
 ## [3.1.1](https://github.com/zyra/ionic-image-loader/compare/v3.1.0...v3.1.1) (2017-04-20)
 
