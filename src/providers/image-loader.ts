@@ -179,7 +179,7 @@ export class ImageLoader {
             this.throwWarning('The cache system is not running. Images will be loaded by your browser instead.');
             resolve(imageUrl);
           }
-        } else  {
+        } else {
           setTimeout(() => check(), 250);
         }
       };
@@ -231,7 +231,7 @@ export class ImageLoader {
     this.processing++;
 
     // take the first item from queue
-    const currentItem: QueueItem = this.queue.splice(0,1)[0];
+    const currentItem: QueueItem = this.queue.splice(0, 1)[0];
 
     // process more items concurrently if we can
     if (this.canProcess) this.processQueue();
@@ -365,7 +365,7 @@ export class ImageLoader {
           };
 
           // grab the first item in index since it's the oldest one
-          const file: IndexItem = this.cacheIndex.splice(0,1)[0];
+          const file: IndexItem = this.cacheIndex.splice(0, 1)[0];
 
           if (typeof file == 'undefined') return maintain();
 
@@ -418,7 +418,7 @@ export class ImageLoader {
 
       // get full path
       const dirPath = this.file.cacheDirectory + this.config.cacheDirectoryName,
-            tempDirPath = this.file.tempDirectory + this.config.cacheDirectoryName;
+        tempDirPath = this.file.tempDirectory + this.config.cacheDirectoryName;
 
       // check if exists
       this.file.resolveLocalFilesystemUrl(dirPath + '/' + fileName)
@@ -433,6 +433,7 @@ export class ImageLoader {
             this.file
               .readAsDataURL(dirPath, fileName)
               .then((base64: string) => {
+                base64 = base64.replace('data:null', 'data:*/*');
                 resolve(base64);
               })
               .catch(reject);
@@ -514,7 +515,7 @@ export class ImageLoader {
    */
   private createCacheDirectory(replace: boolean = false): Promise<any> {
     let cacheDirectoryPromise: Promise<any>,
-        tempDirectoryPromise: Promise<any>;
+      tempDirectoryPromise: Promise<any>;
 
 
     if (replace) {
