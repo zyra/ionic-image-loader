@@ -1,3 +1,13 @@
+<a name="3.2.1"></a>
+## [3.2.1](https://github.com/zyra/ionic-image-loader/compare/v3.2.0...v3.2.1) (2017-05-24)
+
+
+### Features
+
+* handle ionic WKWebView better ([b17e182](https://github.com/zyra/ionic-image-loader/commit/b17e182))
+
+
+
 <a name="3.2.0"></a>
 # [3.2.0](https://github.com/zyra/ionic-image-loader/compare/v3.1.1...v3.2.0) (2017-05-05)
 

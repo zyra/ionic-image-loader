@@ -66,6 +66,10 @@ export class ImageLoader {
     return this.platform.is('ios') && (<any>window).webkit;
   }
 
+  private get isIonicWKWebView(): boolean {
+    return this.isWKWebView && location.host === 'localhost:8080';
+  }
+
   constructor(
     private config: ImageLoaderConfig,
     private file: File,
@@ -115,7 +119,7 @@ export class ImageLoader {
 
       this.file.removeRecursively(this.file.cacheDirectory, this.config.cacheDirectoryName)
         .then(() => {
-          if (this.isWKWebView) {
+          if (this.isWKWebView && !this.isIonicWKWebView) {
 
             // also clear the temp files
             this.file.removeRecursively(this.file.tempDirectory, this.config.cacheDirectoryName)
@@ -390,7 +394,7 @@ export class ImageLoader {
     return this.file
       .removeFile(this.file.cacheDirectory + this.config.cacheDirectoryName, file)
       .then(() => {
-        if (this.isWKWebView) {
+        if (this.isWKWebView && !this.isIonicWKWebView) {
           return this.file
             .removeFile(this.file.tempDirectory + this.config.cacheDirectoryName, file)
             .catch(() => {
@@ -443,7 +447,12 @@ export class ImageLoader {
             // now check if iOS device & using WKWebView Engine.
             // in this case only the tempDirectory is accessible,
             // therefore the file needs to be copied into that directory first!
-            if (this.isWKWebView) {
+            if (this.isIonicWKWebView) {
+
+              // Ionic WKWebView can access all files, but we just need to replace file:/// with http://localhost:8080/
+              resolve(fileEntry.nativeURL.replace('file:///', 'http://localhost:8080/'));
+
+            } else if (this.isWKWebView) {
 
               // check if file already exists in temp directory
               this.file.resolveLocalFilesystemUrl(tempDirPath + '/' + fileName)
@@ -470,6 +479,7 @@ export class ImageLoader {
               resolve(fileEntry.nativeURL);
 
             }
+
           }
         })
         .catch(reject); // file doesn't exist
@@ -528,7 +538,7 @@ export class ImageLoader {
         .catch(() => this.file.createDir(this.file.cacheDirectory, this.config.cacheDirectoryName, false));
     }
 
-    if (this.isWKWebView) {
+    if (this.isWKWebView && !this.isIonicWKWebView) {
       if (replace) {
         // create or replace the temp directory
         tempDirectoryPromise = this.file.createDir(this.file.tempDirectory, this.config.cacheDirectoryName, replace);
