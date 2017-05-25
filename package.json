@@ -48,7 +48,7 @@
     "lodash": "^4.17.4"
   },
   "peerDependencies": {
-    "@ionic-native/file": "^3.10.2",
-    "@ionic-native/transfer": "^3.10.2"
+    "@ionic-native/file": "^3.6.1",
+    "@ionic-native/transfer": "^3.6.1"
   }
 }
