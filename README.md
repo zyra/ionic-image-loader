@@ -4,7 +4,7 @@
 [![NPM](https://nodei.co/npm-dl/ionic-image-loader.png?months=6&height=2)](https://nodei.co/npm/ionic-image-loader/)
 
 # Ionic Image Loader
-**Ionic 2** Module that loads images in a native background thread and caches them for later use. Uses `cordova-plugin-file` and `cordova-plugin-file-transfer` via [`ionic-native`](https://github.com/driftyco/ionic-native) wrappers.
+**Ionic** Module that loads images in a native background thread and caches them for later use. Uses `cordova-plugin-file` and `cordova-plugin-file-transfer` via [`ionic-native`](https://github.com/driftyco/ionic-native) wrappers.
 
 ## Features
 - Downloads images via a **native thread**. Images will download faster and they will not use the Webview's resources.
@@ -36,10 +36,10 @@ npm install --save ionic-image-loader
 #### 2. Install Required Plugins
 ```
 npm i --save @ionic-native/file
-ionic plugin add cordova-plugin-file --save
+ionic cordova plugin add cordova-plugin-file
 
 npm i --save @ionic-native/transfer
-ionic plugin add cordova-plugin-file-transfer --save
+ionic cordova plugin add cordova-plugin-file-transfer
 ```
 
 #### 3. Import `IonicImageLoader` module
