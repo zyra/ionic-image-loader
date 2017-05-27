@@ -436,6 +436,7 @@ export class ImageLoader {
             this.file
               .readAsDataURL(dirPath, fileName)
               .then((base64: string) => {
+                base64 = base64.replace('data:null', 'data:*/*');
                 resolve(base64);
               })
               .catch(reject);
