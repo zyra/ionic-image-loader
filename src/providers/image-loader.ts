@@ -4,6 +4,7 @@ import { Transfer } from '@ionic-native/transfer';
 import { ImageLoaderConfig } from "./image-loader-config";
 import { Platform } from 'ionic-angular';
 import * as _ from 'lodash';
+import { Observable } from 'rxjs/Rx';
 
 interface IndexItem {
   name: string;
@@ -76,8 +77,7 @@ export class ImageLoader {
     private transfer: Transfer,
     private platform: Platform
   ) {
-    platform.ready().then(() => {
-
+    Observable.fromEvent(document, 'deviceready').first().subscribe(res => {
       if (this.nativeAvailable) {
         this.initCache();
       } else {
@@ -86,8 +86,7 @@ export class ImageLoader {
         this.isInit = true;
         this.throwWarning('You are running on a browser or using livereload, IonicImageLoader will not function, falling back to browser loading.');
       }
-
-    });
+    })
   }
 
   /**
@@ -437,7 +436,6 @@ export class ImageLoader {
             this.file
               .readAsDataURL(dirPath, fileName)
               .then((base64: string) => {
-                base64 = base64.replace('data:null', 'data:*/*');
                 resolve(base64);
               })
               .catch(reject);
