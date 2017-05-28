@@ -1,7 +1,7 @@
 {
     "name": "ionic-image-loader",
-    "version": "3.2.2",
-    "description": "Ionic 2 Component and Service to load images in a background thread and cache them for later use",
+    "version": "3.2.1",
+    "description": "Ionic Component and Service to load images in a background thread and cache them for later use",
     "main": "dist/index.js",
     "typings": "dist/index.d.ts",
     "scripts": {
@@ -34,15 +34,15 @@
         "@angular/forms": "4.1.2",
         "@angular/http": "4.1.2",
         "@angular/platform-browser": "4.1.2",
-        "@ionic-native/core": "^3.6.1",
-        "@ionic-native/file": "^3.6.1",
-        "@ionic-native/transfer": "^3.6.1",
+        "@ionic-native/core": "^3.10.2",
+        "@ionic-native/file": "^3.10.2",
+        "@ionic-native/transfer": "^3.10.2",
         "@types/lodash": "4.14.62",
         "conventional-changelog-cli": "1.2.0",
-        "ionic-angular": "^3.3.0",
+        "ionic-angular": "3.3.0",
         "rxjs": "5.1.1",
-        "typescript": "~2.2.2",
-        "zone.js": "^0.8.10"
+        "typescript": "2.3.3",
+        "zone.js": "0.8.11"
     },
     "dependencies": {
         "lodash": "^4.17.4"
