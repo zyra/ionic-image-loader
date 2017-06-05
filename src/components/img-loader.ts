@@ -1,6 +1,7 @@
 import { Component, Input, Output, ElementRef, Renderer, OnInit, EventEmitter } from '@angular/core';
 import { ImageLoader } from '../providers/image-loader';
 import { ImageLoaderConfig } from '../providers/image-loader-config';
+import { File } from '@ionic-native/file';
 
 @Component({
   selector: 'img-loader',
@@ -113,15 +114,15 @@ export class ImgLoader implements OnInit {
 
   element: HTMLElement;
 
-  constructor(
-    private _element: ElementRef
+  constructor(private _element: ElementRef
     , private _renderer: Renderer
     , private _imageLoader: ImageLoader
-    , private _config: ImageLoaderConfig
-  ) { }
+    , private _config: ImageLoaderConfig,
+              private _file: File) {
+  }
 
   ngOnInit(): void {
-    if(this.fallbackAsPlaceholder && this.fallbackUrl) {
+    if (this.fallbackAsPlaceholder && this.fallbackUrl) {
       this.setImage(this.fallbackUrl, false);
     }
 
@@ -186,7 +187,10 @@ export class ImgLoader implements OnInit {
       }
 
       // set it's src
-      this._renderer.setElementAttribute(this.element, 'src', imageUrl);
+      this._file.resolveLocalFilesystemUrl(imageUrl).then((entry) => {
+        this._renderer.setElementAttribute(this.element, 'src', entry.toInternalURL());
+      });
+
 
       if (this.fallbackUrl && !this._imageLoader.nativeAvailable) {
         this._renderer.setElementAttribute(this.element, 'onerror', `this.src="${ this.fallbackUrl }"`);
@@ -218,7 +222,10 @@ export class ImgLoader implements OnInit {
         this._renderer.setElementStyle(this.element, 'background-repeat', this.backgroundRepeat);
       }
 
-      this._renderer.setElementStyle(this.element, 'background-image', 'url(\'' + ( imageUrl || this.fallbackUrl ) + '\')');
+
+      this._file.resolveLocalFilesystemUrl(imageUrl).then((entry) => {
+        this._renderer.setElementStyle(this.element, 'background-image', 'url(\'' + ( entry.toInternalURL() || this.fallbackUrl ) + '\')');
+      });
 
     }
 
