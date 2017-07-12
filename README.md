@@ -38,7 +38,7 @@ npm install --save ionic-image-loader
 npm i --save @ionic-native/file
 ionic cordova plugin add cordova-plugin-file
 
-npm i --save @ionic-native/transfer
+npm i --save @ionic-native/file-transfer
 ionic cordova plugin add cordova-plugin-file-transfer
 ```
 

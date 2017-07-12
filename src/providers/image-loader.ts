@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { File, FileEntry, FileError, DirectoryEntry } from '@ionic-native/file';
-import { Transfer } from '@ionic-native/transfer';
+import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
 import { ImageLoaderConfig } from "./image-loader-config";
 import { Platform } from 'ionic-angular';
 import * as _ from 'lodash';
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/operator/first';
 
 interface IndexItem {
   name: string;
@@ -22,7 +23,7 @@ interface QueueItem {
 export class ImageLoader {
 
   get nativeAvailable(): boolean {
-    return File.installed() && Transfer.installed();
+    return File.installed() && FileTransfer.installed();
   }
 
   /**
@@ -74,7 +75,7 @@ export class ImageLoader {
   constructor(
     private config: ImageLoaderConfig,
     private file: File,
-    private transfer: Transfer,
+    private fileTransfer: FileTransfer,
     private platform: Platform
   ) {
     Observable.fromEvent(document, 'deviceready').first().subscribe(res => {
@@ -151,7 +152,7 @@ export class ImageLoader {
    * @returns {Promise<any>} Returns a promise that resolves when the download is complete, or rejects on error.
    */
   private downloadImage(imageUrl: string, localPath: string): Promise<any> {
-    const transfer = this.transfer.create();
+    const transfer: FileTransferObject = this.fileTransfer.create();
     return transfer.download(imageUrl, localPath, true);
   }
 
