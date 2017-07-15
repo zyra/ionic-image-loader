@@ -1,3 +1,13 @@
+<a name="4.0.1"></a>
+## [4.0.1](https://github.com/zyra/ionic-image-loader/compare/v4.0.0...v4.0.1) (2017-07-15)
+
+
+### Bug Fixes
+
+* add platform is cordova check for ionic serve / browser usage ([#78](https://github.com/zyra/ionic-image-loader/issues/78)) ([a42d1d8](https://github.com/zyra/ionic-image-loader/commit/a42d1d8))
+
+
+
 <a name="4.0.0"></a>
 # [4.0.0](https://github.com/zyra/ionic-image-loader/compare/v3.2.1...v4.0.0) (2017-07-12)
 
