@@ -78,16 +78,25 @@ export class ImageLoader {
     private fileTransfer: FileTransfer,
     private platform: Platform
   ) {
-    Observable.fromEvent(document, 'deviceready').first().subscribe(res => {
-      if (this.nativeAvailable) {
-        this.initCache();
-      } else {
+    platform.ready().then(() => {
+      if (!platform.is('cordova')) {
         // we are running on a browser, or using livereload
         // plugin will not function in this case
-        this.isInit = true;
+        this.init = true;
         this.throwWarning('You are running on a browser or using livereload, IonicImageLoader will not function, falling back to browser loading.');
+      } else {
+        Observable.fromEvent(document, 'deviceready').first().subscribe(res => {
+          if (this.nativeAvailable) {
+            this.initCache();
+          } else {
+            // we are running on a browser, or using livereload
+            // plugin will not function in this case
+            this.isInit = true;
+            this.throwWarning('You are running on a browser or using livereload, IonicImageLoader will not function, falling back to browser loading.');
+          }
+        })
       }
-    })
+    });
   }
 
   /**
