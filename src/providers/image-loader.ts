@@ -82,7 +82,7 @@ export class ImageLoader {
       if (!platform.is('cordova')) {
         // we are running on a browser, or using livereload
         // plugin will not function in this case
-        this.init = true;
+        this.isInit = true;
         this.throwWarning('You are running on a browser or using livereload, IonicImageLoader will not function, falling back to browser loading.');
       } else {
         Observable.fromEvent(document, 'deviceready').first().subscribe(res => {
