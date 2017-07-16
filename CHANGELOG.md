@@ -1,3 +1,13 @@
+<a name="4.1.0"></a>
+# [4.1.0](https://github.com/zyra/ionic-image-loader/compare/v4.0.2...v4.1.0) (2017-07-16)
+
+
+### Features
+
+* **ImageLoader Provider:** re-use FileTransferObject instances ([072da6c](https://github.com/zyra/ionic-image-loader/commit/072da6c)), closes [#79](https://github.com/zyra/ionic-image-loader/issues/79)
+
+
+
 <a name="4.0.2"></a>
 ## [4.0.2](https://github.com/zyra/ionic-image-loader/compare/v4.0.1...v4.0.2) (2017-07-16)
 
