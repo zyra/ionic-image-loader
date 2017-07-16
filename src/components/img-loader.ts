@@ -1,7 +1,6 @@
 import { Component, Input, Output, ElementRef, Renderer, OnInit, EventEmitter } from '@angular/core';
 import { ImageLoader } from '../providers/image-loader';
 import { ImageLoaderConfig } from '../providers/image-loader-config';
-import { File } from '@ionic-native/file';
 
 @Component({
   selector: 'img-loader',
@@ -114,12 +113,12 @@ export class ImgLoader implements OnInit {
 
   element: HTMLElement;
 
-  constructor(private _element: ElementRef,
-              private _renderer: Renderer,
-              private _imageLoader: ImageLoader,
-              private _config: ImageLoaderConfig,
-              private _file: File) {
-  }
+  constructor(
+    private _element: ElementRef,
+    private _renderer: Renderer,
+    private _imageLoader: ImageLoader,
+    private _config: ImageLoaderConfig
+  ) {}
 
   ngOnInit(): void {
     if (this.fallbackAsPlaceholder && this.fallbackUrl) {
@@ -142,9 +141,13 @@ export class ImgLoader implements OnInit {
   }
 
   private updateImage(imageUrl: string) {
-    this._imageLoader.getImagePath(imageUrl)
-      .then((imageUrl: string) => this.setImage(imageUrl))
-      .catch((error: any) => this.setImage(this.fallbackUrl || imageUrl));
+    try {
+      this._imageLoader.getImagePath(imageUrl)
+        .then((imageUrl: string) => this.setImage(imageUrl))
+        .catch((error: any) => this.setImage(this.fallbackUrl || imageUrl));
+    } catch (e) {
+      console.log('Some error happened  ', e);
+    }
   }
 
   /**
@@ -187,9 +190,7 @@ export class ImgLoader implements OnInit {
       }
 
       // set it's src
-      this._file.resolveLocalFilesystemUrl(imageUrl).then((entry) => {
-        this._renderer.setElementAttribute(this.element, 'src', entry.toInternalURL());
-      });
+      this._renderer.setElementAttribute(this.element, 'src', imageUrl);
 
 
       if (this.fallbackUrl && !this._imageLoader.nativeAvailable) {
@@ -222,9 +223,7 @@ export class ImgLoader implements OnInit {
         this._renderer.setElementStyle(this.element, 'background-repeat', this.backgroundRepeat);
       }
 
-      this._file.resolveLocalFilesystemUrl(imageUrl).then((entry) => {
-        this._renderer.setElementStyle(this.element, 'background-image', 'url(\'' + ( entry.toInternalURL() || this.fallbackUrl ) + '\')');
-      });
+      this._renderer.setElementStyle(this.element, 'background-image', 'url(\'' + ( imageUrl || this.fallbackUrl ) + '\')');
     }
 
     this.load.emit(this);
