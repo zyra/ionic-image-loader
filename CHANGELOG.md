@@ -1,3 +1,13 @@
+<a name="4.0.2"></a>
+## [4.0.2](https://github.com/zyra/ionic-image-loader/compare/v4.0.1...v4.0.2) (2017-07-16)
+
+
+### Bug Fixes
+
+* revert [#61](https://github.com/zyra/ionic-image-loader/issues/61) to fix major issues ([3d7c204](https://github.com/zyra/ionic-image-loader/commit/3d7c204))
+
+
+
 <a name="4.0.1"></a>
 ## [4.0.1](https://github.com/zyra/ionic-image-loader/compare/v4.0.0...v4.0.1) (2017-07-15)
 
