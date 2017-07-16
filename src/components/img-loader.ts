@@ -178,7 +178,7 @@ export class ImgLoader implements OnInit {
     this.isLoading = !stopLoading;
 
     if (this._useImg) {
-
+      
       // Using <img> tag
       if (!this.element) {
         // create img element if we dont have one

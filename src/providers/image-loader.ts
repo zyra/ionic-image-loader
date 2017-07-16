@@ -52,6 +52,8 @@ export class ImageLoader {
    */
   private queue: QueueItem[] = [];
 
+  private transferInstances: FileTransferObject[] = [];
+
   private processing: number = 0;
 
   private cacheIndex: IndexItem[] = [];
@@ -155,17 +157,6 @@ export class ImageLoader {
   }
 
   /**
-   * Downloads an image via cordova-plugin-file-transfer
-   * @param imageUrl {string} The remote URL of the image
-   * @param localPath {string} The local path to store the image at
-   * @returns {Promise<any>} Returns a promise that resolves when the download is complete, or rejects on error.
-   */
-  private downloadImage(imageUrl: string, localPath: string): Promise<any> {
-    const transfer: FileTransferObject = this.fileTransfer.create();
-    return transfer.download(imageUrl, localPath, true);
-  }
-
-  /**
    * Gets the filesystem path of an image.
    * This will return the remote path if anything goes wrong or if the cache service isn't ready yet.
    * @param imageUrl {string} The remote URL of the image
@@ -245,6 +236,16 @@ export class ImageLoader {
 
     // take the first item from queue
     const currentItem: QueueItem = this.queue.splice(0, 1)[0];
+    
+    // create FileTransferObject instance if needed
+    // we would only reach here if current jobs < concurrency limit
+    // so, there's no need to check anything other than the length of
+    // the FileTransferObject instances we have in memory
+    if (this.transferInstances.length === 0) {
+      this.transferInstances.push(this.fileTransfer.create());
+    }
+
+    const transfer: FileTransferObject = this.transferInstances.splice(0, 1)[0];
 
     // process more items concurrently if we can
     if (this.canProcess) this.processQueue();
@@ -254,25 +255,26 @@ export class ImageLoader {
     // then will execute this function again to process any remaining items
     const done = () => {
       this.processing--;
+      this.transferInstances.push(transfer);
       this.processQueue();
     };
 
     const localPath = this.file.cacheDirectory + this.config.cacheDirectoryName + '/' + this.createFileName(currentItem.imageUrl);
-    this.downloadImage(currentItem.imageUrl, localPath)
-      .then((file: FileEntry) => {
 
+    transfer.download(currentItem.imageUrl, localPath)
+      .then((file: FileEntry) => {
         if (this.shouldIndex) {
           this.addFileToIndex(file).then(this.maintainCacheSize.bind(this));
         }
-        this.getCachedImagePath(currentItem.imageUrl).then((localUrl) => {
-          currentItem.resolve(localUrl);
-          done();
-        });
+        return this.getCachedImagePath(currentItem.imageUrl);
+      })
+      .then((localUrl) => {
+        currentItem.resolve(localUrl);
+        done();
       })
       .catch((e) => {
         currentItem.reject();
         this.throwError(e);
-
         done();
       });
 
