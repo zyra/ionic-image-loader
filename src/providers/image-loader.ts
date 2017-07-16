@@ -163,6 +163,11 @@ export class ImageLoader {
    * @returns {Promise<string>} Returns a promise that will always resolve with an image URL
    */
   getImagePath(imageUrl: string): Promise<string> {
+
+    if (typeof imageUrl !== 'string' || imageUrl.length <= 0) {
+      return Promise.reject('The image url provided was empty or invalid.');
+    }
+
     return new Promise<string>((resolve, reject) => {
 
       const getImage = () => {
