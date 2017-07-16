@@ -1,3 +1,13 @@
+<a name="4.1.1"></a>
+## [4.1.1](https://github.com/zyra/ionic-image-loader/compare/v4.1.0...v4.1.1) (2017-07-16)
+
+
+### Bug Fixes
+
+* **ImageLoader Provider:** do not attempt to fetch invalid url ([43223d8](https://github.com/zyra/ionic-image-loader/commit/43223d8)), closes [#76](https://github.com/zyra/ionic-image-loader/issues/76)
+
+
+
 <a name="4.1.0"></a>
 # [4.1.0](https://github.com/zyra/ionic-image-loader/compare/v4.0.2...v4.1.0) (2017-07-16)
 
