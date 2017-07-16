@@ -141,13 +141,9 @@ export class ImgLoader implements OnInit {
   }
 
   private updateImage(imageUrl: string) {
-    try {
-      this._imageLoader.getImagePath(imageUrl)
-        .then((imageUrl: string) => this.setImage(imageUrl))
-        .catch((error: any) => this.setImage(this.fallbackUrl || imageUrl));
-    } catch (e) {
-      console.log('Some error happened  ', e);
-    }
+    this._imageLoader.getImagePath(imageUrl)
+      .then((imageUrl: string) => this.setImage(imageUrl))
+      .catch((error: any) => this.setImage(this.fallbackUrl || imageUrl));
   }
 
   /**
