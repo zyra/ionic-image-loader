@@ -7,6 +7,8 @@ import * as _ from 'lodash';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/first';
 
+declare var LiveReload: any;
+
 interface IndexItem {
   name: string;
   modificationTime: Date;
@@ -67,11 +69,28 @@ export class ImageLoader {
   }
 
   private get isWKWebView(): boolean {
-    return this.platform.is('ios') && (<any>window).webkit;
+    if (this.platform.is('ios') && (<any>window).webkit && (<any>window).webkit.messageHandlers) {
+      return true;
+    }
+
+    return false;
   }
 
   private get isIonicWKWebView(): boolean {
-    return this.isWKWebView && location.host === 'localhost:8080';
+    if (this.isWKWebView) {
+
+      // Native
+      if (location.host === 'localhost:8080') {
+        return true;
+      }
+
+      // Live reload
+      if (LiveReload) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   constructor(
@@ -241,7 +260,7 @@ export class ImageLoader {
 
     // take the first item from queue
     const currentItem: QueueItem = this.queue.splice(0, 1)[0];
-    
+
     // create FileTransferObject instance if needed
     // we would only reach here if current jobs < concurrency limit
     // so, there's no need to check anything other than the length of
