@@ -7,8 +7,6 @@ import * as _ from 'lodash';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/first';
 
-declare var LiveReload: any;
-
 interface IndexItem {
   name: string;
   modificationTime: Date;
@@ -69,28 +67,11 @@ export class ImageLoader {
   }
 
   private get isWKWebView(): boolean {
-    if (this.platform.is('ios') && (<any>window).webkit && (<any>window).webkit.messageHandlers) {
-      return true;
-    }
-
-    return false;
+    return this.platform.is('ios') && (<any>window).webkit && (<any>window).webkit.messageHandlers;
   }
 
   private get isIonicWKWebView(): boolean {
-    if (this.isWKWebView) {
-
-      // Native
-      if (location.host === 'localhost:8080') {
-        return true;
-      }
-
-      // Live reload
-      if (LiveReload) {
-        return true;
-      }
-    }
-
-    return false;
+    return this.isWKWebView && (location.host === 'localhost:8080' || (<any>window).LiveReload);
   }
 
   constructor(
