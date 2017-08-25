@@ -81,6 +81,7 @@ export class ImageLoader {
     private platform: Platform
   ) {
     platform.ready().then(() => {
+      console.log('TEST IMAGE LOADER');
       if (!platform.is('cordova')) {
         // we are running on a browser, or using livereload
         // plugin will not function in this case
@@ -89,7 +90,7 @@ export class ImageLoader {
       } else {
         Observable.fromEvent(document, 'deviceready').first().subscribe(res => {
           if (this.nativeAvailable) {
-            this.initCache();
+            this.initCache(true);
           } else {
             // we are running on a browser, or using livereload
             // plugin will not function in this case
@@ -263,11 +264,18 @@ export class ImageLoader {
       this.transferInstances.push(transfer);
       this.processQueue();
     };
+    
+    const localDir = this.file.cacheDirectory + this.config.cacheDirectoryName;
+    const localPath = this.createFileName(currentItem.imageUrl) + ".tmp";
+    const tempPath = localPath + ".tmp";
 
-    const localPath = this.file.cacheDirectory + this.config.cacheDirectoryName + '/' + this.createFileName(currentItem.imageUrl);
-
-    transfer.download(currentItem.imageUrl, localPath)
+    transfer.download(currentItem.imageUrl, tempPath)
       .then((file: FileEntry) => {
+        console.log(file);
+        return this.file.moveFile(localDir, tempPath, localDir, localPath);
+      })
+      .then((file: Entry) => {
+        console.log(file);
         if (this.shouldIndex) {
           this.addFileToIndex(file).then(this.maintainCacheSize.bind(this));
         }
