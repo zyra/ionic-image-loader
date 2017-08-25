@@ -89,7 +89,7 @@ export class ImageLoader {
       } else {
         Observable.fromEvent(document, 'deviceready').first().subscribe(res => {
           if (this.nativeAvailable) {
-            this.initCache(true);
+            this.initCache();
           } else {
             // we are running on a browser, or using livereload
             // plugin will not function in this case
