@@ -110,6 +110,7 @@ The `<img-loader>` component takes many attributes that allows you to customize 
 | display | string | Sets the `display` CSS property of the `<img-loader>` element. This is ignored if `useImg` is set to `true`. | block |
 | backgroundSize | string | Sets the `background-size` CSS property of the `<img-loader>` element. This is ignored if `useImg` is set to `true`. | contain |
 | backgroundRepeat | string | Sets the `background-repeat` CSS property of the `<img-loader>` element. This is ignored if `useImg` is set to `true`. | no-repeat |
+| fallbackAsPlaceholder | boolean | Use fallback as a placeholder until the image loads. | false |
 
 
 **Note:** The default values can be changed using the [global configuration](https://github.com/zyramedia/ionic-image-loader#global-configuration) feature.
@@ -255,6 +256,14 @@ Set the return type of cached images. By default this option is set to 'uri', wh
 Example:
 ```typescript
 this.imageLoaderConfig.setImageReturnType('base64');
+```
+---
+#### enableFallbackAsPlaceholder(enable: boolean)
+Enable/Disable the fallback image as placeholder instead of the spinner. Defaults to false.
+
+Example:
+```ts
+this.imageLoaderConfig.enableFallbackAsPlaceholder(true);
 ```
 ---
 
