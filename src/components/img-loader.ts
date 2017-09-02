@@ -4,7 +4,8 @@ import { ImageLoaderConfig } from '../providers/image-loader-config';
 
 @Component({
   selector: 'img-loader',
-  template: '<ion-spinner *ngIf="spinner && isLoading && !fallbackAsPlaceholder" [name]="spinnerName" [color]="spinnerColor"></ion-spinner>',
+  template: '<ion-spinner *ngIf="spinner && isLoading && !fallbackAsPlaceholder" [name]="spinnerName" [color]="spinnerColor"></ion-spinner>' +
+  '<ng-content></ng-content>',
   styles: ['ion-spinner { float: none; margin-left: auto; margin-right: auto; display: block; }']
 })
 export class ImgLoader implements OnInit {
@@ -178,7 +179,7 @@ export class ImgLoader implements OnInit {
     this.isLoading = !stopLoading;
 
     if (this._useImg) {
-      
+
       // Using <img> tag
       if (!this.element) {
         // create img element if we dont have one
