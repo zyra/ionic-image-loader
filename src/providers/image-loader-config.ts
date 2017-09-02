@@ -35,6 +35,10 @@ export class ImageLoaderConfig {
 
   spinnerColor: string;
 
+  fileTransferOptions: any = {
+    trustAllHosts: false
+  };
+
   private _cacheDirectoryName: string = 'image-loader-cache';
 
   set cacheDirectoryName(name: string) {
@@ -180,6 +184,14 @@ export class ImageLoaderConfig {
    */
   setSpinnerColor(color: string): void {
     this.spinnerColor = color;
+  }
+
+  /**
+   * Set options for the FileTransfer plugin
+   * @param options
+   */
+  setFileTransferOptions(options: { trustAllHosts: boolean; [key: string]: any; }): void {
+    this.fileTransferOptions = options;
   }
 
 }

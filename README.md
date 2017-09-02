@@ -266,6 +266,19 @@ Example:
 this.imageLoaderConfig.enableFallbackAsPlaceholder(true);
 ```
 ---
+#### setFileTransferOptions(options: any)
+Set options for FileTransfer plugin to use. If you would like to set a value for the `trustAllHosts` param, you can add it to the options object.
+
+Example:
+```ts
+this.imageLoaderConfig.setFileTransferOptions({
+  trustAllHosts: true, // defaults to false
+  headers: {
+    Authorization: 'Basic dGVzdHVzZXJuYW1lOnRlc3RwYXNzd29yZA=='
+  }
+});
+```
+---
 
 # Preloading images
 ```typescript

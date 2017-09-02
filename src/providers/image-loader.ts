@@ -241,7 +241,7 @@ export class ImageLoader {
 
     // take the first item from queue
     const currentItem: QueueItem = this.queue.splice(0, 1)[0];
-    
+
     // create FileTransferObject instance if needed
     // we would only reach here if current jobs < concurrency limit
     // so, there's no need to check anything other than the length of
@@ -266,7 +266,7 @@ export class ImageLoader {
 
     const localPath = this.file.cacheDirectory + this.config.cacheDirectoryName + '/' + this.createFileName(currentItem.imageUrl);
 
-    transfer.download(currentItem.imageUrl, localPath)
+    transfer.download(currentItem.imageUrl, localPath, Boolean(this.config.fileTransferOptions.trustAllHosts), this.config.fileTransferOptions)
       .then((file: FileEntry) => {
         if (this.shouldIndex) {
           this.addFileToIndex(file).then(this.maintainCacheSize.bind(this));
