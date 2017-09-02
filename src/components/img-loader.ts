@@ -1,4 +1,4 @@
-import { Component, Input, Output, ElementRef, Renderer, OnInit, EventEmitter } from '@angular/core';
+import { Component, Input, Output, ElementRef, Renderer2, OnInit, EventEmitter } from '@angular/core';
 import { ImageLoader } from '../providers/image-loader';
 import { ImageLoaderConfig } from '../providers/image-loader-config';
 
@@ -124,7 +124,7 @@ export class ImgLoader implements OnInit {
 
   constructor(
     private _element: ElementRef,
-    private _renderer: Renderer,
+    private _renderer: Renderer2,
     private _imageLoader: ImageLoader,
     private _config: ImageLoaderConfig
   ) {}
@@ -195,11 +195,11 @@ export class ImgLoader implements OnInit {
       }
 
       // set it's src
-      this._renderer.setElementAttribute(this.element, 'src', imageUrl);
+      this._renderer.setAttribute(this.element, 'src', imageUrl);
 
 
       if (this.fallbackUrl && !this._imageLoader.nativeAvailable) {
-        this._renderer.setElementAttribute(this.element, 'onerror', `this.src="${ this.fallbackUrl }"`);
+        this._renderer.setAttribute(this.element, 'onerror', `this.src="${ this.fallbackUrl }"`);
       }
 
     } else {
@@ -210,11 +210,11 @@ export class ImgLoader implements OnInit {
 
       for (let prop in propMap) {
         if (this[prop]) {
-          this._renderer.setElementStyle(this.element, propMap[prop], this[prop]);
+          this._renderer.setStyle(this.element, propMap[prop], this[prop]);
         }
       }
 
-      this._renderer.setElementStyle(this.element, 'background-image', 'url(\'' + ( imageUrl || this.fallbackUrl ) + '\')');
+      this._renderer.setStyle(this.element, 'background-image', 'url(\'' + ( imageUrl || this.fallbackUrl ) + '\')');
     }
 
     this.load.emit(this);
