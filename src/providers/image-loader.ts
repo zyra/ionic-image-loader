@@ -356,7 +356,8 @@ export class ImageLoader {
     return this.file.listDir(this.file.cacheDirectory, this.config.cacheDirectoryName)
       .then(files => Promise.all(files.map(this.addFileToIndex.bind(this))))
       .then(() => {
-        this.cacheIndex = _.sortBy(this.cacheIndex, 'modificationTime');
+        // Sort items by date. Most recent to oldest.
+        this.cacheIndex = this.cacheIndex.sort((a: IndexItem, b: IndexItem): number => a>b?-1:a<b?1:0);
         this.indexed = true;
         return Promise.resolve();
       })
