@@ -1,3 +1,19 @@
+<a name="4.2.0"></a>
+# [4.2.0](https://github.com/zyra/ionic-image-loader/compare/v4.1.1...v4.2.0) (2017-09-04)
+
+
+### Bug Fixes
+
+* **image-loader:** fix webkit related issue ([#82](https://github.com/zyra/ionic-image-loader/issues/82)) ([7ff88be](https://github.com/zyra/ionic-image-loader/commit/7ff88be)), closes [#80](https://github.com/zyra/ionic-image-loader/issues/80)
+
+
+### Features
+
+* **image-loader:** allow setting FileTransfer options ([6802a9b](https://github.com/zyra/ionic-image-loader/commit/6802a9b)), closes [#88](https://github.com/zyra/ionic-image-loader/issues/88)
+* **img-loader:** allow adding content inside the image box ([366d42e](https://github.com/zyra/ionic-image-loader/commit/366d42e))
+
+
+
 <a name="4.1.1"></a>
 ## [4.1.1](https://github.com/zyra/ionic-image-loader/compare/v4.1.0...v4.1.1) (2017-07-16)
 
