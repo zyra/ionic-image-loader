@@ -1,7 +1,5 @@
-[![npm](https://img.shields.io/npm/l/express.svg)](https://www.npmjs.com/package/ionic-image-loader/)
-
-[![NPM](https://nodei.co/npm/ionic-image-loader.png?stars&downloads)](https://nodei.co/npm/ionic-image-loader/)
-[![NPM](https://nodei.co/npm-dl/ionic-image-loader.png?months=6&height=2)](https://nodei.co/npm/ionic-image-loader/)
+[![npm](https://img.shields.io/npm/l/ionic-image-loader.svg)](https://www.npmjs.com/package/ionic-image-loader/)
+[![npm](https://img.shields.io/npm/dt/ionic-image-loader.svg)](https://www.npmjs.com/package/ionic-image-loader)
 
 # Ionic Image Loader
 **Ionic** Module that loads images in a native background thread and caches them for later use. Uses `cordova-plugin-file` and `cordova-plugin-file-transfer` via [`ionic-native`](https://github.com/driftyco/ionic-native) wrappers.
@@ -112,6 +110,7 @@ The `<img-loader>` component takes many attributes that allows you to customize 
 | display | string | Sets the `display` CSS property of the `<img-loader>` element. This is ignored if `useImg` is set to `true`. | block |
 | backgroundSize | string | Sets the `background-size` CSS property of the `<img-loader>` element. This is ignored if `useImg` is set to `true`. | contain |
 | backgroundRepeat | string | Sets the `background-repeat` CSS property of the `<img-loader>` element. This is ignored if `useImg` is set to `true`. | no-repeat |
+| fallbackAsPlaceholder | boolean | Use fallback as a placeholder until the image loads. | false |
 
 
 **Note:** The default values can be changed using the [global configuration](https://github.com/zyramedia/ionic-image-loader#global-configuration) feature.
@@ -257,6 +256,27 @@ Set the return type of cached images. By default this option is set to 'uri', wh
 Example:
 ```typescript
 this.imageLoaderConfig.setImageReturnType('base64');
+```
+---
+#### enableFallbackAsPlaceholder(enable: boolean)
+Enable/Disable the fallback image as placeholder instead of the spinner. Defaults to false.
+
+Example:
+```ts
+this.imageLoaderConfig.enableFallbackAsPlaceholder(true);
+```
+---
+#### setFileTransferOptions(options: any)
+Set options for FileTransfer plugin to use. If you would like to set a value for the `trustAllHosts` param, you can add it to the options object.
+
+Example:
+```ts
+this.imageLoaderConfig.setFileTransferOptions({
+  trustAllHosts: true, // defaults to false
+  headers: {
+    Authorization: 'Basic dGVzdHVzZXJuYW1lOnRlc3RwYXNzd29yZA=='
+  }
+});
 ```
 ---
 

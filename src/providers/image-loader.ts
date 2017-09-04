@@ -67,11 +67,11 @@ export class ImageLoader {
   }
 
   private get isWKWebView(): boolean {
-    return this.platform.is('ios') && (<any>window).webkit;
+    return this.platform.is('ios') && (<any>window).webkit && (<any>window).webkit.messageHandlers;
   }
 
   private get isIonicWKWebView(): boolean {
-    return this.isWKWebView && location.host === 'localhost:8080';
+    return this.isWKWebView && (location.host === 'localhost:8080' || (<any>window).LiveReload);
   }
 
   constructor(
@@ -241,7 +241,7 @@ export class ImageLoader {
 
     // take the first item from queue
     const currentItem: QueueItem = this.queue.splice(0, 1)[0];
-    
+
     // create FileTransferObject instance if needed
     // we would only reach here if current jobs < concurrency limit
     // so, there's no need to check anything other than the length of
@@ -266,7 +266,7 @@ export class ImageLoader {
 
     const localPath = this.file.cacheDirectory + this.config.cacheDirectoryName + '/' + this.createFileName(currentItem.imageUrl);
 
-    transfer.download(currentItem.imageUrl, localPath)
+    transfer.download(currentItem.imageUrl, localPath, Boolean(this.config.fileTransferOptions.trustAllHosts), this.config.fileTransferOptions)
       .then((file: FileEntry) => {
         if (this.shouldIndex) {
           this.addFileToIndex(file).then(this.maintainCacheSize.bind(this));
@@ -356,7 +356,8 @@ export class ImageLoader {
     return this.file.listDir(this.file.cacheDirectory, this.config.cacheDirectoryName)
       .then(files => Promise.all(files.map(this.addFileToIndex.bind(this))))
       .then(() => {
-        this.cacheIndex = _.sortBy(this.cacheIndex, 'modificationTime');
+        // Sort items by date. Most recent to oldest.
+        this.cacheIndex = this.cacheIndex.sort((a: IndexItem, b: IndexItem): number => a>b?-1:a<b?1:0);
         this.indexed = true;
         return Promise.resolve();
       })
