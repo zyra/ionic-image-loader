@@ -80,25 +80,23 @@ export class ImageLoader {
     private fileTransfer: FileTransfer,
     private platform: Platform
   ) {
-    platform.ready().then(() => {
-      if (!platform.is('cordova')) {
-        // we are running on a browser, or using livereload
-        // plugin will not function in this case
-        this.isInit = true;
-        this.throwWarning('You are running on a browser or using livereload, IonicImageLoader will not function, falling back to browser loading.');
-      } else {
-        Observable.fromEvent(document, 'deviceready').first().subscribe(res => {
-          if (this.nativeAvailable) {
-            this.initCache();
-          } else {
-            // we are running on a browser, or using livereload
-            // plugin will not function in this case
-            this.isInit = true;
-            this.throwWarning('You are running on a browser or using livereload, IonicImageLoader will not function, falling back to browser loading.');
-          }
-        })
-      }
-    });
+    if (!platform.is('cordova')) {
+      // we are running on a browser, or using livereload
+      // plugin will not function in this case
+      this.isInit = true;
+      this.throwWarning('You are running on a browser or using livereload, IonicImageLoader will not function, falling back to browser loading.');
+    } else {
+      Observable.fromEvent(document, 'deviceready').first().subscribe(res => {
+        if (this.nativeAvailable) {
+          this.initCache();
+        } else {
+          // we are running on a browser, or using livereload
+          // plugin will not function in this case
+          this.isInit = true;
+          this.throwWarning('You are running on a browser or using livereload, IonicImageLoader will not function, falling back to browser loading.');
+        }
+      });
+    }
   }
 
   /**
@@ -357,7 +355,7 @@ export class ImageLoader {
       .then(files => Promise.all(files.map(this.addFileToIndex.bind(this))))
       .then(() => {
         // Sort items by date. Most recent to oldest.
-        this.cacheIndex = this.cacheIndex.sort((a: IndexItem, b: IndexItem): number => a>b?-1:a<b?1:0);
+        this.cacheIndex = this.cacheIndex.sort((a: IndexItem, b: IndexItem): number => a > b ? -1 : a < b ? 1 : 0);
         this.indexed = true;
         return Promise.resolve();
       })
