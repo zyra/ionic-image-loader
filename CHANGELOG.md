@@ -1,3 +1,14 @@
+<a name="4.2.1"></a>
+## [4.2.1](https://github.com/zyra/ionic-image-loader/compare/v4.2.0...v4.2.1) (2017-09-07)
+
+
+### Bug Fixes
+
+* **component:** revert to Renderer class to maintain backwards compatbility ([316fcb9](https://github.com/zyra/ionic-image-loader/commit/316fcb9)), closes [#95](https://github.com/zyra/ionic-image-loader/issues/95)
+* **provider:** remove platform.ready ([#96](https://github.com/zyra/ionic-image-loader/issues/96)) ([6c3b20e](https://github.com/zyra/ionic-image-loader/commit/6c3b20e))
+
+
+
 <a name="4.2.0"></a>
 # [4.2.0](https://github.com/zyra/ionic-image-loader/compare/v4.1.1...v4.2.0) (2017-09-04)
 
