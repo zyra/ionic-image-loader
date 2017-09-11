@@ -1,5 +1,6 @@
 [![npm](https://img.shields.io/npm/l/ionic-image-loader.svg)](https://www.npmjs.com/package/ionic-image-loader/)
 [![npm](https://img.shields.io/npm/dt/ionic-image-loader.svg)](https://www.npmjs.com/package/ionic-image-loader)
+[![npm](https://img.shields.io/npm/dm/ionic-image-loader.svg)](https://www.npmjs.com/package/ionic-image-loader)
 
 # Ionic Image Loader
 **Ionic** Module that loads images in a native background thread and caches them for later use. Uses `cordova-plugin-file` and `cordova-plugin-file-transfer` via [`ionic-native`](https://github.com/driftyco/ionic-native) wrappers.
