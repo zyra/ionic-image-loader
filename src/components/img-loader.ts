@@ -107,6 +107,15 @@ export class ImgLoader implements OnInit {
    * Color of the spinner
    */
   @Input() spinnerColor: string = this._config.spinnerColor;
+   
+  /**
+   * Use changing parameters separated  by comma ','
+   */
+  @Input()
+  set dynamicParams(params: string) {
+    if (typeof params === 'string')
+    this._config.dynamicParams== params.spit(",");
+  }
 
   /**
    * Notify on image load..
