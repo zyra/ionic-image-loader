@@ -152,6 +152,27 @@ export class ImageLoader {
     clear();
 
   }
+  
+   /**
+   * Filter to allow or diallow dynamic parameter
+   * This will allow images with dynamic parameters to be saved and recorgnised in the cache
+   * This will only remove specified dynamic parameters from the cached name
+   * @param imageUrl {string} Image URL
+   * @returns {string} returns a URL with everything after '?' removed
+   */
+  getRealName(imageUrl:string): string{
+    if(this.config.dynamicParams.length>0){
+    var params= [],root=imageUrl.substring(0, imageUrl.indexOf('?'));
+    imageUrl.replace(/([^=&]+)=([^&]*)/g, function(m, key, value){ 
+      if(this.config.dynamicParams.indexOf(key)===-1))
+        params.push([key,value].join("=")); 
+        }); 
+    return [root,params.join("&")].join("?");
+    }
+   
+  return imageUrl;
+    
+  }
 
   /**
    * Gets the filesystem path of an image.
@@ -166,9 +187,9 @@ export class ImageLoader {
     }
 
     return new Promise<string>((resolve, reject) => {
-
+    var realUrl = this.getRealName(imageUrl);
       const getImage = () => {
-        this.getCachedImagePath(imageUrl)
+        this.getCachedImagePath(realUrl)
           .then(resolve)
           .catch(() => {
             // image doesn't exist in cache, lets fetch it and save it
@@ -260,15 +281,15 @@ export class ImageLoader {
       this.transferInstances.push(transfer);
       this.processQueue();
     };
-
-    const localPath = this.file.cacheDirectory + this.config.cacheDirectoryName + '/' + this.createFileName(currentItem.imageUrl);
+      const realName = this.getRealName(currentItem.imageUrl);
+    const localPath = this.file.cacheDirectory + this.config.cacheDirectoryName + '/' + this.createFileName(realName);
 
     transfer.download(currentItem.imageUrl, localPath, Boolean(this.config.fileTransferOptions.trustAllHosts), this.config.fileTransferOptions)
       .then((file: FileEntry) => {
         if (this.shouldIndex) {
           this.addFileToIndex(file).then(this.maintainCacheSize.bind(this));
         }
-        return this.getCachedImagePath(currentItem.imageUrl);
+        return this.getCachedImagePath(realName);
       })
       .then((localUrl) => {
         currentItem.resolve(localUrl);
