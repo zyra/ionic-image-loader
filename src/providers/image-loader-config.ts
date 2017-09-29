@@ -34,6 +34,8 @@ export class ImageLoaderConfig {
   spinnerName: string;
 
   spinnerColor: string;
+  
+  dynamicParams: Array<string> = [];
 
   fileTransferOptions: any = {
     trustAllHosts: false
