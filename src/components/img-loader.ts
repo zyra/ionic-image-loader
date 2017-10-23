@@ -58,6 +58,12 @@ export class ImgLoader implements OnInit {
 
   private _useImg: boolean = this._config.useImg;
 
+
+  /**
+   * Attributes to pass through to img tag if _useImg == true
+   */
+  @Input('imgAttributes') imgAttributes: string = "";
+
   /**
    * Convenience attribute to disable caching
    * @param val
@@ -196,6 +202,11 @@ export class ImgLoader implements OnInit {
 
       // set it's src
       this._renderer.setElementAttribute(this.element, 'src', imageUrl);
+
+      // if imgAttributes are defined, add them here
+      if (this.imgAttributes != '') {
+        this._renderer.setElementAttribute(this.element, 'class', this.imgAttributes);
+      }
 
 
       if (this.fallbackUrl && !this._imageLoader.nativeAvailable) {
