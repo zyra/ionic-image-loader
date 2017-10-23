@@ -31,7 +31,7 @@ export declare class ImgLoader implements OnInit {
     /**
      * Attributes to pass through to img tag if _useImg == true
      */
-    imgAttributes: string;
+    imgAttributes: {};
     /**
      * Convenience attribute to disable caching
      * @param val

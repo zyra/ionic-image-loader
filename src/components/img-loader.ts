@@ -62,7 +62,7 @@ export class ImgLoader implements OnInit {
   /**
    * Attributes to pass through to img tag if _useImg == true
    */
-  @Input('imgAttributes') imgAttributes: string = "";
+  @Input('imgAttributes') imgAttributes: {} = {};
 
   /**
    * Convenience attribute to disable caching
@@ -133,7 +133,7 @@ export class ImgLoader implements OnInit {
     private _renderer: Renderer,
     private _imageLoader: ImageLoader,
     private _config: ImageLoaderConfig
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     if (this.fallbackAsPlaceholder && this.fallbackUrl) {
@@ -205,8 +205,13 @@ export class ImgLoader implements OnInit {
 
       // if imgAttributes are defined, add them here
       if (this.imgAttributes != '') {
-        this._renderer.setElementAttribute(this.element, 'class', this.imgAttributes);
+
+        for (var key in this.imgAttributes) {
+          var value = this.imgAttributes[key];
+          this._renderer.setElementAttribute(this.element, key, value);
+        }
       }
+
 
 
       if (this.fallbackUrl && !this._imageLoader.nativeAvailable) {
@@ -225,7 +230,7 @@ export class ImgLoader implements OnInit {
         }
       }
 
-      this._renderer.setElementStyle(this.element, 'background-image', 'url(\'' + ( imageUrl || this.fallbackUrl ) + '\')');
+      this._renderer.setElementStyle(this.element, 'background-image', 'url(\'' + (imageUrl || this.fallbackUrl) + '\')');
     }
 
     this.load.emit(this);
