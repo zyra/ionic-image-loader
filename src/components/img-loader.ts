@@ -204,22 +204,10 @@ export class ImgLoader implements OnInit {
       // set it's src
       this._renderer.setElementAttribute(this.element, 'src', imageUrl);
 
-      // if imgAttributes are defined, add them here
-      if (this.imgAttributes.length > 0) {
-
-        this.imgAttributes.forEach((attribute) => {
-          var value = attribute.value;
-          var element = attribute.element;
-          if (attribute.encapsulateWithBrackets == true) {
-            element = '(' + element + ')';
-          }
-          this._renderer.setElementAttribute(this.element, element, value);
-
-        });
-
-      }
-
-
+      // if imgAttributes are defined, add them to our img element
+      this.imgAttributes.forEach((attribute, index, attributeArray) => {
+        this._renderer.setElementAttribute(this.element, attribute.element, attribute.value);
+      });
 
       if (this.fallbackUrl && !this._imageLoader.nativeAvailable) {
         this._renderer.listen(this.element, 'error', () => this._renderer.setElementAttribute(this.element, 'src', this.fallbackUrl));
