@@ -30,7 +30,7 @@ var ImgLoader = (function () {
         /**
          * Attributes to pass through to img tag if _useImg == true
          */
-        this.imgAttributes = {};
+        this.imgAttributes = [];
         /**
          * Enable/Disable caching
          * @type {boolean}
@@ -171,11 +171,15 @@ var ImgLoader = (function () {
             // set it's src
             this._renderer.setElementAttribute(this.element, 'src', imageUrl);
             // if imgAttributes are defined, add them here
-            if (this.imgAttributes != '') {
-                for (var key in this.imgAttributes) {
-                    var value = this.imgAttributes[key];
-                    this._renderer.setElementAttribute(this.element, key, value);
-                }
+            if (this.imgAttributes.length > 0) {
+                this.imgAttributes.forEach(function (attribute) {
+                    var value = attribute.value;
+                    var element = attribute.element;
+                    if (attribute.encapsulateWithBrackets == true) {
+                        element = '(' + element + ')';
+                    }
+                    _this._renderer.setElementAttribute(_this.element, element, value);
+                });
             }
             if (this.fallbackUrl && !this._imageLoader.nativeAvailable) {
                 this._renderer.listen(this.element, 'error', function () { return _this._renderer.setElementAttribute(_this.element, 'src', _this.fallbackUrl); });

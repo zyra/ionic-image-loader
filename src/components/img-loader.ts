@@ -1,6 +1,7 @@
 import { Component, Input, Output, ElementRef, Renderer, OnInit, EventEmitter } from '@angular/core';
 import { ImageLoader } from '../providers/image-loader';
 import { ImageLoaderConfig } from '../providers/image-loader-config';
+import { ImageAttribute } from './image-attribute';
 
 const propMap: any = {
   display: 'display',
@@ -62,7 +63,7 @@ export class ImgLoader implements OnInit {
   /**
    * Attributes to pass through to img tag if _useImg == true
    */
-  @Input('imgAttributes') imgAttributes: {} = {};
+  @Input('imgAttributes') imgAttributes: ImageAttribute[] = [];
 
   /**
    * Convenience attribute to disable caching
@@ -204,12 +205,18 @@ export class ImgLoader implements OnInit {
       this._renderer.setElementAttribute(this.element, 'src', imageUrl);
 
       // if imgAttributes are defined, add them here
-      if (this.imgAttributes != '') {
+      if (this.imgAttributes.length > 0) {
 
-        for (var key in this.imgAttributes) {
-          var value = this.imgAttributes[key];
-          this._renderer.setElementAttribute(this.element, key, value);
-        }
+        this.imgAttributes.forEach((attribute) => {
+          var value = attribute.value;
+          var element = attribute.element;
+          if (attribute.encapsulateWithBrackets == true) {
+            element = '(' + element + ')';
+          }
+          this._renderer.setElementAttribute(this.element, element, value);
+
+        });
+
       }
 
 

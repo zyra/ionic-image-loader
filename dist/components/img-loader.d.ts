@@ -1,6 +1,7 @@
 import { ElementRef, Renderer, OnInit, EventEmitter } from '@angular/core';
 import { ImageLoader } from '../providers/image-loader';
 import { ImageLoaderConfig } from '../providers/image-loader-config';
+import { ImageAttribute } from './image-attribute';
 export declare class ImgLoader implements OnInit {
     private _element;
     private _renderer;
@@ -31,7 +32,7 @@ export declare class ImgLoader implements OnInit {
     /**
      * Attributes to pass through to img tag if _useImg == true
      */
-    imgAttributes: {};
+    imgAttributes: ImageAttribute[];
     /**
      * Convenience attribute to disable caching
      * @param val
