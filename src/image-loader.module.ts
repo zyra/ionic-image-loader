@@ -1,6 +1,7 @@
 import { NgModule, ModuleWithProviders } from '@angular/core';
 import { ImgLoader } from './components/img-loader';
 import { ImageLoader } from './providers/image-loader';
+import { ImageAttribute } from './components/image-attribute';
 import { ImageLoaderConfig } from './providers/image-loader-config';
 import { IonicModule } from 'ionic-angular';
 import { File } from '@ionic-native/file';

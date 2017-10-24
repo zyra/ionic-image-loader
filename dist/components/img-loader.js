@@ -170,17 +170,10 @@ var ImgLoader = (function () {
             }
             // set it's src
             this._renderer.setElementAttribute(this.element, 'src', imageUrl);
-            // if imgAttributes are defined, add them here
-            if (this.imgAttributes.length > 0) {
-                this.imgAttributes.forEach(function (attribute) {
-                    var value = attribute.value;
-                    var element = attribute.element;
-                    if (attribute.encapsulateWithBrackets == true) {
-                        element = '(' + element + ')';
-                    }
-                    _this._renderer.setElementAttribute(_this.element, element, value);
-                });
-            }
+            // if imgAttributes are defined, add them to our img element
+            this.imgAttributes.forEach(function (attribute, index, attributeArray) {
+                _this._renderer.setElementAttribute(_this.element, attribute.element, attribute.value);
+            });
             if (this.fallbackUrl && !this._imageLoader.nativeAvailable) {
                 this._renderer.listen(this.element, 'error', function () { return _this._renderer.setElementAttribute(_this.element, 'src', _this.fallbackUrl); });
             }

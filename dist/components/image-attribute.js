@@ -2,7 +2,6 @@ var ImageAttribute = (function () {
     function ImageAttribute() {
         this.element = "";
         this.value = "";
-        this.encapsulateWithBrackets = false;
     }
     return ImageAttribute;
 }());
