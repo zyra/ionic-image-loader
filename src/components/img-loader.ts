@@ -134,7 +134,7 @@ export class ImgLoader implements OnInit {
     private _renderer: Renderer,
     private _imageLoader: ImageLoader,
     private _config: ImageLoaderConfig
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     if (this.fallbackAsPlaceholder && this.fallbackUrl) {
@@ -225,7 +225,7 @@ export class ImgLoader implements OnInit {
         }
       }
 
-      this._renderer.setElementStyle(this.element, 'background-image', 'url(\'' + (imageUrl || this.fallbackUrl) + '\')');
+      this._renderer.setElementStyle(this.element, 'background-image', 'url(\'' + ( imageUrl || this.fallbackUrl ) + '\')');
     }
 
     this.load.emit(this);
