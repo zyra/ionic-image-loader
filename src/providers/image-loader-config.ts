@@ -39,6 +39,10 @@ export class ImageLoaderConfig {
     trustAllHosts: false
   };
 
+  fileNameCachedWithExtension: boolean = false;
+
+  fallbackFileNameCachedExtension: string = '.jpg';
+
   private _cacheDirectoryName: string = 'image-loader-cache';
 
   set cacheDirectoryName(name: string) {
@@ -194,4 +198,19 @@ export class ImageLoaderConfig {
     this.fileTransferOptions = options;
   }
 
+  /**
+   * Enable/Disable the save filename of cached images with extension.  Defaults to false.
+   * @param enable {boolean} set to true to enable
+   */
+  setFileNameCachedWithExtension(enable: boolean) {
+    this.fileNameCachedWithExtension = enable;
+  }
+
+  /**
+   * Set fallback extension filename of cached images.  Defaults to '.jpg'.
+   * @param extension {string} fallback extension (e.x .jpg)
+   */
+  setFallbackFileNameCachedExtension(extension: string) {
+    this.fallbackFileNameCachedExtension = extension;
+  }
 }

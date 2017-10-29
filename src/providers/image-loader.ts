@@ -576,7 +576,7 @@ export class ImageLoader {
    */
   private createFileName(url: string): string {
     // hash the url to get a unique file name
-    return this.hashString(url).toString();
+    return this.hashString(url).toString() + (this.config.fileNameCachedWithExtension ? this.getExtensionFromFileName(url) : '');
   }
 
   /**
@@ -595,4 +595,13 @@ export class ImageLoader {
     return hash;
   }
 
+  /**
+   * extract extension from filename or url
+   *
+   * @param filename
+   * @returns {string}
+   */
+  private getExtensionFromFileName(filename) {
+    return filename.substr((~-filename.lastIndexOf(".") >>> 0) + 1) || this.config.fallbackFileNameCachedExtension;
+  }
 }
