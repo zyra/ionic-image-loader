@@ -4,7 +4,7 @@ import { ImageLoader } from './providers/image-loader';
 import { ImageLoaderConfig } from './providers/image-loader-config';
 import { IonicModule } from 'ionic-angular';
 import { File } from '@ionic-native/file';
-import { Transfer } from '@ionic-native/transfer';
+import { FileTransfer } from '@ionic-native/file-transfer';
 
 @NgModule({
   declarations: [
@@ -25,7 +25,7 @@ export class IonicImageLoader {
         ImageLoaderConfig,
         ImageLoader,
         File,
-        Transfer
+        FileTransfer
       ]
     };
   }

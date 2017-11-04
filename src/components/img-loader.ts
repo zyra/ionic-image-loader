@@ -2,9 +2,18 @@ import { Component, Input, Output, ElementRef, Renderer, OnInit, EventEmitter } 
 import { ImageLoader } from '../providers/image-loader';
 import { ImageLoaderConfig } from '../providers/image-loader-config';
 
+const propMap: any = {
+  display: 'display',
+  height: 'height',
+  width: 'width',
+  backgroundSize: 'background-size',
+  backgroundRepeat: 'background-repeat'
+};
+
 @Component({
   selector: 'img-loader',
-  template: '<ion-spinner *ngIf="spinner && isLoading && !fallbackAsPlaceholder" [name]="spinnerName" [color]="spinnerColor"></ion-spinner>',
+  template: '<ion-spinner *ngIf="spinner && isLoading && !fallbackAsPlaceholder" [name]="spinnerName" [color]="spinnerColor"></ion-spinner>' +
+  '<ng-content></ng-content>',
   styles: ['ion-spinner { float: none; margin-left: auto; margin-right: auto; display: block; }']
 })
 export class ImgLoader implements OnInit {
@@ -114,14 +123,14 @@ export class ImgLoader implements OnInit {
   element: HTMLElement;
 
   constructor(
-    private _element: ElementRef
-    , private _renderer: Renderer
-    , private _imageLoader: ImageLoader
-    , private _config: ImageLoaderConfig
-  ) { }
+    private _element: ElementRef,
+    private _renderer: Renderer,
+    private _imageLoader: ImageLoader,
+    private _config: ImageLoaderConfig
+  ) {}
 
   ngOnInit(): void {
-    if(this.fallbackAsPlaceholder && this.fallbackUrl) {
+    if (this.fallbackAsPlaceholder && this.fallbackUrl) {
       this.setImage(this.fallbackUrl, false);
     }
 
@@ -188,8 +197,9 @@ export class ImgLoader implements OnInit {
       // set it's src
       this._renderer.setElementAttribute(this.element, 'src', imageUrl);
 
+
       if (this.fallbackUrl && !this._imageLoader.nativeAvailable) {
-        this._renderer.setElementAttribute(this.element, 'onerror', `this.src="${ this.fallbackUrl }"`);
+        this._renderer.listen(this.element, 'error', () => this._renderer.setElementAttribute(this.element, 'src', this.fallbackUrl));
       }
 
     } else {
@@ -198,28 +208,13 @@ export class ImgLoader implements OnInit {
 
       this.element = this._element.nativeElement;
 
-      if (this.display) {
-        this._renderer.setElementStyle(this.element, 'display', this.display);
-      }
-
-      if (this.height) {
-        this._renderer.setElementStyle(this.element, 'height', this.height);
-      }
-
-      if (this.width) {
-        this._renderer.setElementStyle(this.element, 'width', this.width);
-      }
-
-      if (this.backgroundSize) {
-        this._renderer.setElementStyle(this.element, 'background-size', this.backgroundSize);
-      }
-
-      if (this.backgroundRepeat) {
-        this._renderer.setElementStyle(this.element, 'background-repeat', this.backgroundRepeat);
+      for (let prop in propMap) {
+        if (this[prop]) {
+          this._renderer.setElementStyle(this.element, propMap[prop], this[prop]);
+        }
       }
 
       this._renderer.setElementStyle(this.element, 'background-image', 'url(\'' + ( imageUrl || this.fallbackUrl ) + '\')');
-
     }
 
     this.load.emit(this);

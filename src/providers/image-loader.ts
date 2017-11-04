@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { File, FileEntry, FileError, DirectoryEntry } from '@ionic-native/file';
-import { Transfer } from '@ionic-native/transfer';
+import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
 import { ImageLoaderConfig } from "./image-loader-config";
 import { Platform } from 'ionic-angular';
-import * as _ from 'lodash';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/operator/first';
 
 interface IndexItem {
   name: string;
@@ -21,7 +22,7 @@ interface QueueItem {
 export class ImageLoader {
 
   get nativeAvailable(): boolean {
-    return File.installed() && Transfer.installed();
+    return File.installed() && FileTransfer.installed();
   }
 
   /**
@@ -50,6 +51,8 @@ export class ImageLoader {
    */
   private queue: QueueItem[] = [];
 
+  private transferInstances: FileTransferObject[] = [];
+
   private processing: number = 0;
 
   private cacheIndex: IndexItem[] = [];
@@ -63,31 +66,36 @@ export class ImageLoader {
   }
 
   private get isWKWebView(): boolean {
-    return this.platform.is('ios') && (<any>window).webkit;
+    return this.platform.is('ios') && (<any>window).webkit && (<any>window).webkit.messageHandlers;
   }
 
   private get isIonicWKWebView(): boolean {
-    return this.isWKWebView && location.host === 'localhost:8080';
+    return this.isWKWebView && (location.host === 'localhost:8080' || (<any>window).LiveReload);
   }
 
   constructor(
     private config: ImageLoaderConfig,
     private file: File,
-    private transfer: Transfer,
+    private fileTransfer: FileTransfer,
     private platform: Platform
   ) {
-    platform.ready().then(() => {
-
-      if (this.nativeAvailable) {
-        this.initCache();
-      } else {
-        // we are running on a browser, or using livereload
-        // plugin will not function in this case
-        this.isInit = true;
-        this.throwWarning('You are running on a browser or using livereload, IonicImageLoader will not function, falling back to browser loading.');
-      }
-
-    });
+    if (!platform.is('cordova')) {
+      // we are running on a browser, or using livereload
+      // plugin will not function in this case
+      this.isInit = true;
+      this.throwWarning('You are running on a browser or using livereload, IonicImageLoader will not function, falling back to browser loading.');
+    } else {
+      Observable.fromEvent(document, 'deviceready').first().subscribe(res => {
+        if (this.nativeAvailable) {
+          this.initCache();
+        } else {
+          // we are running on a browser, or using livereload
+          // plugin will not function in this case
+          this.isInit = true;
+          this.throwWarning('You are running on a browser or using livereload, IonicImageLoader will not function, falling back to browser loading.');
+        }
+      });
+    }
   }
 
   /**
@@ -146,23 +154,17 @@ export class ImageLoader {
   }
 
   /**
-   * Downloads an image via cordova-plugin-file-transfer
-   * @param imageUrl {string} The remote URL of the image
-   * @param localPath {string} The local path to store the image at
-   * @returns {Promise<any>} Returns a promise that resolves when the download is complete, or rejects on error.
-   */
-  private downloadImage(imageUrl: string, localPath: string): Promise<any> {
-    const transfer = this.transfer.create();
-    return transfer.download(imageUrl, localPath, true);
-  }
-
-  /**
    * Gets the filesystem path of an image.
    * This will return the remote path if anything goes wrong or if the cache service isn't ready yet.
    * @param imageUrl {string} The remote URL of the image
    * @returns {Promise<string>} Returns a promise that will always resolve with an image URL
    */
   getImagePath(imageUrl: string): Promise<string> {
+
+    if (typeof imageUrl !== 'string' || imageUrl.length <= 0) {
+      return Promise.reject('The image url provided was empty or invalid.');
+    }
+
     return new Promise<string>((resolve, reject) => {
 
       const getImage = () => {
@@ -183,7 +185,7 @@ export class ImageLoader {
             this.throwWarning('The cache system is not running. Images will be loaded by your browser instead.');
             resolve(imageUrl);
           }
-        } else  {
+        } else {
           setTimeout(() => check(), 250);
         }
       };
@@ -235,7 +237,17 @@ export class ImageLoader {
     this.processing++;
 
     // take the first item from queue
-    const currentItem: QueueItem = this.queue.splice(0,1)[0];
+    const currentItem: QueueItem = this.queue.splice(0, 1)[0];
+
+    // create FileTransferObject instance if needed
+    // we would only reach here if current jobs < concurrency limit
+    // so, there's no need to check anything other than the length of
+    // the FileTransferObject instances we have in memory
+    if (this.transferInstances.length === 0) {
+      this.transferInstances.push(this.fileTransfer.create());
+    }
+
+    const transfer: FileTransferObject = this.transferInstances.splice(0, 1)[0];
 
     // process more items concurrently if we can
     if (this.canProcess) this.processQueue();
@@ -245,25 +257,26 @@ export class ImageLoader {
     // then will execute this function again to process any remaining items
     const done = () => {
       this.processing--;
+      this.transferInstances.push(transfer);
       this.processQueue();
     };
 
     const localPath = this.file.cacheDirectory + this.config.cacheDirectoryName + '/' + this.createFileName(currentItem.imageUrl);
-    this.downloadImage(currentItem.imageUrl, localPath)
-      .then((file: FileEntry) => {
 
+    transfer.download(currentItem.imageUrl, localPath, Boolean(this.config.fileTransferOptions.trustAllHosts), this.config.fileTransferOptions)
+      .then((file: FileEntry) => {
         if (this.shouldIndex) {
           this.addFileToIndex(file).then(this.maintainCacheSize.bind(this));
         }
-        this.getCachedImagePath(currentItem.imageUrl).then((localUrl) => {
-          currentItem.resolve(localUrl);
-          done();
-        });
+        return this.getCachedImagePath(currentItem.imageUrl);
+      })
+      .then((localUrl) => {
+        currentItem.resolve(localUrl);
+        done();
       })
       .catch((e) => {
         currentItem.reject();
         this.throwError(e);
-
         done();
       });
 
@@ -340,7 +353,8 @@ export class ImageLoader {
     return this.file.listDir(this.file.cacheDirectory, this.config.cacheDirectoryName)
       .then(files => Promise.all(files.map(this.addFileToIndex.bind(this))))
       .then(() => {
-        this.cacheIndex = _.sortBy(this.cacheIndex, 'modificationTime');
+        // Sort items by date. Most recent to oldest.
+        this.cacheIndex = this.cacheIndex.sort((a: IndexItem, b: IndexItem): number => a > b ? -1 : a < b ? 1 : 0);
         this.indexed = true;
         return Promise.resolve();
       })
@@ -369,7 +383,7 @@ export class ImageLoader {
           };
 
           // grab the first item in index since it's the oldest one
-          const file: IndexItem = this.cacheIndex.splice(0,1)[0];
+          const file: IndexItem = this.cacheIndex.splice(0, 1)[0];
 
           if (typeof file == 'undefined') return maintain();
 
@@ -422,7 +436,7 @@ export class ImageLoader {
 
       // get full path
       const dirPath = this.file.cacheDirectory + this.config.cacheDirectoryName,
-            tempDirPath = this.file.tempDirectory + this.config.cacheDirectoryName;
+        tempDirPath = this.file.tempDirectory + this.config.cacheDirectoryName;
 
       // check if exists
       this.file.resolveLocalFilesystemUrl(dirPath + '/' + fileName)
@@ -437,6 +451,7 @@ export class ImageLoader {
             this.file
               .readAsDataURL(dirPath, fileName)
               .then((base64: string) => {
+                base64 = base64.replace('data:null', 'data:*/*');
                 resolve(base64);
               })
               .catch(reject);
@@ -524,7 +539,7 @@ export class ImageLoader {
    */
   private createCacheDirectory(replace: boolean = false): Promise<any> {
     let cacheDirectoryPromise: Promise<any>,
-        tempDirectoryPromise: Promise<any>;
+      tempDirectoryPromise: Promise<any>;
 
 
     if (replace) {
