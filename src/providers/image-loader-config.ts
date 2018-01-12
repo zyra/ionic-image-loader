@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { HttpHeaders } from '@angular/common/http';
 
 @Injectable()
 export class ImageLoaderConfig {
@@ -35,9 +36,7 @@ export class ImageLoaderConfig {
 
   spinnerColor: string;
 
-  fileTransferOptions: any = {
-    trustAllHosts: false
-  };
+  httpHeaders: HttpHeaders;
 
   private _cacheDirectoryName: string = 'image-loader-cache';
 
@@ -187,11 +186,20 @@ export class ImageLoaderConfig {
   }
 
   /**
+   * Set headers options for the HttpClient transfers.
+   * @param headers
+   */
+  setHttpHeaders(headers: HttpHeaders): void {
+    this.httpHeaders = headers;
+  }
+
+  /**
    * Set options for the FileTransfer plugin
    * @param options
+   * @deprecated FileTransfer plugin removed.
    */
   setFileTransferOptions(options: { trustAllHosts: boolean; [key: string]: any; }): void {
-    this.fileTransferOptions = options;
+    // do nothing, plugin deprecated.
   }
 
 }

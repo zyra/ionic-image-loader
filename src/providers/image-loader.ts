@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { File, FileEntry, FileError, DirectoryEntry } from '@ionic-native/file';
-import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
+import { DirectoryEntry, File, FileEntry, FileError } from '@ionic-native/file';
+import { HttpClient } from '@angular/common/http';
 import { ImageLoaderConfig } from "./image-loader-config";
 import { Platform } from 'ionic-angular';
 import { Observable } from 'rxjs/Observable';
@@ -22,7 +22,7 @@ interface QueueItem {
 export class ImageLoader {
 
   get nativeAvailable(): boolean {
-    return File.installed() && FileTransfer.installed();
+    return File.installed();
   }
 
   /**
@@ -51,8 +51,6 @@ export class ImageLoader {
    */
   private queue: QueueItem[] = [];
 
-  private transferInstances: FileTransferObject[] = [];
-
   private processing: number = 0;
 
   private cacheIndex: IndexItem[] = [];
@@ -76,7 +74,7 @@ export class ImageLoader {
   constructor(
     private config: ImageLoaderConfig,
     private file: File,
-    private fileTransfer: FileTransfer,
+    private http: HttpClient,
     private platform: Platform
   ) {
     if (!platform.is('cordova')) {
@@ -239,16 +237,6 @@ export class ImageLoader {
     // take the first item from queue
     const currentItem: QueueItem = this.queue.splice(0, 1)[0];
 
-    // create FileTransferObject instance if needed
-    // we would only reach here if current jobs < concurrency limit
-    // so, there's no need to check anything other than the length of
-    // the FileTransferObject instances we have in memory
-    if (this.transferInstances.length === 0) {
-      this.transferInstances.push(this.fileTransfer.create());
-    }
-
-    const transfer: FileTransferObject = this.transferInstances.splice(0, 1)[0];
-
     // process more items concurrently if we can
     if (this.canProcess) this.processQueue();
 
@@ -257,29 +245,30 @@ export class ImageLoader {
     // then will execute this function again to process any remaining items
     const done = () => {
       this.processing--;
-      this.transferInstances.push(transfer);
       this.processQueue();
     };
 
-    const localPath = this.file.cacheDirectory + this.config.cacheDirectoryName + '/' + this.createFileName(currentItem.imageUrl);
+    const localDir = this.file.cacheDirectory + this.config.cacheDirectoryName + '/';
+    const fileName = this.createFileName(currentItem.imageUrl);
 
-    transfer.download(currentItem.imageUrl, localPath, Boolean(this.config.fileTransferOptions.trustAllHosts), this.config.fileTransferOptions)
-      .then((file: FileEntry) => {
+    this.http.get(currentItem.imageUrl, {
+      responseType: 'blob',
+      headers: this.config.httpHeaders,
+    }).subscribe((data: Blob) => {
+      this.file.writeFile(localDir, fileName, data).then((file: FileEntry) => {
         if (this.shouldIndex) {
           this.addFileToIndex(file).then(this.maintainCacheSize.bind(this));
         }
         return this.getCachedImagePath(currentItem.imageUrl);
-      })
-      .then((localUrl) => {
+      }).then((localUrl) => {
         currentItem.resolve(localUrl);
         done();
-      })
-      .catch((e) => {
+      }).catch((e) => {
         currentItem.reject();
         this.throwError(e);
         done();
       });
-
+    });
   }
 
   /**
