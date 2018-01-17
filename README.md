@@ -277,6 +277,22 @@ this.imageLoaderConfig.setHttpRequestOptions({
 });
 ```
 ---
+#### setFileNameCachedWithExtension(enable: boolean)
+Enable/Disable the save filename of cached images with extension.  Defaults to false.
+
+Example:
+```ts
+this.imageLoaderConfig.setFileNameCachedWithExtension(true);
+```
+---
+#### setFallbackFileNameCachedExtension(extension: string)
+Sometime url missing extension, in this case you can set fallback as default extension. Defaults to '.jpg'
+
+Example:
+```ts
+this.imageLoaderConfig.setFallbackFileNameCachedExtension('.png');
+```
+---
 
 # Preloading images
 ```typescript
