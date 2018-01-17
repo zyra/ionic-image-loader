@@ -1,17 +1,18 @@
-import { NgModule, ModuleWithProviders } from '@angular/core';
+import { ModuleWithProviders, NgModule } from '@angular/core';
 import { ImgLoader } from './components/img-loader';
 import { ImageLoader } from './providers/image-loader';
 import { ImageLoaderConfig } from './providers/image-loader-config';
 import { IonicModule } from 'ionic-angular';
 import { File } from '@ionic-native/file';
-import { FileTransfer } from '@ionic-native/file-transfer';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
     ImgLoader
   ],
   imports: [
-    IonicModule
+    IonicModule,
+    HttpClientModule,
   ],
   exports: [
     ImgLoader
@@ -25,7 +26,6 @@ export class IonicImageLoader {
         ImageLoaderConfig,
         ImageLoader,
         File,
-        FileTransfer
       ]
     };
   }

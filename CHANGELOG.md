@@ -1,3 +1,12 @@
+<a name="4.2.2"></a>
+## [4.2.2](https://github.com/zyra/ionic-image-loader/compare/v4.2.1...v4.2.2) (2018-01-13)
+
+
+### Compatibility
+
+* **provider:** use Angular HttpClient instead of deprecated FileTransfer plugin, closes ([#124](https://github.com/zyra/ionic-image-loader/issues/124))
+
+
 <a name="4.2.1"></a>
 ## [4.2.1](https://github.com/zyra/ionic-image-loader/compare/v4.2.0...v4.2.1) (2017-09-07)
 
