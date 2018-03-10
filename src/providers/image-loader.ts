@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { DirectoryEntry, File, FileEntry, FileError } from '@ionic-native/file';
-import { HttpClient } from '@angular/common/http';
 import { ImageLoaderConfig } from "./image-loader-config";
 import { Platform } from 'ionic-angular';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/first';
+import {HTTP} from "@ionic-native/http";
 
 interface IndexItem {
   name: string;
@@ -74,7 +74,7 @@ export class ImageLoader {
   constructor(
     private config: ImageLoaderConfig,
     private file: File,
-    private http: HttpClient,
+    private http: HTTP,
     private platform: Platform
   ) {
     if (!platform.is('cordova')) {
@@ -252,9 +252,9 @@ export class ImageLoader {
     const fileName = this.createFileName(currentItem.imageUrl);
 
     this.http.get(currentItem.imageUrl, {
-      responseType: 'blob',
-      headers: this.config.httpHeaders,
-    }).subscribe((data: Blob) => {
+      responseType: 'blob'
+    }, this.config.httpHeaders).then((res:any) => {
+      let data:Blob = res.data;
       this.file.writeFile(localDir, fileName, data).then((file: FileEntry) => {
         if (this.shouldIndex) {
           this.addFileToIndex(file).then(this.maintainCacheSize.bind(this));

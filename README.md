@@ -3,7 +3,7 @@
 [![npm](https://img.shields.io/npm/dm/ionic-image-loader.svg)](https://www.npmjs.com/package/ionic-image-loader)
 
 # Ionic Image Loader
-**Ionic** Module that loads images in a background thread and caches them for later use. Uses `HttpClient` from `Angular 4+`, and `cordova-plugin-file` via [`ionic-native`](https://github.com/driftyco/ionic-native) wrappers.
+**Ionic** Module that loads images in a background thread and caches them for later use. Uses `cordova-plugin-file` via [`ionic-native`](https://github.com/driftyco/ionic-native) wrappers, and Ionic Native Http to add support for iOS and WKWebView
 
 
 ## Features
@@ -35,8 +35,9 @@ npm install --save ionic-image-loader
 
 #### 2. Install Required Plugins
 ```
-npm i --save @ionic-native/file
+npm i --save @ionic-native/file @ionic-native/http
 ionic cordova plugin add cordova-plugin-file
+ionic cordova plugin add cordova-plugin-advanced-http
 ```
 
 #### 3. Import `IonicImageLoader` module
