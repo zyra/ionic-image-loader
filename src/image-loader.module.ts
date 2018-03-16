@@ -3,6 +3,7 @@ import { ImgLoader } from './components/img-loader';
 import { ImageLoader } from './providers/image-loader';
 import { ImageLoaderConfig } from './providers/image-loader-config';
 import { IonicModule } from 'ionic-angular';
+import { File } from '@ionic-native/file';
 import { HTTP } from '@ionic-native/http';
 
 @NgModule({
@@ -24,6 +25,7 @@ export class IonicImageLoader {
         ImageLoaderConfig,
         ImageLoader,
         HTTP,
+        File
       ]
     };
   }
