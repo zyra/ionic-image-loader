@@ -255,6 +255,8 @@ export class ImageLoader {
 
           if (this.currentlyProcessing[currentItem.imageUrl] !== undefined) {
             delete this.currentlyProcessing[currentItem.imageUrl];
+          } else {
+            console.log('Image-loader: currently proceesing file seems like already processed by other Promise');
           }
         };
 
@@ -292,6 +294,7 @@ export class ImageLoader {
         );
       });
     } else {
+      console.log('Image-loader: Prevented same Image from loading at the same time');
       this.currentlyProcessing[currentItem.imageUrl].then(() => {
         currentItem.resolve(this.getCachedImagePath(currentItem.imageUrl));
       });
