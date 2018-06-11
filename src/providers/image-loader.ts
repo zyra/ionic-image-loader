@@ -248,6 +248,12 @@ export class ImageLoader {
       this.processQueue();
     };
 
+    const error = (e) => {
+      currentItem.reject();
+      this.throwError(e);
+      done();
+    };
+
     const localDir = this.file.cacheDirectory + this.config.cacheDirectoryName + '/';
     const fileName = this.createFileName(currentItem.imageUrl);
 
@@ -265,15 +271,11 @@ export class ImageLoader {
           currentItem.resolve(localUrl);
           done();
         }).catch((e) => {
-          currentItem.reject();
-          this.throwError(e);
-          done();
+          error(e);
         });
       },
       (e) => {
-        currentItem.reject();
-        this.throwError(e);
-        done();
+        error(e);
       }
     );
   }
