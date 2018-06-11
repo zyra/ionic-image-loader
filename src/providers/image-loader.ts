@@ -254,21 +254,28 @@ export class ImageLoader {
     this.http.get(currentItem.imageUrl, {
       responseType: 'blob',
       headers: this.config.httpHeaders,
-    }).subscribe((data: Blob) => {
-      this.file.writeFile(localDir, fileName, data).then((file: FileEntry) => {
-        if (this.shouldIndex) {
-          this.addFileToIndex(file).then(this.maintainCacheSize.bind(this));
-        }
-        return this.getCachedImagePath(currentItem.imageUrl);
-      }).then((localUrl) => {
-        currentItem.resolve(localUrl);
-        done();
-      }).catch((e) => {
+    }).subscribe(
+      (data: Blob) => {
+        this.file.writeFile(localDir, fileName, data).then((file: FileEntry) => {
+          if (this.shouldIndex) {
+            this.addFileToIndex(file).then(this.maintainCacheSize.bind(this));
+          }
+          return this.getCachedImagePath(currentItem.imageUrl);
+        }).then((localUrl) => {
+          currentItem.resolve(localUrl);
+          done();
+        }).catch((e) => {
+          currentItem.reject();
+          this.throwError(e);
+          done();
+        });
+      },
+      (e) => {
         currentItem.reject();
         this.throwError(e);
         done();
-      });
-    });
+      }
+    );
   }
 
   /**
