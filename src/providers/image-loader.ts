@@ -53,6 +53,11 @@ export class ImageLoader {
 
   private processing: number = 0;
 
+  /**
+   * Fast accessable Object for currently processing items
+   */
+  private currentlyProcessing: {[index: string]: Promise<any>};
+
   private cacheIndex: IndexItem[] = [];
 
   private currentCacheSize: number = 0;
@@ -236,48 +241,61 @@ export class ImageLoader {
 
     // take the first item from queue
     const currentItem: QueueItem = this.queue.splice(0, 1)[0];
+    if (this.currentlyProcessing[currentItem.imageUrl] !== undefined) {
+      this.currentlyProcessing[currentItem.imageUrl] = new Promise((resolve, reject) => {
+        // process more items concurrently if we can
+        if (this.canProcess) this.processQueue();
 
-    // process more items concurrently if we can
-    if (this.canProcess) this.processQueue();
+        // function to call when done processing this item
+        // this will reduce the processing number
+        // then will execute this function again to process any remaining items
+        const done = () => {
+          this.processing--;
+          this.processQueue();
 
-    // function to call when done processing this item
-    // this will reduce the processing number
-    // then will execute this function again to process any remaining items
-    const done = () => {
-      this.processing--;
-      this.processQueue();
-    };
-
-    const error = (e) => {
-      currentItem.reject();
-      this.throwError(e);
-      done();
-    };
-
-    const localDir = this.file.cacheDirectory + this.config.cacheDirectoryName + '/';
-    const fileName = this.createFileName(currentItem.imageUrl);
-
-    this.http.get(currentItem.imageUrl, {
-      responseType: 'blob',
-      headers: this.config.httpHeaders,
-    }).subscribe(
-      (data: Blob) => {
-        this.file.writeFile(localDir, fileName, data).then((file: FileEntry) => {
-          if (this.shouldIndex) {
-            this.addFileToIndex(file).then(this.maintainCacheSize.bind(this));
+          if (this.currentlyProcessing[currentItem.imageUrl] !== undefined) {
+            delete this.currentlyProcessing[currentItem.imageUrl];
           }
-          return this.getCachedImagePath(currentItem.imageUrl);
-        }).then((localUrl) => {
-          currentItem.resolve(localUrl);
+        };
+
+        const error = (e) => {
+          currentItem.reject();
+          reject();
+          this.throwError(e);
           done();
-        }).catch((e) => {
-          error(e);
-        });
-      },
-      (e) => {
-        error(e);
-      }
-    );
+        };
+
+        const localDir = this.file.cacheDirectory + this.config.cacheDirectoryName + '/';
+        const fileName = this.createFileName(currentItem.imageUrl);
+
+        this.http.get(currentItem.imageUrl, {
+          responseType: 'blob',
+          headers: this.config.httpHeaders,
+        }).subscribe(
+          (data: Blob) => {
+            this.file.writeFile(localDir, fileName, data).then((file: FileEntry) => {
+              if (this.shouldIndex) {
+                this.addFileToIndex(file).then(this.maintainCacheSize.bind(this));
+              }
+              return this.getCachedImagePath(currentItem.imageUrl);
+            }).then((localUrl) => {
+              currentItem.resolve(localUrl);
+              resolve();
+              done();
+            }).catch((e) => {
+              error(e);
+            });
+          },
+          (e) => {
+            error(e);
+          }
+        );
+      });
+    } else {
+      this.currentlyProcessing[currentItem.imageUrl].then(() => {
+        currentItem.resolve(this.getCachedImagePath(currentItem.imageUrl));
+      });
+    }
   }
 
   /**
