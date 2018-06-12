@@ -56,7 +56,7 @@ export class ImageLoader {
   /**
    * Fast accessable Object for currently processing items
    */
-  private currentlyProcessing: {[index: string]: Promise<any>};
+  private currentlyProcessing: {[index: string]: Promise<any>} = {};
 
   private cacheIndex: IndexItem[] = [];
 
@@ -241,7 +241,7 @@ export class ImageLoader {
 
     // take the first item from queue
     const currentItem: QueueItem = this.queue.splice(0, 1)[0];
-    if (this.currentlyProcessing[currentItem.imageUrl] !== undefined) {
+    if (this.currentlyProcessing[currentItem.imageUrl] === undefined) {
       this.currentlyProcessing[currentItem.imageUrl] = new Promise((resolve, reject) => {
         // process more items concurrently if we can
         if (this.canProcess) this.processQueue();
@@ -255,14 +255,11 @@ export class ImageLoader {
 
           if (this.currentlyProcessing[currentItem.imageUrl] !== undefined) {
             delete this.currentlyProcessing[currentItem.imageUrl];
-          } else {
-            console.log('Image-loader: currently proceesing file seems like already processed by other Promise');
           }
         };
 
         const error = (e) => {
           currentItem.reject();
-          reject();
           this.throwError(e);
           done();
         };
@@ -275,28 +272,35 @@ export class ImageLoader {
           headers: this.config.httpHeaders,
         }).subscribe(
           (data: Blob) => {
-            this.file.writeFile(localDir, fileName, data).then((file: FileEntry) => {
+            this.file.writeFile(localDir, fileName, data, {replace: true}).then((file: FileEntry) => {
               if (this.shouldIndex) {
-                this.addFileToIndex(file).then(this.maintainCacheSize.bind(this));
+                this.addFileToIndex(file).then(() => {
+                  this.getCachedImagePath(currentItem.imageUrl).then((localUrl) => {
+                    this.maintainCacheSize();
+                    currentItem.resolve(localUrl);
+                    resolve();
+                    done();
+                    this.maintainCacheSize();
+                  });
+                });
               }
-              return this.getCachedImagePath(currentItem.imageUrl);
-            }).then((localUrl) => {
-              currentItem.resolve(localUrl);
-              resolve();
-              done();
             }).catch((e) => {
+              //Could not write image
               error(e);
             });
           },
           (e) => {
+            //Could not get image via httpClient
             error(e);
           }
         );
       });
     } else {
-      console.log('Image-loader: Prevented same Image from loading at the same time');
+      //Prevented same Image from loading at the same time
       this.currentlyProcessing[currentItem.imageUrl].then(() => {
-        currentItem.resolve(this.getCachedImagePath(currentItem.imageUrl));
+        this.getCachedImagePath(currentItem.imageUrl).then((localUrl) => {
+          currentItem.resolve(localUrl);
+        })
       });
     }
   }
