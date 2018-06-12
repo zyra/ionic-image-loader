@@ -171,13 +171,16 @@ export class ImageLoader {
     return new Promise<string>((resolve, reject) => {
 
       const getImage = () => {
-        this.getCachedImagePath(imageUrl)
-          .then(resolve)
-          .catch(() => {
-            // image doesn't exist in cache, lets fetch it and save it
-            this.addItemToQueue(imageUrl, resolve, reject);
-          });
-
+        if (this.isImageUrlRelative(imageUrl)) {
+          resolve(imageUrl);
+        } else {
+          this.getCachedImagePath(imageUrl)
+            .then(resolve)
+            .catch(() => {
+              // image doesn't exist in cache, lets fetch it and save it
+              this.addItemToQueue(imageUrl, resolve, reject);
+            });
+        }
       };
 
       const check = () => {
@@ -197,6 +200,14 @@ export class ImageLoader {
 
     });
 
+  }
+
+  /**
+   * Returns if an imageUrl is an relative path
+   * @param imageUrl
+   */
+  private isImageUrlRelative(imageUrl: string) {
+    return !(/^https?:\/\//i.test(imageUrl) ||  /^file:\/\/\//i.test(imageUrl));
   }
 
   /**
