@@ -53,6 +53,11 @@ export class ImageLoader {
 
   private processing: number = 0;
 
+  /**
+   * Fast accessable Object for currently processing items
+   */
+  private currentlyProcessing: {[index: string]: Promise<any>} = {};
+
   private cacheIndex: IndexItem[] = [];
 
   private currentCacheSize: number = 0;
@@ -166,13 +171,16 @@ export class ImageLoader {
     return new Promise<string>((resolve, reject) => {
 
       const getImage = () => {
-        this.getCachedImagePath(imageUrl)
-          .then(resolve)
-          .catch(() => {
-            // image doesn't exist in cache, lets fetch it and save it
-            this.addItemToQueue(imageUrl, resolve, reject);
-          });
-
+        if (this.isImageUrlRelative(imageUrl)) {
+          resolve(imageUrl);
+        } else {
+          this.getCachedImagePath(imageUrl)
+            .then(resolve)
+            .catch(() => {
+              // image doesn't exist in cache, lets fetch it and save it
+              this.addItemToQueue(imageUrl, resolve, reject);
+            });
+        }
       };
 
       const check = () => {
@@ -192,6 +200,14 @@ export class ImageLoader {
 
     });
 
+  }
+
+  /**
+   * Returns if an imageUrl is an relative path
+   * @param imageUrl
+   */
+  private isImageUrlRelative(imageUrl: string) {
+    return !(/^https?:\/\//i.test(imageUrl) ||  /^file:\/\/\//i.test(imageUrl));
   }
 
   /**
@@ -236,39 +252,67 @@ export class ImageLoader {
 
     // take the first item from queue
     const currentItem: QueueItem = this.queue.splice(0, 1)[0];
+    if (this.currentlyProcessing[currentItem.imageUrl] === undefined) {
+      this.currentlyProcessing[currentItem.imageUrl] = new Promise((resolve, reject) => {
+        // process more items concurrently if we can
+        if (this.canProcess) this.processQueue();
 
-    // process more items concurrently if we can
-    if (this.canProcess) this.processQueue();
+        // function to call when done processing this item
+        // this will reduce the processing number
+        // then will execute this function again to process any remaining items
+        const done = () => {
+          this.processing--;
+          this.processQueue();
 
-    // function to call when done processing this item
-    // this will reduce the processing number
-    // then will execute this function again to process any remaining items
-    const done = () => {
-      this.processing--;
-      this.processQueue();
-    };
+          if (this.currentlyProcessing[currentItem.imageUrl] !== undefined) {
+            delete this.currentlyProcessing[currentItem.imageUrl];
+          }
+        };
 
-    const localDir = this.file.cacheDirectory + this.config.cacheDirectoryName + '/';
-    const fileName = this.createFileName(currentItem.imageUrl);
+        const error = (e) => {
+          currentItem.reject();
+          this.throwError(e);
+          done();
+        };
 
-    this.http.get(currentItem.imageUrl, {
-      responseType: 'blob',
-      headers: this.config.httpHeaders,
-    }).subscribe((data: Blob) => {
-      this.file.writeFile(localDir, fileName, data).then((file: FileEntry) => {
-        if (this.shouldIndex) {
-          this.addFileToIndex(file).then(this.maintainCacheSize.bind(this));
-        }
-        return this.getCachedImagePath(currentItem.imageUrl);
-      }).then((localUrl) => {
-        currentItem.resolve(localUrl);
-        done();
-      }).catch((e) => {
-        currentItem.reject();
-        this.throwError(e);
-        done();
+        const localDir = this.file.cacheDirectory + this.config.cacheDirectoryName + '/';
+        const fileName = this.createFileName(currentItem.imageUrl);
+
+        this.http.get(currentItem.imageUrl, {
+          responseType: 'blob',
+          headers: this.config.httpHeaders,
+        }).subscribe(
+          (data: Blob) => {
+            this.file.writeFile(localDir, fileName, data, {replace: true}).then((file: FileEntry) => {
+              if (this.shouldIndex) {
+                this.addFileToIndex(file).then(() => {
+                  this.getCachedImagePath(currentItem.imageUrl).then((localUrl) => {
+                    currentItem.resolve(localUrl);
+                    resolve();
+                    done();
+                    this.maintainCacheSize();
+                  });
+                });
+              }
+            }).catch((e) => {
+              //Could not write image
+              error(e);
+            });
+          },
+          (e) => {
+            //Could not get image via httpClient
+            error(e);
+          }
+        );
       });
-    });
+    } else {
+      //Prevented same Image from loading at the same time
+      this.currentlyProcessing[currentItem.imageUrl].then(() => {
+        this.getCachedImagePath(currentItem.imageUrl).then((localUrl) => {
+          currentItem.resolve(localUrl);
+        })
+      });
+    }
   }
 
   /**
