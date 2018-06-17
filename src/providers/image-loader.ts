@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { DirectoryEntry, File, FileEntry, FileError } from '@ionic-native/file';
 import { HttpClient } from '@angular/common/http';
+import { normalizeUrl } from 'ionic-angular';
 import { ImageLoaderConfig } from "./image-loader-config";
 import { Platform } from 'ionic-angular';
 import { Observable } from 'rxjs/Observable';
@@ -452,8 +453,8 @@ export class ImageLoader {
             // therefore the file needs to be copied into that directory first!
             if (this.isIonicWKWebView) {
 
-              // Ionic WKWebView can access all files, but we just need to replace file:/// with http://localhost:8080/
-              resolve(fileEntry.nativeURL.replace('file:///', 'http://localhost:8080/'));
+              // Use Ionic normalizeUrl to generate the right URL for Ionic WKWebView
+              resolve(normalizeUrl(fileEntry.nativeURL));
 
             } else if (this.isWKWebView) {
 
