@@ -1,3 +1,13 @@
+<a name="5.0.1"></a>
+## [5.0.1](https://github.com/zyra/ionic-image-loader/compare/v5.0.0...v5.0.1) (2018-06-18)
+
+
+### Bug Fixes
+
+* **wkwebview:** images not loading in Ionic WKWebView ([#160](https://github.com/zyra/ionic-image-loader/issues/160)) ([db16dc2](https://github.com/zyra/ionic-image-loader/commit/db16dc2))
+
+
+
 <a name="5.0.0"></a>
 # [5.0.0](https://github.com/zyra/ionic-image-loader/compare/v4.2.1...v5.0.0) (2018-01-23)
 
