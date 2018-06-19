@@ -414,11 +414,18 @@ export class ImageLoader {
    * @returns {Promise<string>} Returns a promise that resolves with the local path if exists, or rejects if doesn't exist
    */
   private getCachedImagePath(url: string): Promise<string> {
+    // Check if we're running with livereload
+    let _isDev: boolean = (window['IonicDevServer'] != undefined);
     return new Promise<string>((resolve, reject) => {
 
       // make sure cache is ready
       if (!this.isCacheReady) {
         return reject();
+      }
+      
+      // if we're running with livereload, ignore cache and call the resource from it's URL
+      if(!!_isDev){
+          return reject();
       }
 
       // get file name
@@ -452,10 +459,8 @@ export class ImageLoader {
             // in this case only the tempDirectory is accessible,
             // therefore the file needs to be copied into that directory first!
             if (this.isIonicWKWebView) {
-
               // Use Ionic normalizeUrl to generate the right URL for Ionic WKWebView
               resolve(normalizeURL(fileEntry.nativeURL));
-
             } else if (this.isWKWebView) {
 
               // check if file already exists in temp directory
