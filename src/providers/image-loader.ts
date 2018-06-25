@@ -207,7 +207,7 @@ export class ImageLoader {
    * @param imageUrl
    */
   private isImageUrlRelative(imageUrl: string) {
-    return !(/^https?:\/\//i.test(imageUrl) ||  /^file:\/\/\//i.test(imageUrl));
+    return !/^(https?|file):\/\/\/?/i.test(imageUrl);
   }
 
   /**
