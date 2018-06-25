@@ -71,6 +71,10 @@ export class ImageLoader {
   private get isIonicWKWebView(): boolean {
     return this.isWKWebView && (location.host === 'localhost:8080' || (<any>window).LiveReload);
   }
+  
+  private get isDevServer() : boolean {
+    return (window['IonicDevServer'] != undefined); 
+  }
 
   constructor(
     private config: ImageLoaderConfig,
@@ -414,8 +418,6 @@ export class ImageLoader {
    * @returns {Promise<string>} Returns a promise that resolves with the local path if exists, or rejects if doesn't exist
    */
   private getCachedImagePath(url: string): Promise<string> {
-    // Check if we're running with livereload
-    let _isDev: boolean = (window['IonicDevServer'] != undefined);
     return new Promise<string>((resolve, reject) => {
 
       // make sure cache is ready
@@ -424,7 +426,7 @@ export class ImageLoader {
       }
       
       // if we're running with livereload, ignore cache and call the resource from it's URL
-      if(!!_isDev){
+      if(this.isDevServer){
           return reject();
       }
 
