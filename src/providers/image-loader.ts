@@ -76,6 +76,10 @@ export class ImageLoader {
   private get isIonicWKWebView(): boolean {
     return this.isWKWebView && (location.host === 'localhost:8080' || (<any>window).LiveReload);
   }
+  
+  private get isDevServer() : boolean {
+    return (window['IonicDevServer'] != undefined); 
+  }
 
   constructor(
     private config: ImageLoaderConfig,
@@ -464,6 +468,11 @@ export class ImageLoader {
       if (!this.isCacheReady) {
         return reject();
       }
+      
+      // if we're running with livereload, ignore cache and call the resource from it's URL
+      if(this.isDevServer){
+          return reject();
+      }
 
       // get file name
       const fileName = this.createFileName(url);
@@ -496,10 +505,8 @@ export class ImageLoader {
             // in this case only the tempDirectory is accessible,
             // therefore the file needs to be copied into that directory first!
             if (this.isIonicWKWebView) {
-
               // Use Ionic normalizeUrl to generate the right URL for Ionic WKWebView
               resolve(normalizeURL(fileEntry.nativeURL));
-
             } else if (this.isWKWebView) {
 
               // check if file already exists in temp directory
