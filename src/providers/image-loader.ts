@@ -471,7 +471,7 @@ export class ImageLoader {
       
       // if we're running with livereload, ignore cache and call the resource from it's URL
       if(this.isDevServer){
-          return reject();
+          return resolve(url);
       }
 
       // get file name
