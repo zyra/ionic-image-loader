@@ -1,10 +1,16 @@
+<a name="5.0.3"></a>
+## [5.0.3](https://github.com/zyra/ionic-image-loader/compare/v5.0.2...v5.0.3) (2018-06-29)
+
+
+### Bug Fixes
+
+* **image-loader:** resolve gray content in image issue ([#163](https://github.com/zyra/ionic-image-loader/issues/163)) ([a15309f](https://github.com/zyra/ionic-image-loader/commit/a15309f))
+* **livereload:** images not loading ([#161](https://github.com/zyra/ionic-image-loader/issues/161)) ([ead3918](https://github.com/zyra/ionic-image-loader/commit/ead3918))
+
+
+
 <a name="5.0.2"></a>
-## [5.0.2](https://github.com/zyra/ionic-image-loader/compare/v5.0.1...v5.0.2) (2018-06-18)
-
-
-
-<a name="5.0.1"></a>
-## [5.0.1](https://github.com/zyra/ionic-image-loader/compare/v5.0.0...v5.0.1) (2018-06-18)
+## [5.0.2](https://github.com/zyra/ionic-image-loader/compare/v5.0.0...v5.0.2) (2018-06-18)
 
 
 ### Bug Fixes
