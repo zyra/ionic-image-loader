@@ -384,9 +384,6 @@ export class ImageLoader {
    */
   private indexCache(): Promise<void> {
 
-    // only index if needed, to save resources
-    if (this.isCacheSpaceExceeded) return Promise.resolve();
-
     this.cacheIndex = [];
 
     return this.file.listDir(this.file.cacheDirectory, this.config.cacheDirectoryName)
