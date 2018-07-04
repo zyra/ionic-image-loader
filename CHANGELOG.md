@@ -1,3 +1,13 @@
+<a name="5.0.4"></a>
+## [5.0.4](https://github.com/zyra/ionic-image-loader/compare/v5.0.3...v5.0.4) (2018-07-04)
+
+
+### Bug Fixes
+
+* **livereload:** wrong usage of reject, meant resolve. ([#167](https://github.com/zyra/ionic-image-loader/issues/167)) ([bab73a8](https://github.com/zyra/ionic-image-loader/commit/bab73a8))
+
+
+
 <a name="5.0.3"></a>
 ## [5.0.3](https://github.com/zyra/ionic-image-loader/compare/v5.0.2...v5.0.3) (2018-06-29)
 
