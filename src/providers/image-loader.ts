@@ -65,8 +65,8 @@ export class ImageLoader {
 
   private indexed: boolean = false;
 
-  private get shouldIndex(): boolean {
-    return (this.config.maxCacheAge > -1) || (this.config.maxCacheSize > -1);
+  private get isCacheSpaceExceeded(): boolean {
+    return this.config.maxCacheSize > -1 && this.currentCacheSize > this.config.maxCacheSize;
   }
 
   private get isWKWebView(): boolean {
@@ -76,9 +76,9 @@ export class ImageLoader {
   private get isIonicWKWebView(): boolean {
     return this.isWKWebView && (location.host === 'localhost:8080' || (<any>window).LiveReload);
   }
-  
+
   private get isDevServer() : boolean {
-    return (window['IonicDevServer'] != undefined); 
+    return (window['IonicDevServer'] != undefined);
   }
 
   constructor(
@@ -289,16 +289,17 @@ export class ImageLoader {
         }).subscribe(
           (data: Blob) => {
             this.file.writeFile(localDir, fileName, data, {replace: true}).then((file: FileEntry) => {
-              if (this.shouldIndex) {
-                this.addFileToIndex(file).then(() => {
-                  this.getCachedImagePath(currentItem.imageUrl).then((localUrl) => {
-                    currentItem.resolve(localUrl);
-                    resolve();
-                    done();
-                    this.maintainCacheSize();
-                  });
-                });
+              if (this.isCacheSpaceExceeded) {
+                this.maintainCacheSize();
               }
+              this.addFileToIndex(file).then(() => {
+                this.getCachedImagePath(currentItem.imageUrl).then((localUrl) => {
+                  currentItem.resolve(localUrl);
+                  resolve();
+                  done();
+                  this.maintainCacheSize();
+                });
+              });
             }).catch((e) => {
               //Could not write image
               error(e);
@@ -383,9 +384,6 @@ export class ImageLoader {
    */
   private indexCache(): Promise<void> {
 
-    // only index if needed, to save resources
-    if (!this.shouldIndex) return Promise.resolve();
-
     this.cacheIndex = [];
 
     return this.file.listDir(this.file.cacheDirectory, this.config.cacheDirectoryName)
@@ -468,7 +466,7 @@ export class ImageLoader {
       if (!this.isCacheReady) {
         return reject();
       }
-      
+
       // if we're running with livereload, ignore cache and call the resource from it's URL
       if(this.isDevServer){
           return resolve(url);

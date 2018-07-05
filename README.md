@@ -114,6 +114,19 @@ The `<img-loader>` component takes many attributes that allows you to customize 
 
 **Note:** The default values can be changed using the [global configuration](https://github.com/zyramedia/ionic-image-loader#global-configuration) feature.
 
+## Quirks
+In some cases, images won't load on the first time, the culprit seems to be `@ionic-native/file` or `cordova-plugin-file` in its `writeFile` function not calling resolve or reject.
+
+In the meantime we find a solution, here's a quick workaround:
+
+In **./src/index.html** move your `polyfill.js`include above `cordova.js`
+```
+    <!-- The polyfills js is generated during the build process -->
+    <script src="build/polyfills.js"></script>
+
+    <!-- cordova.js required for cordova apps (remove if not needed) -->
+    <script src="cordova.js"></script>
+```
 
 # Global Configuration
 This is optional but it is helpful if you wish to set the global configuration for all of your `<img-loader>` instances. To configure the module, inject the `ImageLoaderConfig` provider in your app's main component.
