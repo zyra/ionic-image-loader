@@ -1,4 +1,4 @@
-import { Component, Input, Output, ElementRef, Renderer, OnInit, EventEmitter } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, Renderer } from '@angular/core';
 import { ImageLoader } from '../providers/image-loader';
 import { ImageLoaderConfig } from '../providers/image-loader-config';
 
@@ -19,6 +19,77 @@ const propMap: any = {
 export class ImgLoader implements OnInit {
 
   /**
+   * Fallback URL to load when the image url fails to load or does not exist.
+   */
+  @Input('fallback') fallbackUrl: string = this._config.fallbackUrl;
+  /**
+   * Whether to show a spinner while the image loads
+   */
+  @Input() spinner: boolean = this._config.spinnerEnabled;
+  /**
+   * Whether to show the fallback image instead of a spinner while the image loads
+   */
+  @Input() fallbackAsPlaceholder: boolean = this._config.fallbackAsPlaceholder;
+  /**
+   * Enable/Disable caching
+   * @type {boolean}
+   */
+  @Input() cache: boolean = true;
+  /**
+   * Width of the image. This will be ignored if using useImg.
+   */
+  @Input() width: string = this._config.width;
+  /**
+   * Height of the image. This will be ignored if using useImg.
+   */
+  @Input() height: string = this._config.height;
+  /**
+   * Display type of the image. This will be ignored if using useImg.
+   */
+  @Input() display: string = this._config.display;
+  /**
+   * Background size. This will be ignored if using useImg.
+   */
+  @Input() backgroundSize: string = this._config.backgroundSize;
+  /**
+   * Background repeat. This will be ignored if using useImg.
+   */
+  @Input() backgroundRepeat: string = this._config.backgroundRepeat;
+  /**
+   * Name of the spinner
+   */
+  @Input() spinnerName: string = this._config.spinnerName;
+  /**
+   * Color of the spinner
+   */
+  @Input() spinnerColor: string = this._config.spinnerColor;
+  /**
+   * Notify on image load..
+   */
+  @Output()
+  load: EventEmitter<ImgLoader> = new EventEmitter<ImgLoader>();
+  /**
+   * Indicates if the image is still loading
+   * @type {boolean}
+   */
+  isLoading: boolean = true;
+  element: HTMLElement;
+
+  constructor(
+    private _element: ElementRef,
+    private _renderer: Renderer,
+    private _imageLoader: ImageLoader,
+    private _config: ImageLoaderConfig
+  ) {
+  }
+
+  private _src: string;
+
+  get src(): string {
+    return this._src;
+  }
+
+  /**
    * The URL of the image to load.
    */
   @Input()
@@ -27,26 +98,7 @@ export class ImgLoader implements OnInit {
     this.updateImage(this._src);
   };
 
-  get src(): string {
-    return this._src;
-  }
-
-  private _src: string;
-
-  /**
-   * Fallback URL to load when the image url fails to load or does not exist.
-   */
-  @Input('fallback') fallbackUrl: string = this._config.fallbackUrl;
-
-  /**
-   * Whether to show a spinner while the image loads
-   */
-  @Input() spinner: boolean = this._config.spinnerEnabled;
-
-  /**
-   * Whether to show the fallback image instead of a spinner while the image loads
-   */
-  @Input() fallbackAsPlaceholder: boolean = this._config.fallbackAsPlaceholder;
+  private _useImg: boolean = this._config.useImg;
 
   /**
    * Use <img> tag
@@ -56,8 +108,6 @@ export class ImgLoader implements OnInit {
     this._useImg = val !== false;
   }
 
-  private _useImg: boolean = this._config.useImg;
-
   /**
    * Convenience attribute to disable caching
    * @param val
@@ -66,68 +116,6 @@ export class ImgLoader implements OnInit {
   set noCache(val: boolean) {
     this.cache = val !== false;
   }
-
-  /**
-   * Enable/Disable caching
-   * @type {boolean}
-   */
-  @Input() cache: boolean = true;
-
-  /**
-   * Width of the image. This will be ignored if using useImg.
-   */
-  @Input() width: string = this._config.width;
-
-  /**
-   * Height of the image. This will be ignored if using useImg.
-   */
-  @Input() height: string = this._config.height;
-
-  /**
-   * Display type of the image. This will be ignored if using useImg.
-   */
-  @Input() display: string = this._config.display;
-
-  /**
-   * Background size. This will be ignored if using useImg.
-   */
-  @Input() backgroundSize: string = this._config.backgroundSize;
-
-  /**
-   * Background repeat. This will be ignored if using useImg.
-   */
-  @Input() backgroundRepeat: string = this._config.backgroundRepeat;
-
-  /**
-   * Name of the spinner
-   */
-  @Input() spinnerName: string = this._config.spinnerName;
-
-  /**
-   * Color of the spinner
-   */
-  @Input() spinnerColor: string = this._config.spinnerColor;
-
-  /**
-   * Notify on image load..
-   */
-  @Output()
-  load: EventEmitter<ImgLoader> = new EventEmitter<ImgLoader>();
-
-  /**
-   * Indicates if the image is still loading
-   * @type {boolean}
-   */
-  isLoading: boolean = true;
-
-  element: HTMLElement;
-
-  constructor(
-    private _element: ElementRef,
-    private _renderer: Renderer,
-    private _imageLoader: ImageLoader,
-    private _config: ImageLoaderConfig
-  ) {}
 
   ngOnInit(): void {
     if (this.fallbackAsPlaceholder && this.fallbackUrl) {
@@ -214,7 +202,7 @@ export class ImgLoader implements OnInit {
         }
       }
 
-      this._renderer.setElementStyle(this.element, 'background-image', 'url(\'' + ( imageUrl || this.fallbackUrl ) + '\')');
+      this._renderer.setElementStyle(this.element, 'background-image', 'url(\'' + (imageUrl || this.fallbackUrl) + '\')');
     }
 
     this.load.emit(this);

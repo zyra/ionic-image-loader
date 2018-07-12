@@ -12,7 +12,7 @@ import { HttpClientModule } from '@angular/common/http';
   ],
   imports: [
     IonicModule,
-    HttpClientModule,
+    HttpClientModule
   ],
   exports: [
     ImgLoader
@@ -25,7 +25,7 @@ export class IonicImageLoader {
       providers: [
         ImageLoaderConfig,
         ImageLoader,
-        File,
+        File
       ]
     };
   }

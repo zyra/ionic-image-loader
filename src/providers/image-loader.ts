@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { DirectoryEntry, File, FileEntry, FileError } from '@ionic-native/file';
 import { HttpClient } from '@angular/common/http';
-import { normalizeURL } from 'ionic-angular';
-import { ImageLoaderConfig } from "./image-loader-config";
-import { Platform } from 'ionic-angular';
+import { normalizeURL, Platform } from 'ionic-angular';
+import { ImageLoaderConfig } from './image-loader-config';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/first';
 
@@ -22,64 +21,36 @@ interface QueueItem {
 @Injectable()
 export class ImageLoader {
 
-  get nativeAvailable(): boolean {
-    return File.installed();
-  }
-
   /**
    * Indicates if the cache service is ready.
    * When the cache service isn't ready, images are loaded via browser instead.
    * @type {boolean}
    */
   private isCacheReady: boolean = false;
-
   /**
    * Indicates if this service is initialized.
    * This service is initialized once all the setup is done.
    * @type {boolean}
    */
   private isInit: boolean = false;
-
   /**
    * Number of concurrent requests allowed
    * @type {number}
    */
   private concurrency: number = 5;
-
   /**
    * Queue items
    * @type {Array}
    */
   private queue: QueueItem[] = [];
-
   private processing: number = 0;
-
   /**
    * Fast accessable Object for currently processing items
    */
-  private currentlyProcessing: {[index: string]: Promise<any>} = {};
-
+  private currentlyProcessing: { [index: string]: Promise<any> } = {};
   private cacheIndex: IndexItem[] = [];
-
   private currentCacheSize: number = 0;
-
   private indexed: boolean = false;
-
-  private get isCacheSpaceExceeded(): boolean {
-    return this.config.maxCacheSize > -1 && this.currentCacheSize > this.config.maxCacheSize;
-  }
-
-  private get isWKWebView(): boolean {
-    return this.platform.is('ios') && (<any>window).webkit && (<any>window).webkit.messageHandlers;
-  }
-
-  private get isIonicWKWebView(): boolean {
-    return this.isWKWebView && (location.host === 'localhost:8080' || (<any>window).LiveReload);
-  }
-
-  private get isDevServer() : boolean {
-    return (window['IonicDevServer'] != undefined);
-  }
 
   constructor(
     private config: ImageLoaderConfig,
@@ -104,6 +75,37 @@ export class ImageLoader {
         }
       });
     }
+  }
+
+  get nativeAvailable(): boolean {
+    return File.installed();
+  }
+
+  private get isCacheSpaceExceeded(): boolean {
+    return this.config.maxCacheSize > -1 && this.currentCacheSize > this.config.maxCacheSize;
+  }
+
+  private get isWKWebView(): boolean {
+    return this.platform.is('ios') && (<any>window).webkit && (<any>window).webkit.messageHandlers;
+  }
+
+  private get isIonicWKWebView(): boolean {
+    return this.isWKWebView && (location.host === 'localhost:8080' || (<any>window).LiveReload);
+  }
+
+  private get isDevServer(): boolean {
+    return (window['IonicDevServer'] != undefined);
+  }
+
+  /**
+   * Check if we can process more items in the queue
+   * @returns {boolean}
+   */
+  private get canProcess(): boolean {
+    return (
+      this.queue.length > 0
+      && this.processing < this.concurrency
+    );
   }
 
   /**
@@ -234,17 +236,6 @@ export class ImageLoader {
   }
 
   /**
-   * Check if we can process more items in the queue
-   * @returns {boolean}
-   */
-  private get canProcess(): boolean {
-    return (
-      this.queue.length > 0
-      && this.processing < this.concurrency
-    );
-  }
-
-  /**
    * Processes one item from the queue
    */
   private processQueue() {
@@ -285,7 +276,7 @@ export class ImageLoader {
 
         this.http.get(currentItem.imageUrl, {
           responseType: 'blob',
-          headers: this.config.httpHeaders,
+          headers: this.config.httpHeaders
         }).subscribe(
           (data: Blob) => {
             this.file.writeFile(localDir, fileName, data, {replace: true}).then((file: FileEntry) => {
@@ -468,8 +459,8 @@ export class ImageLoader {
       }
 
       // if we're running with livereload, ignore cache and call the resource from it's URL
-      if(this.isDevServer){
-          return resolve(url);
+      if (this.isDevServer) {
+        return resolve(url);
       }
 
       // get file name
@@ -641,6 +632,6 @@ export class ImageLoader {
    * @returns {string}
    */
   private getExtensionFromFileName(filename) {
-    return filename.substr((~-filename.lastIndexOf(".") >>> 0) + 1) || this.config.fallbackFileNameCachedExtension;
+    return filename.substr((~-filename.lastIndexOf('.') >>> 0) + 1) || this.config.fallbackFileNameCachedExtension;
   }
 }

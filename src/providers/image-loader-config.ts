@@ -44,13 +44,13 @@ export class ImageLoaderConfig {
 
   private _cacheDirectoryName: string = 'image-loader-cache';
 
+  get cacheDirectoryName(): string {
+    return this._cacheDirectoryName;
+  }
+
   set cacheDirectoryName(name: string) {
     name.replace(/\W/g, '');
     this._cacheDirectoryName = name;
-  }
-
-  get cacheDirectoryName(): string {
-    return this._cacheDirectoryName;
   }
 
   /**
