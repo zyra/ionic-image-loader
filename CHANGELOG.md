@@ -1,3 +1,13 @@
+<a name="5.0.5"></a>
+## [5.0.5](https://github.com/zyra/ionic-image-loader/compare/v5.0.4...v5.0.5) (2018-07-12)
+
+
+### Bug Fixes
+
+* **cache:** Images not saved to cache ([#171](https://github.com/zyra/ionic-image-loader/issues/171)) ([07eb2e7](https://github.com/zyra/ionic-image-loader/commit/07eb2e7))
+
+
+
 <a name="5.0.4"></a>
 ## [5.0.4](https://github.com/zyra/ionic-image-loader/compare/v5.0.3...v5.0.4) (2018-07-04)
 
