@@ -1,9 +1,8 @@
-import { Injectable } from '@angular/core';
 import { HttpHeaders } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 
 @Injectable()
 export class ImageLoaderConfig {
-
   debugMode: boolean = false;
 
   spinnerEnabled: boolean = true;
@@ -174,7 +173,7 @@ export class ImageLoaderConfig {
   }
 
   /**
-   * Set the default spinnern ame
+   * Set the default spinner name
    * @param name
    */
   setSpinnerName(name: string): void {
@@ -202,7 +201,10 @@ export class ImageLoaderConfig {
    * @param options
    * @deprecated FileTransfer plugin removed.
    */
-  setFileTransferOptions(options: { trustAllHosts: boolean; [key: string]: any; }): void {
+  setFileTransferOptions(options: {
+    trustAllHosts: boolean;
+    [key: string]: any;
+  }): void {
     // do nothing, plugin deprecated.
   }
 
