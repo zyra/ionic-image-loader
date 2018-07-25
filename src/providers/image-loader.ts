@@ -26,31 +26,31 @@ export class ImageLoader {
    * When the cache service isn't ready, images are loaded via browser instead.
    * @type {boolean}
    */
-  private isCacheReady: boolean = false;
+  private isCacheReady = false;
   /**
    * Indicates if this service is initialized.
    * This service is initialized once all the setup is done.
    * @type {boolean}
    */
-  private isInit: boolean = false;
+  private isInit = false;
   /**
    * Number of concurrent requests allowed
    * @type {number}
    */
-  private concurrency: number = 5;
+  private concurrency = 5;
   /**
    * Queue items
    * @type {Array}
    */
   private queue: QueueItem[] = [];
-  private processing: number = 0;
+  private processing = 0;
   /**
    * Fast accessible Object for currently processing items
    */
   private currentlyProcessing: { [index: string]: Promise<any> } = {};
   private cacheIndex: IndexItem[] = [];
-  private currentCacheSize: number = 0;
-  private indexed: boolean = false;
+  private currentCacheSize = 0;
+  private indexed = false;
 
   constructor(
     private config: ImageLoaderConfig,
@@ -110,7 +110,7 @@ export class ImageLoader {
   }
 
   private get isDevServer(): boolean {
-    return window['IonicDevServer'] != undefined;
+    return window['IonicDevServer'] !== undefined;
   }
 
   /**
@@ -123,7 +123,7 @@ export class ImageLoader {
 
   /**
    * Preload an image
-   * @param imageUrl {string} Image URL
+   * @param {string} imageUrl Image URL
    * @returns {Promise<string>} returns a promise that resolves with the cached image URL
    */
   preload(imageUrl: string): Promise<string> {
@@ -134,7 +134,9 @@ export class ImageLoader {
    * Clears the cache
    */
   clearCache(): void {
-    if (!this.platform.is('cordova')) return;
+    if (!this.platform.is('cordova')) {
+      return;
+    }
 
     const clear = () => {
       if (!this.isInit) {
@@ -179,7 +181,7 @@ export class ImageLoader {
   /**
    * Gets the filesystem path of an image.
    * This will return the remote path if anything goes wrong or if the cache service isn't ready yet.
-   * @param imageUrl {string} The remote URL of the image
+   * @param {string} imageUrl The remote URL of the image
    * @returns {Promise<string>} Returns a promise that will always resolve with an image URL
    */
   getImagePath(imageUrl: string): Promise<string> {
@@ -222,7 +224,7 @@ export class ImageLoader {
 
   /**
    * Returns if an imageUrl is an relative path
-   * @param imageUrl
+   * @param {string} imageUrl
    */
   private isImageUrlRelative(imageUrl: string) {
     return !/^(https?|file):\/\/\/?/i.test(imageUrl);
@@ -230,7 +232,7 @@ export class ImageLoader {
 
   /**
    * Add an item to the queue
-   * @param imageUrl
+   * @param {string} imageUrl
    * @param resolve
    * @param reject
    */
@@ -249,7 +251,9 @@ export class ImageLoader {
    */
   private processQueue() {
     // make sure we can process items first
-    if (!this.canProcess) return;
+    if (!this.canProcess) {
+      return;
+    }
 
     // increase the processing number
     this.processing++;
@@ -260,7 +264,9 @@ export class ImageLoader {
       this.currentlyProcessing[currentItem.imageUrl] = new Promise(
         (resolve, reject) => {
           // process more items concurrently if we can
-          if (this.canProcess) this.processQueue();
+          if (this.canProcess) {
+            this.processQueue();
+          }
 
           // function to call when done processing this item
           // this will reduce the processing number
@@ -309,19 +315,19 @@ export class ImageLoader {
                     });
                   })
                   .catch(e => {
-                    //Could not write image
+                    // Could not write image
                     error(e);
                   });
               },
               e => {
-                //Could not get image via httpClient
+                // Could not get image via httpClient
                 error(e);
               }
             );
         }
       );
     } else {
-      //Prevented same Image from loading at the same time
+      // Prevented same Image from loading at the same time
       this.currentlyProcessing[currentItem.imageUrl].then(() => {
         this.getCachedImagePath(currentItem.imageUrl).then(localUrl => {
           currentItem.resolve(localUrl);
@@ -332,7 +338,7 @@ export class ImageLoader {
 
   /**
    * Initialize the cache service
-   * @param replace {boolean} Whether to replace the cache directory if it already exists
+   * @param [boolean] replace Whether to replace the cache directory if it already exists
    */
   private initCache(replace?: boolean): void {
     this.concurrency = this.config.concurrency;
@@ -353,7 +359,7 @@ export class ImageLoader {
   /**
    * Adds a file to index.
    * Also deletes any files if they are older than the set maximum cache age.
-   * @param file {FileEntry} File to index
+   * @param {FileEntry} file File to index
    * @returns {Promise<any>}
    */
   private addFileToIndex(file: FileEntry): Promise<any> {
@@ -385,7 +391,7 @@ export class ImageLoader {
 
   /**
    * Indexes the cache if necessary
-   * @returns {any}
+   * @returns {Promise<void>}
    */
   private indexCache(): Promise<void> {
     this.cacheIndex = [];
@@ -425,7 +431,9 @@ export class ImageLoader {
           // grab the first item in index since it's the oldest one
           const file: IndexItem = this.cacheIndex.splice(0, 1)[0];
 
-          if (typeof file == 'undefined') return maintain();
+          if (typeof file === 'undefined') {
+            return maintain();
+          }
 
           // delete the file then process next file if necessary
           this.removeFile(file.name)
@@ -440,7 +448,8 @@ export class ImageLoader {
 
   /**
    * Remove a file
-   * @param file {string} The name of the file to remove
+   * @param {string} file The name of the file to remove
+   * @returns {Promise<any>}
    */
   private removeFile(file: string): Promise<any> {
     return this.file
@@ -464,7 +473,7 @@ export class ImageLoader {
 
   /**
    * Get the local path of a previously cached image if exists
-   * @param url {string} The remote URL of the image
+   * @param {string} url The remote URL of the image
    * @returns {Promise<string>} Returns a promise that resolves with the local path if exists, or rejects if doesn't exist
    */
   private getCachedImagePath(url: string): Promise<string> {
@@ -495,7 +504,7 @@ export class ImageLoader {
           if (this.config.imageReturnType === 'base64') {
             // read the file as data url and return the base64 string.
             // should always be successful as the existence of the file
-            // is alreay ensured
+            // is already ensured
             this.file
               .readAsDataURL(dirPath, fileName)
               .then((base64: string) => {
@@ -543,7 +552,7 @@ export class ImageLoader {
 
   /**
    * Throws a console error if debug mode is enabled
-   * @param args {any[]} Error message
+   * @param {any[]} args Error message
    */
   private throwError(...args: any[]): void {
     if (this.config.debugMode) {
@@ -554,7 +563,7 @@ export class ImageLoader {
 
   /**
    * Throws a console warning if debug mode is enabled
-   * @param args {any[]} Error message
+   * @param {any[]} args Error message
    */
   private throwWarning(...args: any[]): void {
     if (this.config.debugMode) {
@@ -631,7 +640,7 @@ export class ImageLoader {
 
   /**
    * Creates a unique file name out of the URL
-   * @param url {string} URL of the file
+   * @param {string} url URL of the file
    * @returns {string} Unique file name
    */
   private createFileName(url: string): string {
@@ -646,16 +655,20 @@ export class ImageLoader {
 
   /**
    * Converts a string to a unique 32-bit int
-   * @param string {string} string to hash
+   * @param {string} string string to hash
    * @returns {number} 32-bit int
    */
   private hashString(string: string): number {
     let hash = 0,
       char;
-    if (string.length === 0) return hash;
+    if (string.length === 0) {
+      return hash;
+    }
     for (let i = 0; i < string.length; i++) {
       char = string.charCodeAt(i);
+      // tslint:disable-next-line
       hash = (hash << 5) - hash + char;
+      // tslint:disable-next-line
       hash = hash & hash;
     }
     return hash;
@@ -664,11 +677,12 @@ export class ImageLoader {
   /**
    * extract extension from filename or url
    *
-   * @param filename
+   * @param {string} filename
    * @returns {string}
    */
-  private getExtensionFromFileName(filename) {
+  private getExtensionFromFileName(filename: string): string {
     return (
+      // tslint:disable-next-line
       filename.substr((~-filename.lastIndexOf('.') >>> 0) + 1) ||
       this.config.fallbackFileNameCachedExtension
     );
