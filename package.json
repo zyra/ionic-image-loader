@@ -7,6 +7,7 @@
   "scripts": {
     "prebuild": "rimraf dist aot",
     "build": "ngc",
+    "lint": "tslint \"src/**/*.ts\"",
     "test": "echo \"Error: no test specified\" && exit 1",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
     "postchangelog": "git commit -am \"chore(): update changelog\"",
@@ -40,10 +41,12 @@
     "@angular/platform-browser-dynamic": "5.2.11",
     "@ionic-native/core": "4.3.3",
     "@ionic-native/file": "4.3.3",
+    "codelyzer": "^4.4.2",
     "conventional-changelog-cli": "^2.0.1",
     "ionic-angular": "^3.9.2",
     "rimraf": "^2.6.2",
     "rxjs": "5.5.11",
+    "tslint": "^5.11.0",
     "typescript": "2.4.2",
     "zone.js": "0.8.26"
   },
