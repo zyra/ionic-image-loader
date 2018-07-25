@@ -142,9 +142,9 @@ export class ImageLoaderConfig {
 
   /**
    * Set the maximum number of allowed connections at the same time.
-   * @param concurrency
+   * @param {number} concurrency
    */
-  setConcurrency(concurrency): void {
+  setConcurrency(concurrency: number): void {
     this.concurrency = concurrency;
   }
 
@@ -174,23 +174,23 @@ export class ImageLoaderConfig {
 
   /**
    * Set the default spinner name
-   * @param name
+   * @param {string} name
    */
-  setSpinnerName(name): void {
+  setSpinnerName(name: string): void {
     this.spinnerName = name;
   }
 
   /**
    * Set the default spinner color
-   * @param color
+   * @param {string} color
    */
-  setSpinnerColor(color): void {
+  setSpinnerColor(color: string): void {
     this.spinnerColor = color;
   }
 
   /**
    * Set headers options for the HttpClient transfers.
-   * @param headers
+   * @param {HttpHeaders} headers
    */
   setHttpHeaders(headers: HttpHeaders): void {
     this.httpHeaders = headers;
