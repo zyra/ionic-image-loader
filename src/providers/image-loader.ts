@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { File, FileEntry, FileError, DirectoryEntry } from '@ionic-native/file';
-import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
-import { ImageLoaderConfig } from "./image-loader-config";
-import { Platform } from 'ionic-angular';
+import { DirectoryEntry, File, FileEntry, FileError } from '@ionic-native/file';
+import { HttpClient } from '@angular/common/http';
+import { normalizeURL, Platform } from 'ionic-angular';
+import { ImageLoaderConfig } from './image-loader-config';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/first';
 
@@ -21,62 +21,41 @@ interface QueueItem {
 @Injectable()
 export class ImageLoader {
 
-  get nativeAvailable(): boolean {
-    return File.installed() && FileTransfer.installed();
-  }
-
   /**
    * Indicates if the cache service is ready.
    * When the cache service isn't ready, images are loaded via browser instead.
    * @type {boolean}
    */
   private isCacheReady: boolean = false;
-
   /**
    * Indicates if this service is initialized.
    * This service is initialized once all the setup is done.
    * @type {boolean}
    */
   private isInit: boolean = false;
-
   /**
    * Number of concurrent requests allowed
    * @type {number}
    */
   private concurrency: number = 5;
-
   /**
    * Queue items
    * @type {Array}
    */
   private queue: QueueItem[] = [];
-
-  private transferInstances: FileTransferObject[] = [];
-
   private processing: number = 0;
-
+  /**
+   * Fast accessable Object for currently processing items
+   */
+  private currentlyProcessing: { [index: string]: Promise<any> } = {};
   private cacheIndex: IndexItem[] = [];
-
   private currentCacheSize: number = 0;
-
   private indexed: boolean = false;
-
-  private get shouldIndex(): boolean {
-    return (this.config.maxCacheAge > -1) || (this.config.maxCacheSize > -1);
-  }
-
-  private get isWKWebView(): boolean {
-    return this.platform.is('ios') && (<any>window).webkit && (<any>window).webkit.messageHandlers;
-  }
-
-  private get isIonicWKWebView(): boolean {
-    return this.isWKWebView && (location.host === 'localhost:8080' || (<any>window).LiveReload);
-  }
 
   constructor(
     private config: ImageLoaderConfig,
     private file: File,
-    private fileTransfer: FileTransfer,
+    private http: HttpClient,
     private platform: Platform
   ) {
     if (!platform.is('cordova')) {
@@ -96,6 +75,37 @@ export class ImageLoader {
         }
       });
     }
+  }
+
+  get nativeAvailable(): boolean {
+    return File.installed();
+  }
+
+  private get isCacheSpaceExceeded(): boolean {
+    return this.config.maxCacheSize > -1 && this.currentCacheSize > this.config.maxCacheSize;
+  }
+
+  private get isWKWebView(): boolean {
+    return this.platform.is('ios') && (<any>window).webkit && (<any>window).webkit.messageHandlers;
+  }
+
+  private get isIonicWKWebView(): boolean {
+    return this.isWKWebView && (location.host === 'localhost:8080' || (<any>window).LiveReload);
+  }
+
+  private get isDevServer(): boolean {
+    return (window['IonicDevServer'] != undefined);
+  }
+
+  /**
+   * Check if we can process more items in the queue
+   * @returns {boolean}
+   */
+  private get canProcess(): boolean {
+    return (
+      this.queue.length > 0
+      && this.processing < this.concurrency
+    );
   }
 
   /**
@@ -168,13 +178,16 @@ export class ImageLoader {
     return new Promise<string>((resolve, reject) => {
 
       const getImage = () => {
-        this.getCachedImagePath(imageUrl)
-          .then(resolve)
-          .catch(() => {
-            // image doesn't exist in cache, lets fetch it and save it
-            this.addItemToQueue(imageUrl, resolve, reject);
-          });
-
+        if (this.isImageUrlRelative(imageUrl)) {
+          resolve(imageUrl);
+        } else {
+          this.getCachedImagePath(imageUrl)
+            .then(resolve)
+            .catch(() => {
+              // image doesn't exist in cache, lets fetch it and save it
+              this.addItemToQueue(imageUrl, resolve, reject);
+            });
+        }
       };
 
       const check = () => {
@@ -197,6 +210,14 @@ export class ImageLoader {
   }
 
   /**
+   * Returns if an imageUrl is an relative path
+   * @param imageUrl
+   */
+  private isImageUrlRelative(imageUrl: string) {
+    return !/^(https?|file):\/\/\/?/i.test(imageUrl);
+  }
+
+  /**
    * Add an item to the queue
    * @param imageUrl
    * @param resolve
@@ -215,17 +236,6 @@ export class ImageLoader {
   }
 
   /**
-   * Check if we can process more items in the queue
-   * @returns {boolean}
-   */
-  private get canProcess(): boolean {
-    return (
-      this.queue.length > 0
-      && this.processing < this.concurrency
-    );
-  }
-
-  /**
    * Processes one item from the queue
    */
   private processQueue() {
@@ -238,48 +248,68 @@ export class ImageLoader {
 
     // take the first item from queue
     const currentItem: QueueItem = this.queue.splice(0, 1)[0];
+    if (this.currentlyProcessing[currentItem.imageUrl] === undefined) {
+      this.currentlyProcessing[currentItem.imageUrl] = new Promise((resolve, reject) => {
+        // process more items concurrently if we can
+        if (this.canProcess) this.processQueue();
 
-    // create FileTransferObject instance if needed
-    // we would only reach here if current jobs < concurrency limit
-    // so, there's no need to check anything other than the length of
-    // the FileTransferObject instances we have in memory
-    if (this.transferInstances.length === 0) {
-      this.transferInstances.push(this.fileTransfer.create());
-    }
+        // function to call when done processing this item
+        // this will reduce the processing number
+        // then will execute this function again to process any remaining items
+        const done = () => {
+          this.processing--;
+          this.processQueue();
 
-    const transfer: FileTransferObject = this.transferInstances.splice(0, 1)[0];
+          if (this.currentlyProcessing[currentItem.imageUrl] !== undefined) {
+            delete this.currentlyProcessing[currentItem.imageUrl];
+          }
+        };
 
-    // process more items concurrently if we can
-    if (this.canProcess) this.processQueue();
+        const error = (e) => {
+          currentItem.reject();
+          this.throwError(e);
+          done();
+        };
 
-    // function to call when done processing this item
-    // this will reduce the processing number
-    // then will execute this function again to process any remaining items
-    const done = () => {
-      this.processing--;
-      this.transferInstances.push(transfer);
-      this.processQueue();
-    };
+        const localDir = this.file.cacheDirectory + this.config.cacheDirectoryName + '/';
+        const fileName = this.createFileName(currentItem.imageUrl);
 
-    const localPath = this.file.cacheDirectory + this.config.cacheDirectoryName + '/' + this.createFileName(currentItem.imageUrl);
-
-    transfer.download(currentItem.imageUrl, localPath, Boolean(this.config.fileTransferOptions.trustAllHosts), this.config.fileTransferOptions)
-      .then((file: FileEntry) => {
-        if (this.shouldIndex) {
-          this.addFileToIndex(file).then(this.maintainCacheSize.bind(this));
-        }
-        return this.getCachedImagePath(currentItem.imageUrl);
-      })
-      .then((localUrl) => {
-        currentItem.resolve(localUrl);
-        done();
-      })
-      .catch((e) => {
-        currentItem.reject();
-        this.throwError(e);
-        done();
+        this.http.get(currentItem.imageUrl, {
+          responseType: 'blob',
+          headers: this.config.httpHeaders
+        }).subscribe(
+          (data: Blob) => {
+            this.file.writeFile(localDir, fileName, data, {replace: true}).then((file: FileEntry) => {
+              if (this.isCacheSpaceExceeded) {
+                this.maintainCacheSize();
+              }
+              this.addFileToIndex(file).then(() => {
+                this.getCachedImagePath(currentItem.imageUrl).then((localUrl) => {
+                  currentItem.resolve(localUrl);
+                  resolve();
+                  done();
+                  this.maintainCacheSize();
+                });
+              });
+            }).catch((e) => {
+              //Could not write image
+              error(e);
+            });
+          },
+          (e) => {
+            //Could not get image via httpClient
+            error(e);
+          }
+        );
       });
-
+    } else {
+      //Prevented same Image from loading at the same time
+      this.currentlyProcessing[currentItem.imageUrl].then(() => {
+        this.getCachedImagePath(currentItem.imageUrl).then((localUrl) => {
+          currentItem.resolve(localUrl);
+        })
+      });
+    }
   }
 
   /**
@@ -344,9 +374,6 @@ export class ImageLoader {
    * @returns {any}
    */
   private indexCache(): Promise<void> {
-
-    // only index if needed, to save resources
-    if (!this.shouldIndex) return Promise.resolve();
 
     this.cacheIndex = [];
 
@@ -431,6 +458,11 @@ export class ImageLoader {
         return reject();
       }
 
+      // if we're running with livereload, ignore cache and call the resource from it's URL
+      if (this.isDevServer) {
+        return resolve(url);
+      }
+
       // get file name
       const fileName = this.createFileName(url);
 
@@ -462,10 +494,8 @@ export class ImageLoader {
             // in this case only the tempDirectory is accessible,
             // therefore the file needs to be copied into that directory first!
             if (this.isIonicWKWebView) {
-
-              // Ionic WKWebView can access all files, but we just need to replace file:/// with http://localhost:8080/
-              resolve(fileEntry.nativeURL.replace('file:///', 'http://localhost:8080/'));
-
+              // Use Ionic normalizeUrl to generate the right URL for Ionic WKWebView
+              resolve(normalizeURL(fileEntry.nativeURL));
             } else if (this.isWKWebView) {
 
               // check if file already exists in temp directory
@@ -576,7 +606,7 @@ export class ImageLoader {
    */
   private createFileName(url: string): string {
     // hash the url to get a unique file name
-    return this.hashString(url).toString();
+    return this.hashString(url).toString() + (this.config.fileNameCachedWithExtension ? this.getExtensionFromFileName(url) : '');
   }
 
   /**
@@ -595,4 +625,13 @@ export class ImageLoader {
     return hash;
   }
 
+  /**
+   * extract extension from filename or url
+   *
+   * @param filename
+   * @returns {string}
+   */
+  private getExtensionFromFileName(filename) {
+    return filename.substr((~-filename.lastIndexOf('.') >>> 0) + 1) || this.config.fallbackFileNameCachedExtension;
+  }
 }

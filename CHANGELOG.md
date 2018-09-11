@@ -1,3 +1,55 @@
+<a name="5.0.5"></a>
+## [5.0.5](https://github.com/zyra/ionic-image-loader/compare/v5.0.4...v5.0.5) (2018-07-12)
+
+
+### Bug Fixes
+
+* **cache:** Images not saved to cache ([#171](https://github.com/zyra/ionic-image-loader/issues/171)) ([07eb2e7](https://github.com/zyra/ionic-image-loader/commit/07eb2e7))
+
+
+
+<a name="5.0.4"></a>
+## [5.0.4](https://github.com/zyra/ionic-image-loader/compare/v5.0.3...v5.0.4) (2018-07-04)
+
+
+### Bug Fixes
+
+* **livereload:** wrong usage of reject, meant resolve. ([#167](https://github.com/zyra/ionic-image-loader/issues/167)) ([bab73a8](https://github.com/zyra/ionic-image-loader/commit/bab73a8))
+
+
+
+<a name="5.0.3"></a>
+## [5.0.3](https://github.com/zyra/ionic-image-loader/compare/v5.0.2...v5.0.3) (2018-06-29)
+
+
+### Bug Fixes
+
+* **image-loader:** resolve gray content in image issue ([#163](https://github.com/zyra/ionic-image-loader/issues/163)) ([a15309f](https://github.com/zyra/ionic-image-loader/commit/a15309f))
+* **livereload:** images not loading ([#161](https://github.com/zyra/ionic-image-loader/issues/161)) ([ead3918](https://github.com/zyra/ionic-image-loader/commit/ead3918))
+
+
+
+<a name="5.0.2"></a>
+## [5.0.2](https://github.com/zyra/ionic-image-loader/compare/v5.0.0...v5.0.2) (2018-06-18)
+
+
+### Bug Fixes
+
+* **wkwebview:** images not loading in Ionic WKWebView ([#160](https://github.com/zyra/ionic-image-loader/issues/160)) ([db16dc2](https://github.com/zyra/ionic-image-loader/commit/db16dc2))
+
+
+
+<a name="5.0.0"></a>
+# [5.0.0](https://github.com/zyra/ionic-image-loader/compare/v4.2.1...v5.0.0) (2018-01-23)
+
+
+### Features
+
+* replace FileTransfer plugin with HttpClient ([#125](https://github.com/zyra/ionic-image-loader/issues/125)) ([45201ce](https://github.com/zyra/ionic-image-loader/commit/45201ce))
+* support saving cached images with extension ([#113](https://github.com/zyra/ionic-image-loader/issues/113)) ([fec6e51](https://github.com/zyra/ionic-image-loader/commit/fec6e51))
+
+
+
 <a name="4.2.1"></a>
 ## [4.2.1](https://github.com/zyra/ionic-image-loader/compare/v4.2.0...v4.2.1) (2017-09-07)
 

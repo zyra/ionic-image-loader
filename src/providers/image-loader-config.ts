@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { HttpHeaders } from '@angular/common/http';
 
 @Injectable()
 export class ImageLoaderConfig {
@@ -35,19 +36,21 @@ export class ImageLoaderConfig {
 
   spinnerColor: string;
 
-  fileTransferOptions: any = {
-    trustAllHosts: false
-  };
+  httpHeaders: HttpHeaders;
+
+  fileNameCachedWithExtension: boolean = false;
+
+  fallbackFileNameCachedExtension: string = '.jpg';
 
   private _cacheDirectoryName: string = 'image-loader-cache';
+
+  get cacheDirectoryName(): string {
+    return this._cacheDirectoryName;
+  }
 
   set cacheDirectoryName(name: string) {
     name.replace(/\W/g, '');
     this._cacheDirectoryName = name;
-  }
-
-  get cacheDirectoryName(): string {
-    return this._cacheDirectoryName;
   }
 
   /**
@@ -187,11 +190,35 @@ export class ImageLoaderConfig {
   }
 
   /**
-   * Set options for the FileTransfer plugin
-   * @param options
+   * Set headers options for the HttpClient transfers.
+   * @param headers
    */
-  setFileTransferOptions(options: { trustAllHosts: boolean; [key: string]: any; }): void {
-    this.fileTransferOptions = options;
+  setHttpHeaders(headers: HttpHeaders): void {
+    this.httpHeaders = headers;
   }
 
+  /**
+   * Set options for the FileTransfer plugin
+   * @param options
+   * @deprecated FileTransfer plugin removed.
+   */
+  setFileTransferOptions(options: { trustAllHosts: boolean; [key: string]: any; }): void {
+    // do nothing, plugin deprecated.
+  }
+
+  /**
+   * Enable/Disable the save filename of cached images with extension.  Defaults to false.
+   * @param enable {boolean} set to true to enable
+   */
+  setFileNameCachedWithExtension(enable: boolean) {
+    this.fileNameCachedWithExtension = enable;
+  }
+
+  /**
+   * Set fallback extension filename of cached images.  Defaults to '.jpg'.
+   * @param extension {string} fallback extension (e.x .jpg)
+   */
+  setFallbackFileNameCachedExtension(extension: string) {
+    this.fallbackFileNameCachedExtension = extension;
+  }
 }
