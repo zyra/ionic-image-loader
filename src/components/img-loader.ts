@@ -33,16 +33,16 @@ export class ImgLoaderComponent implements OnInit {
   /**
    * Fallback URL to load when the image url fails to load or does not exist.
    */
-  @Input() fallbackUrl: string = this._config.fallbackUrl;
+  @Input() fallbackUrl: string = this.config.fallbackUrl;
   /**
    * Whether to show a spinner while the image loads
    */
-  @Input() spinner: boolean = this._config.spinnerEnabled;
+  @Input() spinner: boolean = this.config.spinnerEnabled;
   /**
    * Whether to show the fallback image instead of a spinner while the image loads
    */
 
-  @Input() fallbackAsPlaceholder: boolean = this._config.fallbackAsPlaceholder;
+  @Input() fallbackAsPlaceholder: boolean = this.config.fallbackAsPlaceholder;
 
   /**
    * Use <img> tag
@@ -52,7 +52,7 @@ export class ImgLoaderComponent implements OnInit {
     this._useImg = val !== false;
   }
 
-  private _useImg: boolean = this._config.useImg;
+  private _useImg: boolean = this.config.useImg;
 
 
   /**
@@ -90,31 +90,31 @@ export class ImgLoaderComponent implements OnInit {
   /**
    * Width of the image. This will be ignored if using useImg.
    */
-  @Input() width: string = this._config.width;
+  @Input() width: string = this.config.width;
   /**
    * Height of the image. This will be ignored if using useImg.
    */
-  @Input() height: string = this._config.height;
+  @Input() height: string = this.config.height;
   /**
    * Display type of the image. This will be ignored if using useImg.
    */
-  @Input() display: string = this._config.display;
+  @Input() display: string = this.config.display;
   /**
    * Background size. This will be ignored if using useImg.
    */
-  @Input() backgroundSize: string = this._config.backgroundSize;
+  @Input() backgroundSize: string = this.config.backgroundSize;
   /**
    * Background repeat. This will be ignored if using useImg.
    */
-  @Input() backgroundRepeat: string = this._config.backgroundRepeat;
+  @Input() backgroundRepeat: string = this.config.backgroundRepeat;
   /**
    * Name of the spinner
    */
-  @Input() spinnerName: string = this._config.spinnerName;
+  @Input() spinnerName: string = this.config.spinnerName;
   /**
    * Color of the spinner
    */
-  @Input() spinnerColor: string = this._config.spinnerColor;
+  @Input() spinnerColor: string = this.config.spinnerColor;
   /**
    * Notify on image load..
    */
@@ -132,9 +132,9 @@ export class ImgLoaderComponent implements OnInit {
 
   constructor(
     private _element: ElementRef,
-    private _renderer: Renderer2,
-    private _imageLoader: ImageLoader,
-    private _config: ImageLoaderConfig
+    private renderer: Renderer2,
+    private imageLoader: ImageLoader,
+    private config: ImageLoaderConfig
   ) {
   }
 
@@ -159,7 +159,7 @@ export class ImgLoaderComponent implements OnInit {
   }
 
   private updateImage(imageUrl: string) {
-    this._imageLoader
+    this.imageLoader
       .getImagePath(imageUrl)
       .then((url: string) => this.setImage(url))
       .catch((error: any) => this.setImage(this.fallbackUrl || imageUrl));
@@ -202,20 +202,20 @@ export class ImgLoaderComponent implements OnInit {
       // Using <img> tag
       if (!this.element) {
         // create img element if we dont have one
-        this.element = this._renderer.createElement('img');
-        this._renderer.appendChild(this._element.nativeElement, this.element);
+        this.element = this.renderer.createElement('img');
+        this.renderer.appendChild(this._element.nativeElement, this.element);
       }
 
       // set it's src
-      this._renderer.setAttribute(this.element, 'src', imageUrl);
+      this.renderer.setAttribute(this.element, 'src', imageUrl);
 
       // if imgAttributes are defined, add them to our img element
       this.imgAttributes.forEach((attribute) => {
-        this._renderer.setAttribute(this.element, attribute.element, attribute.value);
+        this.renderer.setAttribute(this.element, attribute.element, attribute.value);
       });
-      if (this.fallbackUrl && !this._imageLoader.nativeAvailable) {
-        this._renderer.listen(this.element, 'error', () =>
-          this._renderer.setAttribute(this.element, 'src', this.fallbackUrl)
+      if (this.fallbackUrl && !this.imageLoader.nativeAvailable) {
+        this.renderer.listen(this.element, 'error', () =>
+          this.renderer.setAttribute(this.element, 'src', this.fallbackUrl)
         );
       }
     } else {
@@ -225,11 +225,11 @@ export class ImgLoaderComponent implements OnInit {
 
       for (const prop in propMap) {
         if (this[prop]) {
-          this._renderer.setStyle(this.element, propMap[prop], this[prop]);
+          this.renderer.setStyle(this.element, propMap[prop], this[prop]);
         }
       }
 
-      this._renderer.setStyle(
+      this.renderer.setStyle(
         this.element,
         'background-image',
         `url("${imageUrl || this.fallbackUrl}")`

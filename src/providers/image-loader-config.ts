@@ -202,8 +202,8 @@ export class ImageLoaderConfig {
    * @deprecated FileTransfer plugin removed.
    */
   setFileTransferOptions(options: {
-    trustAllHosts;
-    [key]: any;
+    trustAllHosts: boolean;
+    [key: string]: any;
   }): void {
     // do nothing, plugin deprecated.
   }
