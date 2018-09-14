@@ -1,9 +1,9 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { File, FileEntry } from '@ionic-native/file';
+import { HttpClient }             from '@angular/common/http';
+import { Injectable }             from '@angular/core';
+import { File, FileEntry }        from '@ionic-native/file';
 import { normalizeURL, Platform } from 'ionic-angular';
-import { Observable } from 'rxjs/Observable';
-import { first } from 'rxjs/operators';
+import { fromEvent }              from 'rxjs/observable/fromEvent';
+import { first }                  from 'rxjs/operators';
 
 import { ImageLoaderConfig } from './image-loader-config';
 
@@ -56,17 +56,17 @@ export class ImageLoader {
     private config: ImageLoaderConfig,
     private file: File,
     private http: HttpClient,
-    private platform: Platform
+    private platform: Platform,
   ) {
     if (!platform.is('cordova')) {
       // we are running on a browser, or using livereload
       // plugin will not function in this case
       this.isInit = true;
       this.throwWarning(
-        'You are running on a browser or using livereload, IonicImageLoader will not function, falling back to browser loading.'
+        'You are running on a browser or using livereload, IonicImageLoader will not function, falling back to browser loading.',
       );
     } else {
-      Observable.fromEvent(document, 'deviceready')
+      fromEvent(document, 'deviceready')
         .pipe(first())
         .subscribe(res => {
           if (this.nativeAvailable) {
@@ -76,7 +76,7 @@ export class ImageLoader {
             // plugin will not function in this case
             this.isInit = true;
             this.throwWarning(
-              'You are running on a browser or using livereload, IonicImageLoader will not function, falling back to browser loading.'
+              'You are running on a browser or using livereload, IonicImageLoader will not function, falling back to browser loading.',
             );
           }
         });
@@ -151,7 +151,7 @@ export class ImageLoader {
       this.file
         .removeRecursively(
           this.file.cacheDirectory,
-          this.config.cacheDirectoryName
+          this.config.cacheDirectoryName,
         )
         .then(() => {
           if (this.isWKWebView && !this.isIonicWKWebView) {
@@ -159,7 +159,7 @@ export class ImageLoader {
             this.file
               .removeRecursively(
                 this.file.tempDirectory,
-                this.config.cacheDirectoryName
+                this.config.cacheDirectoryName,
               )
               .catch(error => {
                 // Noop catch. Removing the tempDirectory might fail,
@@ -209,7 +209,7 @@ export class ImageLoader {
             getImage();
           } else {
             this.throwWarning(
-              'The cache system is not running. Images will be loaded by your browser instead.'
+              'The cache system is not running. Images will be loaded by your browser instead.',
             );
             resolve(imageUrl);
           }
@@ -240,7 +240,7 @@ export class ImageLoader {
     this.queue.push({
       imageUrl,
       resolve,
-      reject
+      reject,
     });
 
     this.processQueue();
@@ -293,12 +293,12 @@ export class ImageLoader {
           this.http
             .get(currentItem.imageUrl, {
               responseType: 'blob',
-              headers: this.config.httpHeaders
+              headers: this.config.httpHeaders,
             })
             .subscribe(
               (data: Blob) => {
                 this.file
-                  .writeFile(localDir, fileName, data, { replace: true })
+                  .writeFile(localDir, fileName, data, {replace: true})
                   .then((file: FileEntry) => {
                     if (this.isCacheSpaceExceeded) {
                       this.maintainCacheSize();
@@ -310,7 +310,7 @@ export class ImageLoader {
                           resolve();
                           done();
                           this.maintainCacheSize();
-                        }
+                        },
                       );
                     });
                   })
@@ -322,9 +322,9 @@ export class ImageLoader {
               e => {
                 // Could not get image via httpClient
                 error(e);
-              }
+              },
             );
-        }
+        },
       );
     } else {
       // Prevented same Image from loading at the same time
@@ -364,12 +364,12 @@ export class ImageLoader {
    */
   private addFileToIndex(file: FileEntry): Promise<any> {
     return new Promise<any>((resolve, reject) =>
-      file.getMetadata(resolve, reject)
+      file.getMetadata(resolve, reject),
     ).then(metadata => {
       if (
         this.config.maxCacheAge > -1 &&
         Date.now() - metadata.modificationTime.getTime() >
-          this.config.maxCacheAge
+        this.config.maxCacheAge
       ) {
         // file age exceeds maximum cache age
         return this.removeFile(file.name);
@@ -381,7 +381,7 @@ export class ImageLoader {
         this.cacheIndex.push({
           name: file.name,
           modificationTime: metadata.modificationTime,
-          size: metadata.size
+          size: metadata.size,
         });
 
         return Promise.resolve();
@@ -402,7 +402,7 @@ export class ImageLoader {
       .then(() => {
         // Sort items by date. Most recent to oldest.
         this.cacheIndex = this.cacheIndex.sort(
-          (a: IndexItem, b: IndexItem): number => (a > b ? -1 : a < b ? 1 : 0)
+          (a: IndexItem, b: IndexItem): number => (a > b ? -1 : a < b ? 1 : 0),
         );
         this.indexed = true;
         return Promise.resolve();
@@ -455,14 +455,14 @@ export class ImageLoader {
     return this.file
       .removeFile(
         this.file.cacheDirectory + this.config.cacheDirectoryName,
-        file
+        file,
       )
       .then(() => {
         if (this.isWKWebView && !this.isIonicWKWebView) {
           return this.file
             .removeFile(
               this.file.tempDirectory + this.config.cacheDirectoryName,
-              file
+              file,
             )
             .catch(() => {
               // Noop catch. Removing the files from tempDirectory might fail, as it is not persistent.
@@ -594,19 +594,19 @@ export class ImageLoader {
       cacheDirectoryPromise = this.file.createDir(
         this.file.cacheDirectory,
         this.config.cacheDirectoryName,
-        replace
+        replace,
       );
     } else {
       // check if the cache directory exists.
       // if it does not exist create it!
       cacheDirectoryPromise = this.cacheDirectoryExists(
-        this.file.cacheDirectory
+        this.file.cacheDirectory,
       ).catch(() =>
         this.file.createDir(
           this.file.cacheDirectory,
           this.config.cacheDirectoryName,
-          false
-        )
+          false,
+        ),
       );
     }
 
@@ -616,19 +616,19 @@ export class ImageLoader {
         tempDirectoryPromise = this.file.createDir(
           this.file.tempDirectory,
           this.config.cacheDirectoryName,
-          replace
+          replace,
         );
       } else {
         // check if the temp directory exists.
         // if it does not exist create it!
         tempDirectoryPromise = this.cacheDirectoryExists(
-          this.file.tempDirectory
+          this.file.tempDirectory,
         ).catch(() =>
           this.file.createDir(
             this.file.tempDirectory,
             this.config.cacheDirectoryName,
-            false
-          )
+            false,
+          ),
         );
       }
     } else {

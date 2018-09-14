@@ -1,23 +1,14 @@
-import {
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-  Renderer2
-} from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, Renderer2 } from '@angular/core';
 
-import { ImageLoader } from '../providers/image-loader';
-import { ImageLoaderConfig } from '../providers/image-loader-config';
-import { ImageAttribute } from './image-attribute';
+import { ImageLoader, ImageLoaderConfig } from '..';
+import { ImageAttribute }                 from './image-attribute';
 
 const propMap: any = {
   display: 'display',
   height: 'height',
   width: 'width',
   backgroundSize: 'background-size',
-  backgroundRepeat: 'background-repeat'
+  backgroundRepeat: 'background-repeat',
 };
 
 @Component({
@@ -26,8 +17,8 @@ const propMap: any = {
     '<ion-spinner *ngIf="spinner && isLoading && !fallbackAsPlaceholder" [name]="spinnerName" [color]="spinnerColor"></ion-spinner>' +
     '<ng-content></ng-content>',
   styles: [
-    'ion-spinner { float: none; margin-left: auto; margin-right: auto; display: block; }'
-  ]
+    'ion-spinner { float: none; margin-left: auto; margin-right: auto; display: block; }',
+  ],
 })
 export class ImgLoaderComponent implements OnInit {
   /**
@@ -68,11 +59,13 @@ export class ImgLoaderComponent implements OnInit {
   set noCache(val: boolean) {
     this.cache = val !== false;
   }
+
   /**
    * Enable/Disable caching
    * @type {boolean}
    */
   @Input() cache = true;
+
   /**
    * The URL of the image to load.
    */
@@ -119,9 +112,7 @@ export class ImgLoaderComponent implements OnInit {
    * Notify on image load..
    */
   @Output()
-  load: EventEmitter<ImgLoaderComponent> = new EventEmitter<
-    ImgLoaderComponent
-  >();
+  load: EventEmitter<ImgLoaderComponent> = new EventEmitter<ImgLoaderComponent>();
   /**
    * Indicates if the image is still loading
    * @type {boolean}
@@ -134,7 +125,7 @@ export class ImgLoaderComponent implements OnInit {
     private _element: ElementRef,
     private renderer: Renderer2,
     private imageLoader: ImageLoader,
-    private config: ImageLoaderConfig
+    private config: ImageLoaderConfig,
   ) {
   }
 
@@ -215,7 +206,7 @@ export class ImgLoaderComponent implements OnInit {
       });
       if (this.fallbackUrl && !this.imageLoader.nativeAvailable) {
         this.renderer.listen(this.element, 'error', () =>
-          this.renderer.setAttribute(this.element, 'src', this.fallbackUrl)
+          this.renderer.setAttribute(this.element, 'src', this.fallbackUrl),
         );
       }
     } else {
@@ -232,7 +223,7 @@ export class ImgLoaderComponent implements OnInit {
       this.renderer.setStyle(
         this.element,
         'background-image',
-        `url("${imageUrl || this.fallbackUrl}")`
+        `url("${imageUrl || this.fallbackUrl}")`,
       );
     }
 
