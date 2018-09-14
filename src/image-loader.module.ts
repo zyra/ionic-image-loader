@@ -5,6 +5,7 @@ import { IonicModule } from 'ionic-angular';
 
 import { ImgLoaderComponent } from './components/img-loader';
 import { ImageLoader } from './providers/image-loader';
+import { ImageAttribute } from './components/image-attribute';
 import { ImageLoaderConfig } from './providers/image-loader-config';
 
 @NgModule({

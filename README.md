@@ -110,10 +110,24 @@ The `<img-loader>` component takes many attributes that allows you to customize 
 | backgroundSize | string | Sets the `background-size` CSS property of the `<img-loader>` element. This is ignored if `useImg` is set to `true`. | contain |
 | backgroundRepeat | string | Sets the `background-repeat` CSS property of the `<img-loader>` element. This is ignored if `useImg` is set to `true`. | no-repeat |
 | fallbackAsPlaceholder | boolean | Use fallback as a placeholder until the image loads. | false |
+| imgAttributes | ImageAttribute[] | An array of ImageAttribute objects (element, value).  If `useImg == true`, this array will be iterated and each object added as an attribute to the generated `<img>` HTML element. | []] |
 
 
 **Note:** The default values can be changed using the [global configuration](https://github.com/zyramedia/ionic-image-loader#global-configuration) feature.
 
+## Quirks
+In some cases, images won't load on the first time, the culprit seems to be `@ionic-native/file` or `cordova-plugin-file` in its `writeFile` function not calling resolve or reject.
+
+In the meantime we find a solution, here's a quick workaround:
+
+In **./src/index.html** move your `polyfill.js`include above `cordova.js`
+```
+    <!-- The polyfills js is generated during the build process -->
+    <script src="build/polyfills.js"></script>
+
+    <!-- cordova.js required for cordova apps (remove if not needed) -->
+    <script src="cordova.js"></script>
+```
 
 # Global Configuration
 This is optional but it is helpful if you wish to set the global configuration for all of your `<img-loader>` instances. To configure the module, inject the `ImageLoaderConfig` provider in your app's main component.
@@ -322,6 +336,36 @@ class MyComponent {
   
 }
 
+```
+
+# Passing HTML / CSS Attributes to a generated image
+
+When using ImageLoader to generate an `<img>` element it may be desirable for the generated element to include additional attributes to provide styling or interaction qualities.  The optional `imgAttributes` value can be used to provide such additional attributes which will be included in the generated `<img>` element in the DOM.
+
+Usage:
+
+1. Include the ImageAttribute model in your .ts
+```typescript
+import { ImageAttribute } from 'ionic-image-loader'
+```
+
+2. Generate an array of ImageAttribute objects
+```typescript
+const imageAttributes: ImageAttribute[] = [];
+imageAttributes.push({
+  element: 'class',
+  value: 'circle-photo'
+})
+```
+
+3. Include the `imgAttributes` element in the `img-loader` element of your HTML
+```html
+ <img-loader [src]="..." useImg [imgAttributes]="imageAttributes"> </img-loader>
+```
+
+4. The generated `<img>` tag will be rendered with the specified attributes
+```html
+  <img src="..." class="circle-photo">
 ```
 
 <br><br>
