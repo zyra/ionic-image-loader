@@ -56,12 +56,25 @@ export class ImgLoader implements OnInit {
   set noCache(val: boolean) {
     this.cache = val !== false;
   }
-
   /**
    * Enable/Disable caching
    * @type {boolean}
    */
   @Input() cache: boolean = true;
+  /**
+   * The URL of the image to load.
+   */
+  @Input()
+  set src(imageUrl: string) {
+    this._src = this.processImageUrl(imageUrl);
+    this.updateImage(this._src);
+  };
+
+  get src(): string {
+    return this._src;
+  }
+
+  private _src: string;
   /**
    * Width of the image. This will be ignored if using useImg.
    */
@@ -108,40 +121,6 @@ export class ImgLoader implements OnInit {
     private _imageLoader: ImageLoader,
     private _config: ImageLoaderConfig
   ) {
-  }
-
-  private _src: string;
-
-  get src(): string {
-    return this._src;
-  }
-
-  /**
-   * The URL of the image to load.
-   */
-  @Input()
-  set src(imageUrl: string) {
-    this._src = this.processImageUrl(imageUrl);
-    this.updateImage(this._src);
-  };
-
-  private _useImg: boolean = this._config.useImg;
-
-  /**
-   * Use <img> tag
-   */
-  @Input()
-  set useImg(val: boolean) {
-    this._useImg = val !== false;
-  }
-
-  /**
-   * Convenience attribute to disable caching
-   * @param val
-   */
-  @Input()
-  set noCache(val: boolean) {
-    this.cache = val !== false;
   }
 
   ngOnInit(): void {
@@ -213,7 +192,7 @@ export class ImgLoader implements OnInit {
       this._renderer.setElementAttribute(this.element, 'src', imageUrl);
 
       // if imgAttributes are defined, add them to our img element
-      this.imgAttributes.forEach((attribute, index, attributeArray) => {
+      this.imgAttributes.forEach((attribute) => {
         this._renderer.setElementAttribute(this.element, attribute.element, attribute.value);
       });
 

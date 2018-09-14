@@ -351,7 +351,7 @@ import { ImageAttribute } from 'ionic-image-loader'
 
 2. Generate an array of ImageAttribute objects
 ```typescript
-var imageAttributes: ImageAttribute[] = [];
+const imageAttributes: ImageAttribute[] = [];
 imageAttributes.push({
   element: 'class',
   value: 'circle-photo'

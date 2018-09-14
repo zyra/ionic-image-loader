@@ -1,4 +1,4 @@
-export class ImageAttribute {
-    element: string = "";
-    value: string = "";
+export interface ImageAttribute {
+    element: string;
+    value: string;
 }
