@@ -1,6 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, Renderer } from '@angular/core';
 import { ImageLoader } from '../providers/image-loader';
 import { ImageLoaderConfig } from '../providers/image-loader-config';
+import { ImageAttribute } from './image-attribute';
 
 const propMap: any = {
   display: 'display',
@@ -30,11 +31,50 @@ export class ImgLoader implements OnInit {
    * Whether to show the fallback image instead of a spinner while the image loads
    */
   @Input() fallbackAsPlaceholder: boolean = this._config.fallbackAsPlaceholder;
+
+  /**
+   * Use <img> tag
+   */
+  @Input()
+  set useImg(val: boolean) {
+    this._useImg = val !== false;
+  }
+
+  private _useImg: boolean = this._config.useImg;
+
+
+  /**
+   * Attributes to pass through to img tag if _useImg == true
+   */
+  @Input('imgAttributes') imgAttributes: ImageAttribute[] = [];
+
+  /**
+   * Convenience attribute to disable caching
+   * @param val
+   */
+  @Input()
+  set noCache(val: boolean) {
+    this.cache = val !== false;
+  }
   /**
    * Enable/Disable caching
    * @type {boolean}
    */
   @Input() cache: boolean = true;
+  /**
+   * The URL of the image to load.
+   */
+  @Input()
+  set src(imageUrl: string) {
+    this._src = this.processImageUrl(imageUrl);
+    this.updateImage(this._src);
+  };
+
+  get src(): string {
+    return this._src;
+  }
+
+  private _src: string;
   /**
    * Width of the image. This will be ignored if using useImg.
    */
@@ -81,40 +121,6 @@ export class ImgLoader implements OnInit {
     private _imageLoader: ImageLoader,
     private _config: ImageLoaderConfig
   ) {
-  }
-
-  private _src: string;
-
-  get src(): string {
-    return this._src;
-  }
-
-  /**
-   * The URL of the image to load.
-   */
-  @Input()
-  set src(imageUrl: string) {
-    this._src = this.processImageUrl(imageUrl);
-    this.updateImage(this._src);
-  };
-
-  private _useImg: boolean = this._config.useImg;
-
-  /**
-   * Use <img> tag
-   */
-  @Input()
-  set useImg(val: boolean) {
-    this._useImg = val !== false;
-  }
-
-  /**
-   * Convenience attribute to disable caching
-   * @param val
-   */
-  @Input()
-  set noCache(val: boolean) {
-    this.cache = val !== false;
   }
 
   ngOnInit(): void {
@@ -185,6 +191,10 @@ export class ImgLoader implements OnInit {
       // set it's src
       this._renderer.setElementAttribute(this.element, 'src', imageUrl);
 
+      // if imgAttributes are defined, add them to our img element
+      this.imgAttributes.forEach((attribute) => {
+        this._renderer.setElementAttribute(this.element, attribute.element, attribute.value);
+      });
 
       if (this.fallbackUrl && !this._imageLoader.nativeAvailable) {
         this._renderer.listen(this.element, 'error', () => this._renderer.setElementAttribute(this.element, 'src', this.fallbackUrl));
