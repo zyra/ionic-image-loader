@@ -202,10 +202,8 @@ export class ImgLoaderComponent implements OnInit {
       // Using <img> tag
       if (!this.element) {
         // create img element if we dont have one
-        this.element = this._renderer.createElement(
-          this._element.nativeElement,
-          'img'
-        );
+        this.element = this._renderer.createElement('img');
+        this._renderer.appendChild(this._element.nativeElement, this.element);
       }
 
       // set it's src
