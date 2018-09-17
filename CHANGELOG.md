@@ -1,3 +1,13 @@
+<a name="6.0.0"></a>
+# [6.0.0](https://github.com/zyra/ionic-image-loader/compare/v5.1.1...v6.0.0) (2018-09-17)
+
+
+### Features
+
+* **lib:** Angular5 support ([cb8fd22](https://github.com/zyra/ionic-image-loader/commit/cb8fd22))
+
+
+
 <a name="5.1.1"></a>
 ## [5.1.1](https://github.com/zyra/ionic-image-loader/compare/v6.0.0...v5.1.1) (2018-09-17)
 
