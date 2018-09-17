@@ -3,7 +3,7 @@ import { DirectoryEntry, File, FileEntry, FileError } from '@ionic-native/file';
 import { HttpClient } from '@angular/common/http';
 import { normalizeURL, Platform } from 'ionic-angular';
 import { ImageLoaderConfig } from './image-loader-config';
-import { Observable } from 'rxjs/Observable';
+import { fromEvent } from 'rxjs/observable/fromEvent';
 import 'rxjs/add/operator/first';
 
 interface IndexItem {
@@ -64,7 +64,7 @@ export class ImageLoader {
       this.isInit = true;
       this.throwWarning('You are running on a browser or using livereload, IonicImageLoader will not function, falling back to browser loading.');
     } else {
-      Observable.fromEvent(document, 'deviceready').first().subscribe(res => {
+      fromEvent(document, 'deviceready').first().subscribe(res => {
         if (this.nativeAvailable) {
           this.initCache();
         } else {
