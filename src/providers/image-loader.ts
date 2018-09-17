@@ -315,64 +315,7 @@ export class ImageLoader {
           (e) => {
             //Could not get image via httpClient
             error(e);
-          }
-
-          // function to call when done processing this item
-          // this will reduce the processing number
-          // then will execute this function again to process any remaining items
-          const done = () => {
-            this.processing--;
-            this.processQueue();
-
-            if (this.currentlyProcessing[currentItem.imageUrl] !== undefined) {
-              delete this.currentlyProcessing[currentItem.imageUrl];
-            }
-          };
-
-          const error = e => {
-            currentItem.reject();
-            this.throwError(e);
-            done();
-          };
-
-          const localDir =
-            this.file.cacheDirectory + this.config.cacheDirectoryName + '/';
-          const fileName = this.createFileName(currentItem.imageUrl);
-
-          this.http
-            .get(currentItem.imageUrl, {
-              responseType: 'blob',
-              headers: this.config.httpHeaders,
-            })
-            .subscribe(
-              (data: Blob) => {
-                this.file
-                  .writeFile(localDir, fileName, data, {replace: true})
-                  .then((file: FileEntry) => {
-                    if (this.isCacheSpaceExceeded) {
-                      this.maintainCacheSize();
-                    }
-                    this.addFileToIndex(file).then(() => {
-                      this.getCachedImagePath(currentItem.imageUrl).then(
-                        localUrl => {
-                          currentItem.resolve(localUrl);
-                          resolve();
-                          done();
-                          this.maintainCacheSize();
-                        },
-                      );
-                    });
-                  })
-                  .catch(e => {
-                    // Could not write image
-                    error(e);
-                  });
-              },
-              e => {
-                // Could not get image via httpClient
-                error(e);
-              },
-            );
+          });
         },
       );
     } else {
@@ -445,8 +388,7 @@ export class ImageLoader {
   private indexCache(): Promise<void> {
     this.cacheIndex = [];
 
-    return
-      this.file.listDir(this.getFileCacheDirectory(), this.config.cacheDirectoryName)
+    return this.file.listDir(this.getFileCacheDirectory(), this.config.cacheDirectoryName)
       .then(files => Promise.all(files.map(this.addFileToIndex.bind(this))))
       .then(() => {
         // Sort items by date. Most recent to oldest.
