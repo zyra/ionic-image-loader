@@ -19,6 +19,8 @@ interface QueueItem {
   reject: Function;
 }
 
+declare const Ionic: any;
+
 @Injectable()
 export class ImageLoader {
   /**
@@ -518,7 +520,13 @@ export class ImageLoader {
             // therefore the file needs to be copied into that directory first!
             if (this.isIonicWKWebView) {
               // Use Ionic normalizeUrl to generate the right URL for Ionic WKWebView
-              resolve(normalizeURL(fileEntry.nativeURL));
+              if(typeof Ionic.normalizeURL === 'function' ) {
+                resolve(Ionic.normalizeURL(fileEntry.nativeURL));
+              } else if (Ionic.WebView && typeof Ionic.WebView.convertFileSrc === 'function') {
+                resolve(Ionic.WebView.convertFileSrc(fileEntry.nativeURL));
+              } else {
+                resolve(normalizeURL(fileEntry.nativeURL));
+              }
             } else if (this.isWKWebView) {
               // check if file already exists in temp directory
               this.file
