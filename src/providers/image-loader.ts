@@ -264,28 +264,30 @@ export class ImageLoader {
 
     // take the first item from queue
     const currentItem: QueueItem = this.queue.splice(0, 1)[0];
+
+    // function to call when done processing this item
+    // this will reduce the processing number
+    // then will execute this function again to process any remaining items
+    const done = () => {
+      this.processing--;
+      this.processQueue();
+
+      // only delete if it's the last/unique occurrence in the queue
+      if (this.currentlyProcessing[currentItem.imageUrl] !== undefined && !this.currentlyInQueue(currentItem.imageUrl)) {
+        delete this.currentlyProcessing[currentItem.imageUrl];
+      }
+    };
+
+    const error = (e) => {
+      currentItem.reject();
+      this.throwError(e);
+      done();
+    };
+
     if (this.currentlyProcessing[currentItem.imageUrl] === undefined) {
       this.currentlyProcessing[currentItem.imageUrl] = new Promise((resolve, reject) => {
         // process more items concurrently if we can
         if (this.canProcess) this.processQueue();
-
-        // function to call when done processing this item
-        // this will reduce the processing number
-        // then will execute this function again to process any remaining items
-        const done = () => {
-          this.processing--;
-          this.processQueue();
-
-          if (this.currentlyProcessing[currentItem.imageUrl] !== undefined) {
-            delete this.currentlyProcessing[currentItem.imageUrl];
-          }
-        };
-
-        const error = (e) => {
-          currentItem.reject();
-          this.throwError(e);
-          done();
-        };
 
         const localDir = this.getFileCacheDirectory() + this.config.cacheDirectoryName + '/';
         const fileName = this.createFileName(currentItem.imageUrl);
@@ -310,11 +312,13 @@ export class ImageLoader {
             }).catch((e) => {
               //Could not write image
               error(e);
+              reject(e);
             });
           },
           (e) => {
             //Could not get image via httpClient
             error(e);
+            reject(e);
           });
         },
       );
@@ -324,8 +328,21 @@ export class ImageLoader {
         this.getCachedImagePath(currentItem.imageUrl).then(localUrl => {
           currentItem.resolve(localUrl);
         });
+        done();
+      },
+      (e) => {
+        error(e);
       });
     }
+  }
+
+  /**
+   * Search if the url is currently in the queue
+   * @param imageUrl {string} Image url to search
+   * @returns {boolean}
+   */
+  private currentlyInQueue(imageUrl: string) {
+    return this.queue.some(item => item.imageUrl === imageUrl);
   }
 
   /**
