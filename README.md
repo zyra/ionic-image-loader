@@ -76,7 +76,7 @@ This HTML code demonstrates basic usage of this module:
 <img-loader src="https://path.to/my/image.jpg"></img-loader>
 ```
 
-By default, the module sets the image as the background of the `<img-loader>` element. If you want the module to use the image as an `<img>` tag inside the `<img-loader>` element, just add `useImg` attribute as shown below:
+By default, the module sets the image as the background of the `<img-loader>` element. If you want the module to use the image as an `<img>` tag inside the `<img-loader>` elemen, just add `useImg` attribute as shown below:
 ```html
 <img-loader src="https://path.to/my/image.jpg" useImg></img-loader>
 ```
@@ -101,7 +101,7 @@ The `<img-loader>` component takes many attributes that allows you to customize 
 | Attribute Name | Type | Description | Default Value |
 | --- | --- | --- | --- |
 | src | string | The image URL | N/A |
-| fallbackUrl | string | Fallback image url to load in case the original image fails to load | N/A |
+| fallback | string | Fallback image url to load in case the original image fails to load | N/A |
 | spinner | boolean | Show a spinner while the image loads | true |
 | useImg | boolean | Use `<img>` tag to display the image in | false |
 | width | string | The width of the image. This is ignored if `useImg` is set to `true`. | 100% |

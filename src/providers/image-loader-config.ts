@@ -1,53 +1,54 @@
-import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { HttpHeaders } from '@angular/common/http';
 
 @Injectable()
 export class ImageLoaderConfig {
-  debugMode = false;
 
-  spinnerEnabled = true;
+  debugMode: boolean = false;
 
-  fallbackAsPlaceholder = false;
+  spinnerEnabled: boolean = true;
 
-  backgroundSize = 'contain';
+  fallbackAsPlaceholder: boolean = false;
 
-  backgroundRepeat = 'no-repeat';
+  backgroundSize: string = 'contain';
 
-  display = 'block';
+  backgroundRepeat: string = 'no-repeat';
 
-  width = '100%';
+  display: string = 'block';
 
-  height = '100%';
+  width: string = '100%';
 
-  useImg = false;
+  height: string = '100%';
 
-  fallbackUrl;
+  useImg: boolean = false;
 
-  concurrency = 5;
+  fallbackUrl: string;
 
-  maxCacheSize = -1;
+  concurrency: number = 5;
 
-  maxCacheAge = -1;
+  maxCacheSize: number = -1;
+
+  maxCacheAge: number = -1;
 
   imageReturnType: 'base64' | 'uri' = 'uri';
 
-  spinnerName;
+  spinnerName: string;
 
-  spinnerColor;
+  spinnerColor: string;
 
   httpHeaders: HttpHeaders;
 
-  fileNameCachedWithExtension = false;
+  fileNameCachedWithExtension: boolean = false;
 
-  fallbackFileNameCachedExtension = '.jpg';
+  fallbackFileNameCachedExtension: string = '.jpg';
 
-  private _cacheDirectoryName = 'image-loader-cache';
+  private _cacheDirectoryName: string = 'image-loader-cache';
 
-  get cacheDirectoryName() {
+  get cacheDirectoryName(): string {
     return this._cacheDirectoryName;
   }
 
-  set cacheDirectoryName(name) {
+  set cacheDirectoryName(name: string) {
     name.replace(/\W/g, '');
     this._cacheDirectoryName = name;
   }
@@ -61,7 +62,7 @@ export class ImageLoaderConfig {
 
   /**
    * Enable/Disable the spinner by default. Defaults to true.
-   * @param {boolean} enable set to true to enable
+   * @param enable {boolean} set to true to enable
    */
   enableSpinner(enable: boolean): void {
     this.spinnerEnabled = enable;
@@ -69,7 +70,7 @@ export class ImageLoaderConfig {
 
   /**
    * Enable/Disable the fallback image as placeholder instead of the spinner. Defaults to false.
-   * @param {boolean} enable set to true to enable
+   * @param enable {boolean} set to true to enable
    */
   enableFallbackAsPlaceholder(enable: boolean): void {
     this.fallbackAsPlaceholder = enable;
@@ -77,7 +78,7 @@ export class ImageLoaderConfig {
 
   /**
    * Sets the cache directory name. Defaults to 'image-loader-cache'
-   * @param {string} name name of directory
+   * @param name {string} name of directory
    */
   setCacheDirectoryName(name: string): void {
     this.cacheDirectoryName = name;
@@ -85,7 +86,7 @@ export class ImageLoaderConfig {
 
   /**
    * Set default height for images that are not using <img> tag
-   * @param {string} height height
+   * @param height {string} height
    */
   setHeight(height: string): void {
     this.height = height;
@@ -93,7 +94,7 @@ export class ImageLoaderConfig {
 
   /**
    * Set default width for images that are not using <img> tag
-   * @param {string} width Width
+   * @param width {string} Width
    */
   setWidth(width: string): void {
     this.width = width;
@@ -101,7 +102,7 @@ export class ImageLoaderConfig {
 
   /**
    * Enable display mode for images that are not using <img> tag
-   * @param {string} display Display mode
+   * @param display {string} Display mode
    */
   setDisplay(display: string): void {
     this.display = display;
@@ -109,7 +110,7 @@ export class ImageLoaderConfig {
 
   /**
    * Use <img> tag by default
-   * @param {boolean} use set to true to use <img> tag by default
+   * @param use {boolean} set to true to use <img> tag by default
    */
   useImageTag(use: boolean): void {
     this.useImg = use;
@@ -117,7 +118,7 @@ export class ImageLoaderConfig {
 
   /**
    * Set default background size for images that are not using <img> tag
-   * @param {string} backgroundSize Background size
+   * @param backgroundSize {string} Background size
    */
   setBackgroundSize(backgroundSize: string): void {
     this.backgroundSize = backgroundSize;
@@ -125,7 +126,7 @@ export class ImageLoaderConfig {
 
   /**
    * Set background repeat for images that are not using <img> tag
-   * @param {string} backgroundRepeat Background repeat
+   * @param backgroundRepeat {string} Background repeat
    */
   setBackgroundRepeat(backgroundRepeat: string): void {
     this.backgroundRepeat = backgroundRepeat;
@@ -134,7 +135,7 @@ export class ImageLoaderConfig {
   /**
    * Set fallback URL to use when image src is undefined or did not resolve.
    * This image will not be cached. This should ideally be a locally saved image.
-   * @param {string} fallbackUrl The remote or local URL of the image
+   * @param fallbackUrl {string} The remote or local URL of the image
    */
   setFallbackUrl(fallbackUrl: string): void {
     this.fallbackUrl = fallbackUrl;
@@ -142,7 +143,7 @@ export class ImageLoaderConfig {
 
   /**
    * Set the maximum number of allowed connections at the same time.
-   * @param {number} concurrency
+   * @param concurrency
    */
   setConcurrency(concurrency: number): void {
     this.concurrency = concurrency;
@@ -150,7 +151,7 @@ export class ImageLoaderConfig {
 
   /**
    * Sets the maximum allowed cache size
-   * @param {number} cacheSize Cache size in bytes
+   * @param cacheSize {number} Cache size in bytes
    */
   setMaximumCacheSize(cacheSize: number): void {
     this.maxCacheSize = cacheSize;
@@ -158,7 +159,7 @@ export class ImageLoaderConfig {
 
   /**
    * Sets the maximum allowed cache age
-   * @param {number} cacheAge Maximum cache age in milliseconds
+   * @param cacheAge {number} Maximum cache age in milliseconds
    */
   setMaximumCacheAge(cacheAge: number): void {
     this.maxCacheAge = cacheAge;
@@ -173,8 +174,8 @@ export class ImageLoaderConfig {
   }
 
   /**
-   * Set the default spinner name
-   * @param {string} name
+   * Set the default spinnern ame
+   * @param name
    */
   setSpinnerName(name: string): void {
     this.spinnerName = name;
@@ -182,7 +183,7 @@ export class ImageLoaderConfig {
 
   /**
    * Set the default spinner color
-   * @param {string} color
+   * @param color
    */
   setSpinnerColor(color: string): void {
     this.spinnerColor = color;
@@ -190,7 +191,7 @@ export class ImageLoaderConfig {
 
   /**
    * Set headers options for the HttpClient transfers.
-   * @param {HttpHeaders} headers
+   * @param headers
    */
   setHttpHeaders(headers: HttpHeaders): void {
     this.httpHeaders = headers;
@@ -201,16 +202,13 @@ export class ImageLoaderConfig {
    * @param options
    * @deprecated FileTransfer plugin removed.
    */
-  setFileTransferOptions(options: {
-    trustAllHosts: boolean;
-    [key: string]: any;
-  }): void {
+  setFileTransferOptions(options: { trustAllHosts: boolean; [key: string]: any; }): void {
     // do nothing, plugin deprecated.
   }
 
   /**
    * Enable/Disable the save filename of cached images with extension.  Defaults to false.
-   * @param {boolean} enable set to true to enable
+   * @param enable {boolean} set to true to enable
    */
   setFileNameCachedWithExtension(enable: boolean) {
     this.fileNameCachedWithExtension = enable;
@@ -218,7 +216,7 @@ export class ImageLoaderConfig {
 
   /**
    * Set fallback extension filename of cached images.  Defaults to '.jpg'.
-   * @param {string} extension fallback extension (e.x .jpg)
+   * @param extension {string} fallback extension (e.x .jpg)
    */
   setFallbackFileNameCachedExtension(extension: string) {
     this.fallbackFileNameCachedExtension = extension;
