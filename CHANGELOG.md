@@ -1,3 +1,13 @@
+<a name="6.2.0"></a>
+# [6.2.0](https://github.com/zyra/ionic-image-loader/compare/v6.1.0...v6.2.0) (2018-09-17)
+
+
+### Features
+
+* **lib:** allow specifying storage type ([#177](https://github.com/zyra/ionic-image-loader/issues/177)) ([4d8e1c5](https://github.com/zyra/ionic-image-loader/commit/4d8e1c5))
+
+
+
 <a name="6.1.0"></a>
 # [6.1.0](https://github.com/zyra/ionic-image-loader/compare/v5.1.1...v6.1.0) (2018-09-17)
 
