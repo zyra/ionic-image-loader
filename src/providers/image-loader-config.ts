@@ -41,7 +41,10 @@ export class ImageLoaderConfig {
 
   fallbackFileNameCachedExtension = '.jpg';
 
-  private _cacheDirectoryName = 'image-loader-cache';
+  cacheDirectoryType: 'cache'|'data' = 'cache';
+
+  private _cacheDirectoryName: string = 'image-loader-cache';
+
 
   get cacheDirectoryName() {
     return this._cacheDirectoryName;

@@ -131,6 +131,13 @@ export class ImageLoader {
     return this.getImagePath(imageUrl);
   }
 
+  getFileCacheDirectory() {
+    if(this.config.cacheDirectoryType == 'data') {
+      return this.file.dataDirectory;
+    }
+    return this.file.cacheDirectory;
+  }
+
   /**
    * Clears the cache
    */
@@ -149,11 +156,7 @@ export class ImageLoader {
       // pause any operations
       this.isInit = false;
 
-      this.file
-        .removeRecursively(
-          this.file.cacheDirectory,
-          this.config.cacheDirectoryName,
-        )
+      this.file.removeRecursively(this.getFileCacheDirectory(), this.config.cacheDirectoryName)
         .then(() => {
           if (this.isWKWebView && !this.isIonicWKWebView) {
             // also clear the temp files
@@ -262,11 +265,56 @@ export class ImageLoader {
     // take the first item from queue
     const currentItem: QueueItem = this.queue.splice(0, 1)[0];
     if (this.currentlyProcessing[currentItem.imageUrl] === undefined) {
-      this.currentlyProcessing[currentItem.imageUrl] = new Promise(
-        (resolve, reject) => {
-          // process more items concurrently if we can
-          if (this.canProcess) {
-            this.processQueue();
+      this.currentlyProcessing[currentItem.imageUrl] = new Promise((resolve, reject) => {
+        // process more items concurrently if we can
+        if (this.canProcess) this.processQueue();
+
+        // function to call when done processing this item
+        // this will reduce the processing number
+        // then will execute this function again to process any remaining items
+        const done = () => {
+          this.processing--;
+          this.processQueue();
+
+          if (this.currentlyProcessing[currentItem.imageUrl] !== undefined) {
+            delete this.currentlyProcessing[currentItem.imageUrl];
+          }
+        };
+
+        const error = (e) => {
+          currentItem.reject();
+          this.throwError(e);
+          done();
+        };
+
+        const localDir = this.getFileCacheDirectory() + this.config.cacheDirectoryName + '/';
+        const fileName = this.createFileName(currentItem.imageUrl);
+
+        this.http.get(currentItem.imageUrl, {
+          responseType: 'blob',
+          headers: this.config.httpHeaders
+        }).subscribe(
+          (data: Blob) => {
+            this.file.writeFile(localDir, fileName, data, {replace: true}).then((file: FileEntry) => {
+              if (this.isCacheSpaceExceeded) {
+                this.maintainCacheSize();
+              }
+              this.addFileToIndex(file).then(() => {
+                this.getCachedImagePath(currentItem.imageUrl).then((localUrl) => {
+                  currentItem.resolve(localUrl);
+                  resolve();
+                  done();
+                  this.maintainCacheSize();
+                });
+              });
+            }).catch((e) => {
+              //Could not write image
+              error(e);
+            });
+          },
+          (e) => {
+            //Could not get image via httpClient
+            error(e);
           }
 
           // function to call when done processing this item
@@ -397,8 +445,8 @@ export class ImageLoader {
   private indexCache(): Promise<void> {
     this.cacheIndex = [];
 
-    return this.file
-      .listDir(this.file.cacheDirectory, this.config.cacheDirectoryName)
+    return
+      this.file.listDir(this.getFileCacheDirectory(), this.config.cacheDirectoryName)
       .then(files => Promise.all(files.map(this.addFileToIndex.bind(this))))
       .then(() => {
         // Sort items by date. Most recent to oldest.
@@ -454,10 +502,7 @@ export class ImageLoader {
    */
   private removeFile(file: string): Promise<any> {
     return this.file
-      .removeFile(
-        this.file.cacheDirectory + this.config.cacheDirectoryName,
-        file,
-      )
+      .removeFile(this.getFileCacheDirectory() + this.config.cacheDirectoryName, file)
       .then(() => {
         if (this.isWKWebView && !this.isIonicWKWebView) {
           return this.file
@@ -493,7 +538,7 @@ export class ImageLoader {
       const fileName = this.createFileName(url);
 
       // get full path
-      const dirPath = this.file.cacheDirectory + this.config.cacheDirectoryName,
+      const dirPath = this.getFileCacheDirectory() + this.config.cacheDirectoryName,
         tempDirPath = this.file.tempDirectory + this.config.cacheDirectoryName;
 
       // check if exists
@@ -581,7 +626,7 @@ export class ImageLoader {
 
   /**
    * Check if the cache directory exists
-   * @param directory {string} The directory to check. Either this.file.tempDirectory or this.file.cacheDirectory
+   * @param directory {string} The directory to check. Either this.file.tempDirectory or this.getFileCacheDirectory()
    * @returns {Promise<boolean|FileError>} Returns a promise that resolves if exists, and rejects if it doesn't
    */
   private cacheDirectoryExists(directory: string): Promise<boolean> {
@@ -598,23 +643,12 @@ export class ImageLoader {
 
     if (replace) {
       // create or replace the cache directory
-      cacheDirectoryPromise = this.file.createDir(
-        this.file.cacheDirectory,
-        this.config.cacheDirectoryName,
-        replace,
-      );
+      cacheDirectoryPromise = this.file.createDir(this.getFileCacheDirectory(), this.config.cacheDirectoryName, replace);
     } else {
       // check if the cache directory exists.
       // if it does not exist create it!
-      cacheDirectoryPromise = this.cacheDirectoryExists(
-        this.file.cacheDirectory,
-      ).catch(() =>
-        this.file.createDir(
-          this.file.cacheDirectory,
-          this.config.cacheDirectoryName,
-          false,
-        ),
-      );
+      cacheDirectoryPromise = this.cacheDirectoryExists(this.getFileCacheDirectory())
+        .catch(() => this.file.createDir(this.getFileCacheDirectory(), this.config.cacheDirectoryName, false));
     }
 
     if (this.isWKWebView && !this.isIonicWKWebView) {
