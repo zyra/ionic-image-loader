@@ -1,3 +1,18 @@
+<a name="5.1.1"></a>
+## [5.1.1](https://github.com/zyra/ionic-image-loader/compare/v6.0.0...v5.1.1) (2018-09-17)
+
+
+### Bug Fixes
+
+* **image-loader:** fix rxjs fromEvent issue ([ce7f59f](https://github.com/zyra/ionic-image-loader/commit/ce7f59f))
+
+
+
+<a name="6.0.0"></a>
+# [6.0.0](https://github.com/zyra/ionic-image-loader/compare/v5.1.0...v6.0.0) (2018-09-17)
+
+
+
 <a name="5.1.0"></a>
 # [5.1.0](https://github.com/zyra/ionic-image-loader/compare/v5.0.4...v5.1.0) (2018-09-17)
 
