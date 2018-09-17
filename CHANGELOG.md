@@ -1,3 +1,13 @@
+<a name="6.3.0"></a>
+# [6.3.0](https://github.com/zyra/ionic-image-loader/compare/v6.2.0...v6.3.0) (2018-09-17)
+
+
+### Features
+
+* **lib:** fix issues when loading same image multiple times ([f23056f](https://github.com/zyra/ionic-image-loader/commit/f23056f))
+
+
+
 <a name="6.2.0"></a>
 # [6.2.0](https://github.com/zyra/ionic-image-loader/compare/v6.1.0...v6.2.0) (2018-09-17)
 
