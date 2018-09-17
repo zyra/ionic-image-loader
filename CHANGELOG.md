@@ -1,15 +1,16 @@
-<a name="6.0.0"></a>
-# [6.0.0](https://github.com/zyra/ionic-image-loader/compare/v5.1.1...v6.0.0) (2018-09-17)
+<a name="6.1.0"></a>
+# [6.1.0](https://github.com/zyra/ionic-image-loader/compare/v5.1.1...v6.1.0) (2018-09-17)
 
 
 ### Features
 
+* **image-loader:** add ionic webView 2 support ([#189](https://github.com/zyra/ionic-image-loader/issues/189)) ([da035a8](https://github.com/zyra/ionic-image-loader/commit/da035a8)), closes [#187](https://github.com/zyra/ionic-image-loader/issues/187)
 * **lib:** Angular5 support ([cb8fd22](https://github.com/zyra/ionic-image-loader/commit/cb8fd22))
 
 
 
 <a name="5.1.1"></a>
-## [5.1.1](https://github.com/zyra/ionic-image-loader/compare/v6.0.0...v5.1.1) (2018-09-17)
+## [5.1.1](https://github.com/zyra/ionic-image-loader/compare/6.0.0...v5.1.1) (2018-09-17)
 
 
 ### Bug Fixes
@@ -19,7 +20,17 @@
 
 
 <a name="6.0.0"></a>
-# [6.0.0](https://github.com/zyra/ionic-image-loader/compare/v5.1.0...v6.0.0) (2018-09-17)
+# [6.0.0](https://github.com/zyra/ionic-image-loader/compare/v6.0.0...6.0.0) (2018-09-17)
+
+
+
+<a name="6.0.0"></a>
+# [6.0.0](https://github.com/zyra/ionic-image-loader/compare/5.1.0...v6.0.0) (2018-09-17)
+
+
+
+<a name="5.1.0"></a>
+# [5.1.0](https://github.com/zyra/ionic-image-loader/compare/v5.1.0...5.1.0) (2018-09-17)
 
 
 
