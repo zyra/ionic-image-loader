@@ -139,6 +139,44 @@ export class ImageLoader {
   }
 
   /**
+   * Clears cache of a single image
+   * @param {string} imageUrl Image URL
+   */
+  clearImageCache(imageUrl: string): void {
+    if (!this.platform.is('cordova')) {
+      return;
+    }
+
+    const clear = () => {
+      if (!this.isInit) {
+        // do not run this method until our service is initialized
+        setTimeout(clear.bind(this), 500);
+        return;
+      }
+      const fileName = this.createFileName(imageUrl);
+      const route = this.getFileCacheDirectory() + this.config.cacheDirectoryName;
+
+      // pause any operations
+      this.isInit = false;
+
+      this.file.removeFile(route, fileName)
+        .then(() => {
+          if (this.isWKWebView && !this.isIonicWKWebView) {
+            this.file.removeFile(this.file.tempDirectory + this.config.cacheDirectoryName, fileName)
+              .then(() => {
+                this.initCache(true);
+              }).catch(err => {
+                //Handle error?
+            })
+          } else {
+            this.initCache(true);
+          }
+        }).catch(this.throwError.bind(this));
+    };
+    clear();
+  }
+
+  /**
    * Clears the cache
    */
   clearCache(): void {
@@ -156,7 +194,7 @@ export class ImageLoader {
       // pause any operations
       this.isInit = false;
 
-      this.file.removeRecursively(this.getFileCacheDirectory(), this.config.cacheDirectoryName)
+      this.file.removeRecursively(this.getFileCacheDirectory(), this.config.cacheDirectoryName + 'ddd')
         .then(() => {
           if (this.isWKWebView && !this.isIonicWKWebView) {
             // also clear the temp files
@@ -286,40 +324,57 @@ export class ImageLoader {
 
     if (this.currentlyProcessing[currentItem.imageUrl] === undefined) {
       this.currentlyProcessing[currentItem.imageUrl] = new Promise((resolve, reject) => {
-        // process more items concurrently if we can
-        if (this.canProcess) this.processQueue();
+          // process more items concurrently if we can
+          if (this.canProcess) this.processQueue();
 
-        const localDir = this.getFileCacheDirectory() + this.config.cacheDirectoryName + '/';
-        const fileName = this.createFileName(currentItem.imageUrl);
+          // function to call when done processing this item
+          // this will reduce the processing number
+          // then will execute this function again to process any remaining items
+          const done = () => {
+            this.processing--;
+            this.processQueue();
 
-        this.http.get(currentItem.imageUrl, {
-          responseType: 'blob',
-          headers: this.config.httpHeaders
-        }).subscribe(
-          (data: Blob) => {
-            this.file.writeFile(localDir, fileName, data, {replace: true}).then((file: FileEntry) => {
-              if (this.isCacheSpaceExceeded) {
-                this.maintainCacheSize();
-              }
-              this.addFileToIndex(file).then(() => {
-                this.getCachedImagePath(currentItem.imageUrl).then((localUrl) => {
-                  currentItem.resolve(localUrl);
-                  resolve();
-                  done();
+            if (this.currentlyProcessing[currentItem.imageUrl] !== undefined) {
+              delete this.currentlyProcessing[currentItem.imageUrl];
+            }
+          };
+
+          const error = (e) => {
+            currentItem.reject();
+            this.throwError(e);
+            done();
+          };
+
+          const localDir = this.getFileCacheDirectory() + this.config.cacheDirectoryName + '/';
+          const fileName = this.createFileName(currentItem.imageUrl);
+
+          this.http.get(currentItem.imageUrl, {
+            responseType: 'blob',
+            headers: this.config.httpHeaders
+          }).subscribe(
+            (data: Blob) => {
+              this.file.writeFile(localDir, fileName, data, {replace: true}).then((file: FileEntry) => {
+                if (this.isCacheSpaceExceeded) {
                   this.maintainCacheSize();
+                };
+                this.addFileToIndex(file).then(() => {
+                  this.getCachedImagePath(currentItem.imageUrl).then((localUrl) => {
+                    currentItem.resolve(localUrl);
+                    resolve();
+                    done();
+                    this.maintainCacheSize();
+                  });
                 });
+              }).catch((e) => {
+                //Could not write image
+                error(e);
               });
-            }).catch((e) => {
-              //Could not write image
+            },
+            (e) => {
+              //Could not get image via httpClient
               error(e);
               reject(e);
             });
-          },
-          (e) => {
-            //Could not get image via httpClient
-            error(e);
-            reject(e);
-          });
         },
       );
     } else {
