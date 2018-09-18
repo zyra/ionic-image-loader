@@ -139,6 +139,42 @@ export class ImageLoader {
   }
 
   /**
+   * Clears cache of a single image
+   * @param {string} imageUrl Image URL
+   */
+  clearImageCache(imageUrl: string): void {
+    if (!this.platform.is('cordova')) {
+      return;
+    }
+    const clear = () => {
+      if (!this.isInit) {
+        // do not run this method until our service is initialized
+        setTimeout(clear.bind(this), 500);
+        return;
+      }
+      const fileName = this.createFileName(imageUrl);
+      const route = this.getFileCacheDirectory() + this.config.cacheDirectoryName;
+      // pause any operations
+      this.isInit = false;
+      this.file.removeFile(route, fileName)
+        .then(() => {
+          if (this.isWKWebView && !this.isIonicWKWebView) {
+            this.file.removeFile(this.file.tempDirectory + this.config.cacheDirectoryName, fileName)
+              .then(() => {
+                this.initCache(true);
+              }).catch(err => {
+              //Handle error?
+            })
+          } else {
+            this.initCache(true);
+          }
+        }).catch(this.throwError.bind(this));
+    };
+    clear();
+  }
+
+
+  /**
    * Clears the cache
    */
   clearCache(): void {
