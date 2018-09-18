@@ -338,6 +338,22 @@ class MyComponent {
 
 ```
 
+# Clearing single image cache
+```typescript
+
+import { ImageLoader } from 'ionic-image-loader';
+
+@Component(...)
+class MyComponent {
+  
+  constructor(imageLoader: ImageLoader) {
+    imageLoader.clearImageCache('http://path.to/image.jpeg');
+  }
+  
+}
+
+```
+
 # Passing HTML / CSS Attributes to a generated image
 
 When using ImageLoader to generate an `<img>` element it may be desirable for the generated element to include additional attributes to provide styling or interaction qualities.  The optional `imgAttributes` value can be used to provide such additional attributes which will be included in the generated `<img>` element in the DOM.
