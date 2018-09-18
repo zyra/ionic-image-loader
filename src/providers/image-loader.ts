@@ -302,6 +302,26 @@ export class ImageLoader {
 
     // take the first item from queue
     const currentItem: QueueItem = this.queue.splice(0, 1)[0];
+
+    // function to call when done processing this item
+    // this will reduce the processing number
+    // then will execute this function again to process any remaining items
+    const done = () => {
+      this.processing--;
+      this.processQueue();
+
+      // only delete if it's the last/unique occurrence in the queue
+      if (this.currentlyProcessing[currentItem.imageUrl] !== undefined && !this.currentlyInQueue(currentItem.imageUrl)) {
+        delete this.currentlyProcessing[currentItem.imageUrl];
+      }
+    };
+
+    const error = (e) => {
+      currentItem.reject();
+      this.throwError(e);
+      done();
+    };
+
     if (this.currentlyProcessing[currentItem.imageUrl] === undefined) {
       this.currentlyProcessing[currentItem.imageUrl] = new Promise((resolve, reject) => {
           // process more items concurrently if we can
@@ -336,7 +356,7 @@ export class ImageLoader {
               this.file.writeFile(localDir, fileName, data, {replace: true}).then((file: FileEntry) => {
                 if (this.isCacheSpaceExceeded) {
                   this.maintainCacheSize();
-                }
+                };
                 this.addFileToIndex(file).then(() => {
                   this.getCachedImagePath(currentItem.imageUrl).then((localUrl) => {
                     currentItem.resolve(localUrl);
@@ -353,6 +373,7 @@ export class ImageLoader {
             (e) => {
               //Could not get image via httpClient
               error(e);
+              reject(e);
             });
         },
       );
@@ -362,8 +383,21 @@ export class ImageLoader {
         this.getCachedImagePath(currentItem.imageUrl).then(localUrl => {
           currentItem.resolve(localUrl);
         });
+        done();
+      },
+      (e) => {
+        error(e);
       });
     }
+  }
+
+  /**
+   * Search if the url is currently in the queue
+   * @param imageUrl {string} Image url to search
+   * @returns {boolean}
+   */
+  private currentlyInQueue(imageUrl: string) {
+    return this.queue.some(item => item.imageUrl === imageUrl);
   }
 
   /**
