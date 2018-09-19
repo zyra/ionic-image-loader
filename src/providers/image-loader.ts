@@ -105,7 +105,7 @@ export class ImageLoader {
 
   private get isIonicWKWebView(): boolean {
     return (
-      this.isWKWebView &&
+      (this.isWKWebView || this.platform.is('android')) &&
       (location.host === 'localhost:8080' || (<any>window).LiveReload)
     );
   }
