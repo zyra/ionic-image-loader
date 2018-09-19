@@ -104,10 +104,7 @@ export class ImageLoader {
   }
 
   private get isIonicWKWebView(): boolean {
-    return (
-      this.isWKWebView &&
-      (location.host === 'localhost:8080' || (<any>window).LiveReload)
-    );
+    return location.host === 'localhost:8080' || (<any>window).LiveReload;
   }
 
   private get isDevServer(): boolean {
