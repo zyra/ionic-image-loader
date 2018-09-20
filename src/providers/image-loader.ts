@@ -684,7 +684,7 @@ export class ImageLoader {
     return (
       this.hashString(url).toString() +
       (this.config.fileNameCachedWithExtension
-        ? this.getExtensionFromFileName(url)
+        ? this.getExtensionFromUrl(url)
         : '')
     );
   }
@@ -711,15 +711,15 @@ export class ImageLoader {
   }
 
   /**
-   * extract extension from filename or url
+   * Extract extension from filename or url
    *
-   * @param {string} filename
+   * @param {string} url
    * @returns {string}
    */
-  private getExtensionFromFileName(filename: string): string {
+  private getExtensionFromUrl(url: string): string {
+    const urlWitoutParams = url.split(/\#|\?/)[0];
     return (
-      // tslint:disable-next-line
-      filename.substr((~-filename.lastIndexOf('.') >>> 0) + 1) ||
+      urlWitoutParams.substr((~-urlWitoutParams.lastIndexOf('.') >>> 0) + 1) ||
       this.config.fallbackFileNameCachedExtension
     );
   }
