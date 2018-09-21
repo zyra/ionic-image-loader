@@ -227,7 +227,8 @@ export class ImgLoaderComponent implements OnInit {
         `url("${imageUrl || this.fallbackUrl}")`,
       );
     }
-
-    this.load.emit(this);
+    if(stopLoading) {
+      this.load.emit(this);
+    }
   }
 }
