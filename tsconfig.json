@@ -11,7 +11,8 @@
       "dom",
       "es2015"
     ],
-    "outDir": "dist"
+    "outDir": "dist",
+    "rootDir": "./src"
   },
   "exclude": [
     "node_modules",
