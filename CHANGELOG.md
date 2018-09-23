@@ -1,3 +1,20 @@
+<a name="6.3.2"></a>
+## [6.3.2](https://github.com/zyra/ionic-image-loader/compare/v6.3.0...v6.3.2) (2018-09-23)
+
+
+### Bug Fixes
+
+* **image-loader:** URLs with query params lead to broken filenames ([#196](https://github.com/zyra/ionic-image-loader/issues/196)) ([d32f351](https://github.com/zyra/ionic-image-loader/commit/d32f351))
+* **image-loader:** Wrong path with Ionic on Android ([#194](https://github.com/zyra/ionic-image-loader/issues/194)) ([d4132f1](https://github.com/zyra/ionic-image-loader/commit/d4132f1))
+* **load:** fire load event only when image is done loading ([#200](https://github.com/zyra/ionic-image-loader/issues/200)) ([ce123dc](https://github.com/zyra/ionic-image-loader/commit/ce123dc)), closes [#195](https://github.com/zyra/ionic-image-loader/issues/195)
+
+
+### Features
+
+* **clearImageCache:** add ability to remove single image cache ([#192](https://github.com/zyra/ionic-image-loader/issues/192)) ([e22aa57](https://github.com/zyra/ionic-image-loader/commit/e22aa57))
+
+
+
 <a name="6.3.0"></a>
 # [6.3.0](https://github.com/zyra/ionic-image-loader/compare/v6.2.0...v6.3.0) (2018-09-17)
 
@@ -61,6 +78,7 @@
 ### Bug Fixes
 
 * **cache:** Images not saved to cache ([#171](https://github.com/zyra/ionic-image-loader/issues/171)) ([07eb2e7](https://github.com/zyra/ionic-image-loader/commit/07eb2e7))
+* **image-loader:** queue stucks processing same url more than concurrency ([12e7750](https://github.com/zyra/ionic-image-loader/commit/12e7750))
 
 
 ### Features
