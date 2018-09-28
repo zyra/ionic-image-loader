@@ -76,6 +76,7 @@ export class ImgLoaderComponent implements OnInit {
    * Color of the spinner
    */
   @Input() spinnerColor: string = this.config.spinnerColor;
+  @Input() cacheKey: string;
   /**
    * Notify on image load..
    */
