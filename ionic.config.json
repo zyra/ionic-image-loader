@@ -1,0 +1,7 @@
+{
+  "name": "ionic-image-loader-example",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular"
+}
