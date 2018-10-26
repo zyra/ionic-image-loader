@@ -11,6 +11,14 @@
     "lib": [
       "es2017",
       "dom"
-    ]
+    ],
+    "paths": {
+      "ionic-image-loader": [
+        "dist/ionic-image-loader"
+      ],
+      "ionic-image-loader/*": [
+        "dist/ionic-image-loader/*"
+      ]
+    }
   }
 }

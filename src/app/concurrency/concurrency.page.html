@@ -1,0 +1,22 @@
+<ion-header>
+
+  <ion-toolbar>
+    <ion-title>Concurrency</ion-title>
+  </ion-toolbar>
+
+</ion-header>
+
+
+<ion-content>
+  <ion-card *ngFor="let image of images">
+    <img-loader [src]="image" [useImg]="true"></img-loader>
+    <ion-card-content>
+      <ion-card-title>
+        An awesome card
+      </ion-card-title>
+      <p>
+        Just another card
+      </p>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

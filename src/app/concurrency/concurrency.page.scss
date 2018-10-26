@@ -1,0 +1,10 @@
+page-concurrency {
+  img-loader {
+    min-height: 300px;
+    display: block;
+    > ion-spinner {
+      height: 300px;
+
+    }
+  }
+}

@@ -1,12 +1,37 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar color="primary">
     <ion-title>
-      Ionic Blank
+      Ionic Image Loader
     </ion-title>
   </ion-toolbar>
 </ion-header>
+<ion-content>
+  <p padding>
+    Welcome to this demo application. Pick one of the options below to see different use cases of ionic-image-loader:
+  </p>
+  <ion-list>
+    <ion-button href="/cards" routerDirection="forward">
+      Cards
+    </ion-button>
+    <ion-button href="/avatars" routerDirection="forward">
+      Avatars
+    </ion-button>
+    <ion-button href="/slider" routerDirection="forward">
+      Slider
+    </ion-button>
+    <ion-button href="/concurrency" routerDirection="forward">
+      Concurrency test
+    </ion-button>
+    <ion-button href="/ng-content" routerDirection="forward">
+      Ng-content
+    </ion-button>
+    <ion-button href="/virtual-scroll" routerDirection="forward">
+      Virtual Scroll
+    </ion-button>
+  </ion-list>
 
-<ion-content padding>
-  The world is your oyster.
-  <p>If you get lost, the <a target="_blank" rel="noopener" href="https://ionicframework.com/docs">docs</a> will be your guide.</p>
+  <div padding>
+    <ion-button ion-button large block outline (click)="clearCache()">Clear Cache</ion-button>
+  </div>
+
 </ion-content>

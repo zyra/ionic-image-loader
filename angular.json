@@ -161,6 +161,41 @@
           }
         }
       }
+    },
+    "ionic-image-loader": {
+      "root": "projects/ionic-image-loader",
+      "sourceRoot": "projects/ionic-image-loader/src",
+      "projectType": "library",
+      "prefix": "tm",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/ionic-image-loader/tsconfig.lib.json",
+            "project": "projects/ionic-image-loader/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/ionic-image-loader/src/test.ts",
+            "tsConfig": "projects/ionic-image-loader/tsconfig.spec.json",
+            "karmaConfig": "projects/ionic-image-loader/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/ionic-image-loader/tsconfig.lib.json",
+              "projects/ionic-image-loader/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "cli": {
