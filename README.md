@@ -279,16 +279,14 @@ Example:
 this.imageLoaderConfig.enableFallbackAsPlaceholder(true);
 ```
 ---
-#### setHttpRequestOptions(options: any)
-Set options for HttpClient to use.
+#### setHttpHeaders(headers: HttpHeaders)
+Set headers for HttpClient to use.
 
 Example:
 ```ts
-this.imageLoaderConfig.setHttpRequestOptions({
-  headers: {
-    Authorization: 'Basic dGVzdHVzZXJuYW1lOnRlc3RwYXNzd29yZA=='
-  }
-});
+const headers = new HttpHeaders()
+                  .set("Authorization", "Basic dGVzdHVzZXJuYW1lOnRlc3RwYXNzd29yZA==");
+this.imageLoaderConfig.setHttpHeaders(headers);
 ```
 ---
 #### setFileNameCachedWithExtension(enable: boolean)
