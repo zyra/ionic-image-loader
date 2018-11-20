@@ -1,28 +1,25 @@
 import { HttpClientModule } from '@angular/common/http';
-import { ModuleWithProviders, NgModule } from '@angular/core';
-import { File } from '@ionic-native/file';
+import { ModuleWithProviders, NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CommonModule } from "@angular/common";
+import { File } from '@ionic-native/file/ngx';
 import { IonicModule } from '@ionic/angular';
-import { ImageLoaderConfigService } from '../../services/image-loader-config.service';
-import { ImageLoaderService } from '../../services/image-loader.service';
+import { ImageLoaderConfigService } from '../services/image-loader-config.service';
+import { ImageLoaderService } from '../services/image-loader.service';
 import { IonicImageLoaderComponent } from './ionic-image-loader.component';
 
 @NgModule({
   imports: [
       IonicModule,
+      CommonModule,
       HttpClientModule
   ],
   declarations: [IonicImageLoaderComponent],
+  schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
+  providers: [
+      ImageLoaderConfigService,
+      ImageLoaderService,
+      File
+  ],
   exports: [IonicImageLoaderComponent]
 })
-export class IonicImageLoader {
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: IonicImageLoaderComponent,
-        providers: [
-            ImageLoaderConfigService,
-            ImageLoaderService,
-            File
-        ]
-    }
-  }
-}
+export class IonicImageLoader { }

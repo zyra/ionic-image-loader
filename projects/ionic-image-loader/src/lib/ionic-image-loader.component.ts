@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, Renderer2 } from '@angular/core';
-import { ImageLoaderConfigService } from '../../services/image-loader-config.service';
-import { ImageLoaderService } from '../../services/image-loader.service';
+import { ImageLoaderConfigService } from '../services/image-loader-config.service';
+import { ImageLoaderService } from '../services/image-loader.service';
 
 const propMap: any = {
     display: 'display',

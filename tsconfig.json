@@ -18,6 +18,9 @@
       ],
       "ionic-image-loader/*": [
         "dist/ionic-image-loader/*"
+      ],
+      "@angular/*": [
+        "../node_modules/@angular/*"
       ]
     }
   }

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { File, FileEntry } from '@ionic-native/file';
+import { File, FileEntry } from '@ionic-native/file/ngx';
 import { Platform } from '@ionic/angular';
 import { fromEvent } from 'rxjs/internal/observable/fromEvent';
 import { first } from 'rxjs/operators';
