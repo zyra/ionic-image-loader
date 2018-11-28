@@ -1,10 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { File, FileEntry } from '@ionic-native/file';
+import { File, FileEntry } from '@ionic-native/file/ngx';
 import { Platform } from '@ionic/angular';
-import { fromEvent } from 'rxjs/internal/observable/fromEvent';
+import { fromEvent } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { ImageLoaderConfigService } from './image-loader-config.service';
+import { WebView } from '@ionic-native/ionic-webview/ngx';
 
 interface IndexItem {
     name: string;
@@ -59,7 +60,8 @@ export class ImageLoaderService {
         private config: ImageLoaderConfigService,
         private file: File,
         private http: HttpClient,
-        private platform: Platform
+        private platform: Platform,
+        private webview: WebView
     ) {
         if (!platform.is('cordova')) {
             // we are running on a browser, or using livereload
@@ -134,7 +136,7 @@ export class ImageLoaderService {
     }
 
     getFileCacheDirectory() {
-        if (this.config.cacheDirectoryType == 'data') {
+        if (this.config.cacheDirectoryType === 'data') {
             return this.file.dataDirectory;
         }
         return this.file.cacheDirectory;
@@ -165,7 +167,7 @@ export class ImageLoaderService {
                             .then(() => {
                                 this.initCache(true);
                             }).catch(err => {
-                            //Handle error?
+                            // Handle error?
                         });
                     } else {
                         this.initCache(true);
@@ -348,7 +350,7 @@ export class ImageLoaderService {
                                     });
                                 });
                             }).catch((e) => {
-                                //Could not write image
+                                // Could not write image
                                 error(e);
                                 reject(e);
                             });
@@ -567,7 +569,7 @@ export class ImageLoaderService {
                                 resolve(Ionic.WebView.convertFileSrc(fileEntry.nativeURL));
                             } else {
                                 // resolve(normalizeURL(fileEntry.nativeURL));
-                                //TODO: figure out
+                                resolve(this.webview.convertFileSrc(fileEntry.nativeURL));
                             }
                         } else if (this.isWKWebView) {
                             // check if file already exists in temp directory

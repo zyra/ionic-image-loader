@@ -15,7 +15,6 @@ export interface ImageAttribute {
     value: string;
 }
 
-
 @Component({
     selector: 'img-loader',
     template: '<ion-spinner *ngIf="spinner && isLoading && !fallbackAsPlaceholder" [name]="spinnerName" [color]="spinnerColor"></ion-spinner>' +

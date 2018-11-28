@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
     providedIn: 'root'
 })
 export class ImageLoaderConfigService {
-    debugMode = false;
+    public debugMode = false;
 
     spinnerEnabled = true;
 
