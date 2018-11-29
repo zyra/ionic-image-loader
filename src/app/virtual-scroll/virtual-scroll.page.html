@@ -3,12 +3,11 @@
   <ion-toolbar>
     <ion-title>Virtual Scroll</ion-title>
   </ion-toolbar>
-
 </ion-header>
 
 
 <ion-content padding>
-  <ion-list [virtualScroll]="images" [approxItemHeight]="'70px'">
+  <ion-virtual-scroll [items]="images" [approxItemHeight]="'70px'">
     <button ion-item *virtualItem="let image" text-wrap>
       <ion-avatar item-left>
         <img-loader [src]="image" useImg [spinner]="false"></img-loader>
@@ -19,5 +18,5 @@
         <img [src]="image" alt="">
       </ion-avatar>
     </button>
-  </ion-list>
+  </ion-virtual-scroll>
 </ion-content>

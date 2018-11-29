@@ -13,8 +13,6 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { IonicImageLoader } from '../../projects/ionic-image-loader/src/lib/ionic-image-loader.module';
 
-console.log("even breakpunt hier");
-
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
