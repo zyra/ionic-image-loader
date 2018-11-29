@@ -86,11 +86,11 @@ You can also listen to the load event to be notified when the image has been loa
 <img-loader src="path/to/image" (load)="onImageLoad($event)></img-loader>
 ```
 ```typescript
-import { ImgLoader } from 'ionic-image-loader';
+import { ImgLoaderComponent } from 'ionic-image-loader';
 
 ...
 
-onImageLoad(imgLoader: ImgLoader) {
+onImageLoad(imgLoader: ImgLoaderComponent) {
   // do something with the loader
 }
 ```
