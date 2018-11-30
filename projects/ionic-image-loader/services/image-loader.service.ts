@@ -109,9 +109,11 @@ export class ImageLoaderService {
 
     private get isIonicWKWebView(): boolean {
         return (
-            (this.isWKWebView || this.platform.is('android')) &&
-            (location.host === 'localhost:8080' || (<any>window).LiveReload)
-        );
+            //  Important: isWKWebview && isIonicWKWebview must be mutually excluse.
+            //  Otherwise the logic for copying to tmp under IOS will fail.
+            (this.platform.is('android') && this.webview) ||
+            (this.platform.is('android')) && (location.host === 'localhost:8080') ||
+            (<any>window).LiveReload);
     }
 
     private get isDevServer(): boolean {
@@ -138,6 +140,8 @@ export class ImageLoaderService {
     getFileCacheDirectory() {
         if (this.config.cacheDirectoryType === 'data') {
             return this.file.dataDirectory;
+        } else if (this.config.cacheDirectoryType === 'external') {
+            return this.platform.is('android') ? this.file.externalDataDirectory : this.file.documentsDirectory;
         }
         return this.file.cacheDirectory;
     }
@@ -167,8 +171,8 @@ export class ImageLoaderService {
                             .then(() => {
                                 this.initCache(true);
                             }).catch(err => {
-                            // Handle error?
-                        });
+                                // Handle error?
+                            });
                     } else {
                         this.initCache(true);
                     }
@@ -326,50 +330,50 @@ export class ImageLoaderService {
 
         if (this.currentlyProcessing[currentItem.imageUrl] === undefined) {
             this.currentlyProcessing[currentItem.imageUrl] = new Promise((resolve, reject) => {
-                    // process more items concurrently if we can
-                    if (this.canProcess) this.processQueue();
+                // process more items concurrently if we can
+                if (this.canProcess) this.processQueue();
 
-                    const localDir = this.getFileCacheDirectory() + this.config.cacheDirectoryName + '/';
-                    const fileName = this.createFileName(currentItem.imageUrl);
+                const localDir = this.getFileCacheDirectory() + this.config.cacheDirectoryName + '/';
+                const fileName = this.createFileName(currentItem.imageUrl);
 
-                    this.http.get(currentItem.imageUrl, {
-                        responseType: 'blob',
-                        headers: this.config.httpHeaders
-                    }).subscribe(
-                        (data: Blob) => {
-                            this.file.writeFile(localDir, fileName, data, { replace: true }).then((file: FileEntry) => {
-                                if (this.isCacheSpaceExceeded) {
+                this.http.get(currentItem.imageUrl, {
+                    responseType: 'blob',
+                    headers: this.config.httpHeaders
+                }).subscribe(
+                    (data: Blob) => {
+                        this.file.writeFile(localDir, fileName, data, { replace: true }).then((file: FileEntry) => {
+                            if (this.isCacheSpaceExceeded) {
+                                this.maintainCacheSize();
+                            }
+                            this.addFileToIndex(file).then(() => {
+                                this.getCachedImagePath(currentItem.imageUrl).then((localUrl) => {
+                                    currentItem.resolve(localUrl);
+                                    resolve();
+                                    done();
                                     this.maintainCacheSize();
-                                }
-                                this.addFileToIndex(file).then(() => {
-                                    this.getCachedImagePath(currentItem.imageUrl).then((localUrl) => {
-                                        currentItem.resolve(localUrl);
-                                        resolve();
-                                        done();
-                                        this.maintainCacheSize();
-                                    });
                                 });
-                            }).catch((e) => {
-                                // Could not write image
-                                error(e);
-                                reject(e);
                             });
-                        },
-                        (e) => {
-                            //Could not get image via httpClient
+                        }).catch((e) => {
+                            // Could not write image
                             error(e);
                             reject(e);
                         });
-                }
+                    },
+                    (e) => {
+                        //Could not get image via httpClient
+                        error(e);
+                        reject(e);
+                    });
+            }
             );
         } else {
             // Prevented same Image from loading at the same time
             this.currentlyProcessing[currentItem.imageUrl].then(() => {
-                    this.getCachedImagePath(currentItem.imageUrl).then(localUrl => {
-                        currentItem.resolve(localUrl);
-                    });
-                    done();
-                },
+                this.getCachedImagePath(currentItem.imageUrl).then(localUrl => {
+                    currentItem.resolve(localUrl);
+                });
+                done();
+            },
                 (e) => {
                     error(e);
                 });
@@ -562,15 +566,7 @@ export class ImageLoaderService {
                         // in this case only the tempDirectory is accessible,
                         // therefore the file needs to be copied into that directory first!
                         if (this.isIonicWKWebView) {
-                            // Use Ionic normalizeUrl to generate the right URL for Ionic WKWebView
-                            if (typeof Ionic.normalizeURL === 'function') {
-                                resolve(Ionic.normalizeURL(fileEntry.nativeURL));
-                            } else if (Ionic.WebView && typeof Ionic.WebView.convertFileSrc === 'function') {
-                                resolve(Ionic.WebView.convertFileSrc(fileEntry.nativeURL));
-                            } else {
-                                // resolve(normalizeURL(fileEntry.nativeURL));
-                                resolve(this.webview.convertFileSrc(fileEntry.nativeURL));
-                            }
+                            resolve(this.normalizeUrl(fileEntry));
                         } else if (this.isWKWebView) {
                             // check if file already exists in temp directory
                             this.file
@@ -578,7 +574,7 @@ export class ImageLoaderService {
                                 .then((tempFileEntry: FileEntry) => {
                                     // file exists in temp directory
                                     // return native path
-                                    resolve(tempFileEntry.nativeURL);
+                                    resolve(this.normalizeUrl(tempFileEntry));
                                 })
                                 .catch(() => {
                                     // file does not yet exist in the temp directory.
@@ -588,7 +584,7 @@ export class ImageLoaderService {
                                         .then((tempFileEntry: FileEntry) => {
                                             // now the file exists in the temp directory
                                             // return native path
-                                            resolve(tempFileEntry.nativeURL);
+                                            resolve(this.normalizeUrl(tempFileEntry));
                                         })
                                         .catch(reject);
                                 });
@@ -600,6 +596,24 @@ export class ImageLoaderService {
                 })
                 .catch(reject); // file doesn't exist
         });
+    }
+
+    /**
+     * Normalizes the image uri to a version that can be loaded in the webview
+     * @fileEntry {FileEntry} the fileentry of the image file
+     * @returns the normalized Url
+     */
+
+    private normalizeUrl(fileEntry: FileEntry): string {
+        // Use Ionic normalizeUrl to generate the right URL for Ionic WKWebView
+        if (Ionic && typeof Ionic.normalizeURL === 'function') {
+            return Ionic.normalizeURL(fileEntry.nativeURL);
+        }
+        // use new webview function to do the trick
+        if (this.webview) {
+            return this.webview.convertFileSrc(fileEntry.nativeURL);
+        }
+        return fileEntry.nativeURL;
     }
 
     /**
@@ -720,12 +734,17 @@ export class ImageLoaderService {
      *
      * @param {string} url
      * @returns {string}
+     * 
+     * Not always will url's contain a valid image extention. We'll check if any valid extention is supplied. 
+     * If not, we will use the default.
      */
     private getExtensionFromUrl(url: string): string {
         const urlWitoutParams = url.split(/\#|\?/)[0];
+        const ext: string = (urlWitoutParams.substr((~-urlWitoutParams.lastIndexOf('.') >>> 0) + 1) || "").toLowerCase();
+
         return (
-            urlWitoutParams.substr((~-urlWitoutParams.lastIndexOf('.') >>> 0) + 1) ||
-            this.config.fallbackFileNameCachedExtension
+
+            ["jpg", "png", "jpeg", "gif", "svg", "tiff"].indexOf(ext) >= 0 ? ext : this.config.fallbackFileNameCachedExtension
         );
     }
 }

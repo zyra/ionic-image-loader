@@ -163,16 +163,12 @@ export class IonicImageLoaderComponent implements OnInit {
         if (this.cache === false) {
             // need to disable caching
 
-            if (imageUrl.indexOf('?') === -1) {
+            if (imageUrl.indexOf('?') < 0) {
                 // add ? if doesn't exists
                 imageUrl += '?';
-            }
-
-            if (['&', '?'].indexOf(imageUrl.charAt(imageUrl.length)) === -1) {
-                // add & if necessary
+            } else {
                 imageUrl += '&';
             }
-
             // append timestamp at the end to make URL unique
             imageUrl += 'cache_buster=' + Date.now();
         }
