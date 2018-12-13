@@ -27,31 +27,31 @@ export class ImageLoader {
    * When the cache service isn't ready, images are loaded via browser instead.
    * @type {boolean}
    */
-  private isCacheReady: boolean = false;
+  private isCacheReady = false;
   /**
    * Indicates if this service is initialized.
    * This service is initialized once all the setup is done.
    * @type {boolean}
    */
-  private isInit: boolean = false;
+  private isInit = false;
   /**
    * Number of concurrent requests allowed
    * @type {number}
    */
-  private concurrency: number = 5;
+  private concurrency = 5;
   /**
    * Queue items
    * @type {Array}
    */
   private queue: QueueItem[] = [];
-  private processing: number = 0;
+  private processing = 0;
   /**
    * Fast accessible Object for currently processing items
    */
   private currentlyProcessing: { [index: string]: Promise<any> } = {};
   private cacheIndex: IndexItem[] = [];
-  private currentCacheSize: number = 0;
-  private indexed: boolean = false;
+  private currentCacheSize = 0;
+  private indexed = false;
 
   constructor(
     private config: ImageLoaderConfig,
@@ -132,7 +132,7 @@ export class ImageLoader {
   }
 
   getFileCacheDirectory() {
-    if(this.config.cacheDirectoryType == 'data') {
+    if (this.config.cacheDirectoryType == 'data') {
       return this.file.dataDirectory;
     }
     return this.file.cacheDirectory;
@@ -163,8 +163,8 @@ export class ImageLoader {
               .then(() => {
                 this.initCache(true);
               }).catch(err => {
-              //Handle error?
-            })
+              // Handle error?
+            });
           } else {
             this.initCache(true);
           }
@@ -323,7 +323,7 @@ export class ImageLoader {
     if (this.currentlyProcessing[currentItem.imageUrl] === undefined) {
       this.currentlyProcessing[currentItem.imageUrl] = new Promise((resolve, reject) => {
         // process more items concurrently if we can
-        if (this.canProcess) this.processQueue();
+        if (this.canProcess) { this.processQueue(); }
 
         const localDir = this.getFileCacheDirectory() + this.config.cacheDirectoryName + '/';
         const fileName = this.createFileName(currentItem.imageUrl);
@@ -346,13 +346,13 @@ export class ImageLoader {
                 });
               });
             }).catch((e) => {
-              //Could not write image
+              // Could not write image
               error(e);
               reject(e);
             });
           },
           (e) => {
-            //Could not get image via httpClient
+            // Could not get image via httpClient
             error(e);
             reject(e);
           });
@@ -559,7 +559,7 @@ export class ImageLoader {
             // therefore the file needs to be copied into that directory first!
             if (this.isIonicWKWebView) {
               // Use Ionic normalizeUrl to generate the right URL for Ionic WKWebView
-              if(typeof Ionic.normalizeURL === 'function' ) {
+              if (typeof Ionic.normalizeURL === 'function' ) {
                 resolve(Ionic.normalizeURL(fileEntry.nativeURL));
               } else if (Ionic.WebView && typeof Ionic.WebView.convertFileSrc === 'function') {
                 resolve(Ionic.WebView.convertFileSrc(fileEntry.nativeURL));
