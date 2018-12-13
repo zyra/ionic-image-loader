@@ -7,6 +7,8 @@ import { IonicModule } from '@ionic/angular';
 
 import { SliderPage } from './slider.page';
 
+import { IonicImageLoader } from '../../../projects/ionic-image-loader/src/lib/ionic-image-loader.module';
+
 const routes: Routes = [
   {
     path: '',
@@ -19,6 +21,7 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     IonicModule,
+    IonicImageLoader,
     RouterModule.forChild(routes)
   ],
   declarations: [SliderPage]

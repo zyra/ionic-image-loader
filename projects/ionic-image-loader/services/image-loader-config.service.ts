@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
     providedIn: 'root'
 })
 export class ImageLoaderConfigService {
-    debugMode = false;
+    public debugMode = false;
 
     spinnerEnabled = true;
 
@@ -39,11 +39,12 @@ export class ImageLoaderConfigService {
 
     httpHeaders: HttpHeaders;
 
-    fileNameCachedWithExtension = false;
+    // Must be default 'true' for the new WebView to show images
+    fileNameCachedWithExtension = true;
 
     fallbackFileNameCachedExtension = '.jpg';
 
-    cacheDirectoryType: 'cache' | 'data' = 'cache';
+    cacheDirectoryType: 'cache' | 'data' | 'external' = 'cache';
 
     private _cacheDirectoryName: string = 'image-loader-cache';
 
