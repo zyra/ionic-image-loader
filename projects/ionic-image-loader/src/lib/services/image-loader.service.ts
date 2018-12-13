@@ -27,41 +27,6 @@ const EXTENSIONS = ['jpg', 'png', 'jpeg', 'gif', 'svg', 'tiff'];
   providedIn: 'root',
 })
 export class ImageLoaderService {
-  /**
-   * Indicates if the cache service is ready.
-   * When the cache service isn't ready, images are loaded via browser instead.
-   * @type {boolean}
-   */
-  private isCacheReady: boolean = false;
-  /**
-   * Indicates if this service is initialized.
-   * This service is initialized once all the setup is done.
-   * @type {boolean}
-   */
-  private isInit: boolean = false;
-  private initPromiseResolve: Function;
-  private initPromise = new Promise<void>(resolve => this.initPromiseResolve = resolve);
-  private lockSubject = new Subject<boolean>();
-  private lock$ = this.lockSubject.asObservable();
-
-  /**
-   * Number of concurrent requests allowed
-   * @type {number}
-   */
-  private concurrency: number = 5;
-  /**
-   * Queue items
-   * @type {Array}
-   */
-  private queue: QueueItem[] = [];
-  private processing: number = 0;
-  /**
-   * Fast accessible Object for currently processing items
-   */
-  private currentlyProcessing: { [index: string]: Promise<any> } = {};
-  private cacheIndex: IndexItem[] = [];
-  private currentCacheSize: number = 0;
-  private indexed: boolean = false;
 
   constructor(
     private config: ImageLoaderConfigService,
@@ -99,10 +64,6 @@ export class ImageLoaderService {
     return File.installed();
   }
 
-  ready(): Promise<void> {
-    return this.initPromise;
-  }
-
   private get isCacheSpaceExceeded(): boolean {
     return (
       this.config.maxCacheSize > -1 &&
@@ -138,6 +99,47 @@ export class ImageLoaderService {
   private get canProcess(): boolean {
     return this.queue.length > 0 && this.processing < this.concurrency;
   }
+  /**
+   * Indicates if the cache service is ready.
+   * When the cache service isn't ready, images are loaded via browser instead.
+   * @type {boolean}
+   */
+  private isCacheReady = false;
+  /**
+   * Indicates if this service is initialized.
+   * This service is initialized once all the setup is done.
+   * @type {boolean}
+   */
+  private isInit = false;
+  private initPromiseResolve: Function;
+  private initPromise = new Promise<void>(resolve => this.initPromiseResolve = resolve);
+  private lockSubject = new Subject<boolean>();
+  private lock$ = this.lockSubject.asObservable();
+
+  /**
+   * Number of concurrent requests allowed
+   * @type {number}
+   */
+  private concurrency = 5;
+  /**
+   * Queue items
+   * @type {Array}
+   */
+  private queue: QueueItem[] = [];
+  private processing = 0;
+  /**
+   * Fast accessible Object for currently processing items
+   */
+  private currentlyProcessing: { [index: string]: Promise<any> } = {};
+  private cacheIndex: IndexItem[] = [];
+  private currentCacheSize = 0;
+  private indexed = false;
+
+  private lockedCallsQueue: Function[] = [];
+
+  ready(): Promise<void> {
+    return this.initPromise;
+  }
 
   /**
    * Preload an image
@@ -156,8 +158,6 @@ export class ImageLoaderService {
     }
     return this.file.cacheDirectory;
   }
-
-  private lockedCallsQueue: Function[] = [];
 
   private async processLockedQueue() {
     if (await this.getLockedState()) {
@@ -273,7 +273,7 @@ export class ImageLoaderService {
    */
   async getImagePath(imageUrl: string): Promise<string> {
     if (typeof imageUrl !== 'string' || imageUrl.length <= 0) {
-      throw 'The image url provided was empty or invalid.';
+      throw new Error('The image url provided was empty or invalid.');
     }
 
     await this.ready();
@@ -511,7 +511,7 @@ export class ImageLoaderService {
 
           // delete the file then process next file if necessary
           try {
-            await this.removeFile(file.name)
+            await this.removeFile(file.name);
           } catch (err) {
             // ignore errors, nothing we can do about it
           }
@@ -551,7 +551,7 @@ export class ImageLoaderService {
     await this.ready();
 
     if (!this.isCacheReady) {
-      throw 'Cache is not ready';
+      throw new Error('Cache is not ready');
     }
 
     // if we're running with livereload, ignore cache and call the resource from it's URL

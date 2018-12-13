@@ -126,7 +126,7 @@ export class IonicImageLoaderComponent implements OnInit {
     set src(imageUrl: string) {
         this._src = this.processImageUrl(imageUrl);
         this.updateImage(this._src);
-    };
+    }
 
     ngOnInit(): void {
         if (this.fallbackAsPlaceholder && this.fallbackUrl) {
