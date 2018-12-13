@@ -46,7 +46,7 @@ export class ImageLoaderConfigService {
 
     cacheDirectoryType: 'cache' | 'data' | 'external' = 'cache';
 
-    private _cacheDirectoryName: string = 'image-loader-cache';
+    private _cacheDirectoryName = 'image-loader-cache';
 
 
     get cacheDirectoryName() {
