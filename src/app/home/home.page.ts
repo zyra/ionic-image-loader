@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
-import { ImageLoaderConfigService } from '../../../projects/ionic-image-loader/services/image-loader-config.service';
-import { ImageLoaderService } from '../../../projects/ionic-image-loader/services/image-loader.service';
+import { ImageLoaderConfigService } from '../../../projects/ionic-image-loader/src/lib/services/image-loader-config.service';
+import { ImageLoaderService } from '../../../projects/ionic-image-loader/src/lib/services/image-loader.service';
 
 @Component({
     selector: 'app-home',

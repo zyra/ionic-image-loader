@@ -3,8 +3,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { File } from '@ionic-native/file/ngx';
 import { IonicModule } from '@ionic/angular';
 
-import { ImageLoaderConfigService } from '../../services/image-loader-config.service';
-import { ImageLoaderService } from '../../services/image-loader.service';
+import { ImageLoaderConfigService } from './services/image-loader-config.service';
+import { ImageLoaderService } from './services/image-loader.service';
 import { IonicImageLoaderComponent } from './ionic-image-loader.component';
 import { CommonModule } from '@angular/common';
 
