@@ -74,6 +74,7 @@ export class ImageLoaderService {
       this.throwWarning(
         'You are running on a browser or using livereload, IonicImageLoader will not function, falling back to browser loading.',
       );
+      this.initPromiseResolve();
     } else {
       fromEvent(document, 'deviceready')
         .pipe(first())
@@ -84,6 +85,7 @@ export class ImageLoaderService {
             // we are running on a browser, or using livereload
             // plugin will not function in this case
             this.isInit = true;
+            this.initPromiseResolve();
             this.throwWarning(
               'You are running on a browser or using livereload, IonicImageLoader will not function, falling back to browser loading.',
             );
@@ -434,6 +436,7 @@ export class ImageLoaderService {
     }
 
     this.isInit = true;
+    this.initPromiseResolve();
   }
 
   /**
