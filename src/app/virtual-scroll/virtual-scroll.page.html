@@ -11,15 +11,17 @@
 
 <ion-content padding>
   <ion-virtual-scroll [items]="images" [approxItemHeight]="'70px'">
-    <button ion-item *virtualItem="let image" text-wrap>
-      <ion-avatar item-left>
+    <ion-item *virtualItem="let image" text-wrap>
+      <ion-avatar slot="start">
         <img-loader [src]="image" useImg [spinner]="false"></img-loader>
       </ion-avatar>
-      <h2>Something here</h2>
-      <p>More stuff here</p>
-      <ion-avatar item-right>
+      <ion-label>
+        <h2>Something here</h2>
+        <p>More stuff here</p>
+      </ion-label>
+      <ion-avatar slot="end">
         <img [src]="image" alt="">
       </ion-avatar>
-    </button>
+    </ion-item>
   </ion-virtual-scroll>
 </ion-content>
