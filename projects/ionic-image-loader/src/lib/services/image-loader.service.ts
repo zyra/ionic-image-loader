@@ -28,6 +28,38 @@ const EXTENSIONS = ['jpg', 'png', 'jpeg', 'gif', 'svg', 'tiff'];
 })
 export class ImageLoaderService {
 
+  /**
+   * Indicates if the cache service is ready.
+   * When the cache service isn't ready, images are loaded via browser instead.
+   */
+  private isCacheReady = false;
+  /**
+   * Indicates if this service is initialized.
+   * This service is initialized once all the setup is done.
+   */
+  private isInit = false;
+  private initPromiseResolve: Function;
+  private initPromise = new Promise<void>(resolve => this.initPromiseResolve = resolve);
+  private lockSubject = new Subject<boolean>();
+  private lock$ = this.lockSubject.asObservable();
+  /**
+   * Number of concurrent requests allowed
+   */
+  private concurrency = 5;
+  /**
+   * Queue items
+   */
+  private queue: QueueItem[] = [];
+  private processing = 0;
+  /**
+   * Fast accessible Object for currently processing items
+   */
+  private currentlyProcessing: { [index: string]: Promise<any> } = {};
+  private cacheIndex: IndexItem[] = [];
+  private currentCacheSize = 0;
+  private indexed = false;
+  private lockedCallsQueue: Function[] = [];
+
   constructor(
     private config: ImageLoaderConfigService,
     private file: File,
@@ -98,39 +130,6 @@ export class ImageLoaderService {
   private get canProcess(): boolean {
     return this.queue.length > 0 && this.processing < this.concurrency;
   }
-  /**
-   * Indicates if the cache service is ready.
-   * When the cache service isn't ready, images are loaded via browser instead.
-   */
-  private isCacheReady = false;
-  /**
-   * Indicates if this service is initialized.
-   * This service is initialized once all the setup is done.
-   */
-  private isInit = false;
-  private initPromiseResolve: Function;
-  private initPromise = new Promise<void>(resolve => this.initPromiseResolve = resolve);
-  private lockSubject = new Subject<boolean>();
-  private lock$ = this.lockSubject.asObservable();
-
-  /**
-   * Number of concurrent requests allowed
-   */
-  private concurrency = 5;
-  /**
-   * Queue items
-   */
-  private queue: QueueItem[] = [];
-  private processing = 0;
-  /**
-   * Fast accessible Object for currently processing items
-   */
-  private currentlyProcessing: { [index: string]: Promise<any> } = {};
-  private cacheIndex: IndexItem[] = [];
-  private currentCacheSize = 0;
-  private indexed = false;
-
-  private lockedCallsQueue: Function[] = [];
 
   ready(): Promise<void> {
     return this.initPromise;
@@ -152,49 +151,6 @@ export class ImageLoaderService {
       return this.platform.is('android') ? this.file.externalDataDirectory : this.file.documentsDirectory;
     }
     return this.file.cacheDirectory;
-  }
-
-  private async processLockedQueue() {
-    if (await this.getLockedState()) {
-      return;
-    }
-
-    if (this.lockedCallsQueue.length > 0) {
-      await this.setLockedState(true);
-
-      try {
-        await this.lockedCallsQueue.slice(0, 1)[0]();
-      } catch (err) {
-        console.log('Error running locked function: ', err);
-      }
-
-      await this.setLockedState(false);
-      return this.processLockedQueue();
-    }
-  }
-
-  private getLockedState(): Promise<boolean> {
-    return this.lock$
-      .pipe(take(1))
-      .toPromise();
-  }
-
-  private awaitUnlocked(): Promise<boolean> {
-    return this.lock$
-      .pipe(
-        filter(locked => !!locked),
-        take(1),
-      )
-      .toPromise();
-  }
-
-  private async setLockedState(locked: boolean) {
-    this.lockSubject.next(locked);
-  }
-
-  private runLocked(fn: Function) {
-    this.lockedCallsQueue.push(fn);
-    this.processLockedQueue();
   }
 
   /**
@@ -227,7 +183,6 @@ export class ImageLoaderService {
       return this.initCache(true);
     });
   }
-
 
   /**
    * Clears the cache
@@ -288,6 +243,49 @@ export class ImageLoaderService {
       // image doesn't exist in cache, lets fetch it and save it
       return this.addItemToQueue(imageUrl);
     }
+  }
+
+  private async processLockedQueue() {
+    if (await this.getLockedState()) {
+      return;
+    }
+
+    if (this.lockedCallsQueue.length > 0) {
+      await this.setLockedState(true);
+
+      try {
+        await this.lockedCallsQueue.slice(0, 1)[0]();
+      } catch (err) {
+        console.log('Error running locked function: ', err);
+      }
+
+      await this.setLockedState(false);
+      return this.processLockedQueue();
+    }
+  }
+
+  private getLockedState(): Promise<boolean> {
+    return this.lock$
+      .pipe(take(1))
+      .toPromise();
+  }
+
+  private awaitUnlocked(): Promise<boolean> {
+    return this.lock$
+      .pipe(
+        filter(locked => !!locked),
+        take(1),
+      )
+      .toPromise();
+  }
+
+  private async setLockedState(locked: boolean) {
+    this.lockSubject.next(locked);
+  }
+
+  private runLocked(fn: Function) {
+    this.lockedCallsQueue.push(fn);
+    this.processLockedQueue();
   }
 
   /**

@@ -8,12 +8,12 @@ import { Component, OnInit } from '@angular/core';
 export class ConcurrencyPage implements OnInit {
   images: string[] = [];
 
-    constructor() {
-        for (let i = 0; i < 30; i++) {
-            const url = 'http://lorempixel.com/1920/1920/abstract/?v=' + Date.now() + i;
-            this.images.push(url);
-        }
+  constructor() {
+    for (let i = 0; i < 30; i++) {
+      const url = 'http://lorempixel.com/1920/1920/abstract/?v=' + Date.now() + i;
+      this.images.push(url);
     }
+  }
 
   ngOnInit() {
   }

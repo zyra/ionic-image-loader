@@ -1,19 +1,19 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Routes, RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 
-import { VirtualScrollPage } from './virtual-scroll.page';
-
 import { IonicImageLoader } from '../../../projects/ionic-image-loader/src/lib/ionic-image-loader.module';
+
+import { VirtualScrollPage } from './virtual-scroll.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: VirtualScrollPage
-  }
+    component: VirtualScrollPage,
+  },
 ];
 
 @NgModule({
@@ -22,8 +22,9 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     IonicImageLoader,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
   ],
-  declarations: [VirtualScrollPage]
+  declarations: [VirtualScrollPage],
 })
-export class VirtualScrollPageModule {}
+export class VirtualScrollPageModule {
+}

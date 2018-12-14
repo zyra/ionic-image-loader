@@ -1,18 +1,24 @@
 {
-    "extends": "../../tslint.json",
-    "rules": {
-        "directive-selector": [
-            true,
-            "attribute",
-            ["img","ionic-image-loader"],
-            "camelCase"
-        ],
-        "component-selector": [
-            true,
-            "element",
-            ["img","ionic-image-loader"],
-            "kebab-case"
-        ],
-        "no-bitwise": false
-    }
+  "extends": "../../tslint.json",
+  "rules": {
+    "directive-selector": [
+      true,
+      "attribute",
+      [
+        "img",
+        "ionic-image-loader"
+      ],
+      "camelCase"
+    ],
+    "component-selector": [
+      true,
+      "element",
+      [
+        "img",
+        "ionic-image-loader"
+      ],
+      "kebab-case"
+    ],
+    "no-bitwise": false
+  }
 }

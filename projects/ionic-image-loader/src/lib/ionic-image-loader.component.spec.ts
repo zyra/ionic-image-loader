@@ -8,9 +8,9 @@ describe('IonicImageLoaderComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ IonicImageLoaderComponent ]
+      declarations: [IonicImageLoaderComponent],
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

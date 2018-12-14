@@ -7,7 +7,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SliderPage implements OnInit {
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit() {
   }

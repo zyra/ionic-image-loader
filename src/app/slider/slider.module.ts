@@ -1,19 +1,19 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Routes, RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 
-import { SliderPage } from './slider.page';
-
 import { IonicImageLoader } from '../../../projects/ionic-image-loader/src/lib/ionic-image-loader.module';
+
+import { SliderPage } from './slider.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: SliderPage
-  }
+    component: SliderPage,
+  },
 ];
 
 @NgModule({
@@ -22,8 +22,9 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     IonicImageLoader,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
   ],
-  declarations: [SliderPage]
+  declarations: [SliderPage],
 })
-export class SliderPageModule {}
+export class SliderPageModule {
+}

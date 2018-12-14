@@ -1,19 +1,19 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Routes, RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 
-import { NgContentPage } from './ng-content.page';
-
 import { IonicImageLoader } from '../../../projects/ionic-image-loader/src/lib/ionic-image-loader.module';
+
+import { NgContentPage } from './ng-content.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: NgContentPage
-  }
+    component: NgContentPage,
+  },
 ];
 
 @NgModule({
@@ -22,8 +22,9 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     RouterModule.forChild(routes),
-    IonicImageLoader
+    IonicImageLoader,
   ],
-  declarations: [NgContentPage]
+  declarations: [NgContentPage],
 })
-export class NgContentPageModule {}
+export class NgContentPageModule {
+}
