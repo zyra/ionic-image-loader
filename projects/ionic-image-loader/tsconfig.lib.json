@@ -15,7 +15,8 @@
     "lib": [
       "dom",
       "es2015"
-    ]
+    ],
+    "baseUrl": "."
   },
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
