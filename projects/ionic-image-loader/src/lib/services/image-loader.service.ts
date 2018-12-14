@@ -27,37 +27,6 @@ const EXTENSIONS = ['jpg', 'png', 'jpeg', 'gif', 'svg', 'tiff'];
   providedIn: 'root',
 })
 export class ImageLoaderService {
-  /**
-   * Indicates if the cache service is ready.
-   * When the cache service isn't ready, images are loaded via browser instead.
-   */
-  private isCacheReady: boolean = false;
-  /**
-   * Indicates if this service is initialized.
-   * This service is initialized once all the setup is done.
-   */
-  private isInit: boolean = false;
-  private initPromiseResolve: Function;
-  private initPromise = new Promise<void>(resolve => this.initPromiseResolve = resolve);
-  private lockSubject = new Subject<boolean>();
-  private lock$ = this.lockSubject.asObservable();
-
-  /**
-   * Number of concurrent requests allowed
-   */
-  private concurrency: number = 5;
-  /**
-   * Queue items
-   */
-  private queue: QueueItem[] = [];
-  private processing: number = 0;
-  /**
-   * Fast accessible Object for currently processing items
-   */
-  private currentlyProcessing: { [index: string]: Promise<any> } = {};
-  private cacheIndex: IndexItem[] = [];
-  private currentCacheSize: number = 0;
-  private indexed: boolean = false;
 
   constructor(
     private config: ImageLoaderConfigService,
@@ -95,10 +64,6 @@ export class ImageLoaderService {
     return File.installed();
   }
 
-  ready(): Promise<void> {
-    return this.initPromise;
-  }
-
   private get isCacheSpaceExceeded(): boolean {
     return (
       this.config.maxCacheSize > -1 &&
@@ -129,10 +94,46 @@ export class ImageLoaderService {
 
   /**
    * Check if we can process more items in the queue
-   * @returns
    */
   private get canProcess(): boolean {
     return this.queue.length > 0 && this.processing < this.concurrency;
+  }
+  /**
+   * Indicates if the cache service is ready.
+   * When the cache service isn't ready, images are loaded via browser instead.
+   */
+  private isCacheReady = false;
+  /**
+   * Indicates if this service is initialized.
+   * This service is initialized once all the setup is done.
+   */
+  private isInit = false;
+  private initPromiseResolve: Function;
+  private initPromise = new Promise<void>(resolve => this.initPromiseResolve = resolve);
+  private lockSubject = new Subject<boolean>();
+  private lock$ = this.lockSubject.asObservable();
+
+  /**
+   * Number of concurrent requests allowed
+   */
+  private concurrency = 5;
+  /**
+   * Queue items
+   */
+  private queue: QueueItem[] = [];
+  private processing = 0;
+  /**
+   * Fast accessible Object for currently processing items
+   */
+  private currentlyProcessing: { [index: string]: Promise<any> } = {};
+  private cacheIndex: IndexItem[] = [];
+  private currentCacheSize = 0;
+  private indexed = false;
+
+  private lockedCallsQueue: Function[] = [];
+
+  ready(): Promise<void> {
+    return this.initPromise;
   }
 
   /**
@@ -152,8 +153,6 @@ export class ImageLoaderService {
     }
     return this.file.cacheDirectory;
   }
-
-  private lockedCallsQueue: Function[] = [];
 
   private async processLockedQueue() {
     if (await this.getLockedState()) {
@@ -269,7 +268,7 @@ export class ImageLoaderService {
    */
   async getImagePath(imageUrl: string): Promise<string> {
     if (typeof imageUrl !== 'string' || imageUrl.length <= 0) {
-      throw 'The image url provided was empty or invalid.';
+      throw new Error('The image url provided was empty or invalid.');
     }
 
     await this.ready();
@@ -415,7 +414,6 @@ export class ImageLoaderService {
   /**
    * Search if the url is currently in the queue
    * @param imageUrl Image url to search
-   * @returns
    */
   private currentlyInQueue(imageUrl: string) {
     return this.queue.some(item => item.imageUrl === imageUrl);
@@ -443,8 +441,7 @@ export class ImageLoaderService {
   /**
    * Adds a file to index.
    * Also deletes any files if they are older than the set maximum cache age.
-   * @param file File to index
-
+   * @param file FileEntry to index
    */
   private async addFileToIndex(file: FileEntry): Promise<any> {
     const metadata = await new Promise<any>((resolve, reject) => file.getMetadata(resolve, reject));
@@ -471,7 +468,6 @@ export class ImageLoaderService {
 
   /**
    * Indexes the cache if necessary
-
    */
   private async indexCache(): Promise<void> {
     this.cacheIndex = [];
@@ -507,7 +503,7 @@ export class ImageLoaderService {
 
           // delete the file then process next file if necessary
           try {
-            await this.removeFile(file.name)
+            await this.removeFile(file.name);
           } catch (err) {
             // ignore errors, nothing we can do about it
           }
@@ -524,7 +520,6 @@ export class ImageLoaderService {
   /**
    * Remove a file
    * @param file The name of the file to remove
-
    */
   private async removeFile(file: string): Promise<any> {
     await this.file.removeFile(this.getFileCacheDirectory() + this.config.cacheDirectoryName, file);
@@ -541,13 +536,13 @@ export class ImageLoaderService {
   /**
    * Get the local path of a previously cached image if exists
    * @param url The remote URL of the image
-    Returns a promise that resolves with the local path if exists, or rejects if doesn't exist
+   * @returns Returns a promise that resolves with the local path if exists, or rejects if doesn't exist
    */
   private async getCachedImagePath(url: string): Promise<string> {
     await this.ready();
 
     if (!this.isCacheReady) {
-      throw 'Cache is not ready';
+      throw new Error('Cache is not ready');
     }
 
     // if we're running with livereload, ignore cache and call the resource from it's URL
@@ -632,7 +627,7 @@ export class ImageLoaderService {
    * Throws a console error if debug mode is enabled
    * @param args Error message
    */
-  private throwError(...args: any[]): void {
+  private throwError(...args: any[]) {
     if (this.config.debugMode) {
       args.unshift('ImageLoader Error: ');
       console.error.apply(console, args);
@@ -643,7 +638,7 @@ export class ImageLoaderService {
    * Throws a console warning if debug mode is enabled
    * @param args Error message
    */
-  private throwWarning(...args: any[]): void {
+  private throwWarning(...args: any[]) {
     if (this.config.debugMode) {
       args.unshift('ImageLoader Warning: ');
       console.warn.apply(console, args);
@@ -746,7 +741,8 @@ export class ImageLoaderService {
    *
    * @param url
    * @returns
-   * Not always will url's contain a valid image extension. We'll check if any valid extension is supplied.
+   *
+   * Not always will url's contain a valid image extention. We'll check if any valid extention is supplied.
    * If not, we will use the default.
    */
   private getExtensionFromUrl(url: string): string {

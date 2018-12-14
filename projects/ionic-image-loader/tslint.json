@@ -12,6 +12,7 @@
             "element",
             ["img","ionic-image-loader"],
             "kebab-case"
-        ]
+        ],
+        "no-bitwise": false
     }
 }
