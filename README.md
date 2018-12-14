@@ -1,2 +1,6 @@
 # ionic-image-loader for ionic v4
-Still a [WIP]
+
+To install:
+```shell
+npm i -S ionic-image-loader@beta
+```
