@@ -166,7 +166,7 @@
       "root": "projects/ionic-image-loader",
       "sourceRoot": "projects/ionic-image-loader/src",
       "projectType": "library",
-      "prefix": "tm",
+      "prefix": "img",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-ng-packagr:build",
