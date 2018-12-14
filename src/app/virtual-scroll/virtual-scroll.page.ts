@@ -18,9 +18,12 @@ export class VirtualScrollPage implements OnInit {
   ];
 
   constructor() {
-  }
-
-  ngOnInit() {
+    for (let i = 0; i < 5; i++) {
+      this.images = [
+        ...this.images,
+        ...this.images,
+      ];
+    }
   }
 
 }
