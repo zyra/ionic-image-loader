@@ -15,7 +15,7 @@ export class HomePage {
     this.imageLoaderConfig.setMaximumCacheAge(60 * 60 * 1000);
   }
 
-  clearCache(): void {
+  clearCache() {
     this.imageLoader.clearCache();
   }
 }
