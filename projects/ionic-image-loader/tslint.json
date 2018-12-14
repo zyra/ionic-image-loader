@@ -4,13 +4,13 @@
         "directive-selector": [
             true,
             "attribute",
-            "tm",
+            ["img","ionic-image-loader"],
             "camelCase"
         ],
         "component-selector": [
             true,
             "element",
-            "tm",
+            ["img","ionic-image-loader"],
             "kebab-case"
         ]
     }

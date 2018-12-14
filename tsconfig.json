@@ -12,13 +12,9 @@
       "es2017",
       "dom"
     ],
+    "baseUrl": ".",
     "paths": {
-      "ionic-image-loader": [
-        "dist/ionic-image-loader"
-      ],
-      "ionic-image-loader/*": [
-        "dist/ionic-image-loader/*"
-      ]
+      "ionic-image-loader/*": ["dist/ionic-image-loader/*"]
     }
   }
 }

@@ -17,7 +17,6 @@ import { CommonModule } from '@angular/common';
   declarations: [IonicImageLoaderComponent],
   exports: [IonicImageLoaderComponent]
 })
-
 export class IonicImageLoader {
   static forRoot(): ModuleWithProviders {
     return {

@@ -17,8 +17,14 @@ export interface ImageAttribute {
 
 @Component({
     selector: 'img-loader',
-    template: '<ion-spinner *ngIf="spinner && isLoading && !fallbackAsPlaceholder" [name]="spinnerName" [color]="spinnerColor"></ion-spinner>' +
-    '<ng-content></ng-content>',
+    template: `
+        <ion-spinner
+          *ngIf="spinner && isLoading && !fallbackAsPlaceholder"
+          [name]="spinnerName"
+          [color]="spinnerColor"
+        ></ion-spinner>
+        <ng-content></ng-content>
+    `,
     styles: [
         'ion-spinner { float: none; margin-left: auto; margin-right: auto; display: block; }'
     ]
@@ -40,10 +46,9 @@ export class IonicImageLoaderComponent implements OnInit {
     /**
      * Attributes to pass through to img tag if _useImg == true
      */
-    @Input('imgAttributes') imgAttributes: ImageAttribute[] = [];
+    @Input() imgAttributes: ImageAttribute[] = [];
     /**
      * Enable/Disable caching
-     * @type {boolean}
      */
     @Input() cache = true;
     /**
@@ -81,7 +86,6 @@ export class IonicImageLoaderComponent implements OnInit {
     load: EventEmitter<IonicImageLoaderComponent> = new EventEmitter<IonicImageLoaderComponent>();
     /**
      * Indicates if the image is still loading
-     * @type {boolean}
      */
     isLoading = true;
     element: HTMLElement;
@@ -106,7 +110,6 @@ export class IonicImageLoaderComponent implements OnInit {
 
     /**
      * Convenience attribute to disable caching
-     * @param val
      */
     @Input()
     set noCache(val: boolean) {
@@ -126,7 +129,7 @@ export class IonicImageLoaderComponent implements OnInit {
     set src(imageUrl: string) {
         this._src = this.processImageUrl(imageUrl);
         this.updateImage(this._src);
-    };
+    }
 
     ngOnInit(): void {
         if (this.fallbackAsPlaceholder && this.fallbackUrl) {
@@ -157,7 +160,6 @@ export class IonicImageLoaderComponent implements OnInit {
 
     /**
      * Gets the image URL to be loaded and disables caching if necessary
-     * @returns {string}
      */
     private processImageUrl(imageUrl: string): string {
         if (this.cache === false) {
@@ -178,8 +180,8 @@ export class IonicImageLoaderComponent implements OnInit {
 
     /**
      * Set the image to be displayed
-     * @param imageUrl {string} image src
-     * @param stopLoading {boolean} set to true to mark the image as loaded
+     * @param imageUrl image src
+     * @param stopLoading set to true to mark the image as loaded
      */
     private setImage(imageUrl: string, stopLoading: boolean = true): void {
         this.isLoading = !stopLoading;

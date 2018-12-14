@@ -30,13 +30,11 @@ export class ImageLoaderService {
   /**
    * Indicates if the cache service is ready.
    * When the cache service isn't ready, images are loaded via browser instead.
-   * @type {boolean}
    */
   private isCacheReady: boolean = false;
   /**
    * Indicates if this service is initialized.
    * This service is initialized once all the setup is done.
-   * @type {boolean}
    */
   private isInit: boolean = false;
   private initPromiseResolve: Function;
@@ -46,12 +44,10 @@ export class ImageLoaderService {
 
   /**
    * Number of concurrent requests allowed
-   * @type {number}
    */
   private concurrency: number = 5;
   /**
    * Queue items
-   * @type {Array}
    */
   private queue: QueueItem[] = [];
   private processing: number = 0;
@@ -133,7 +129,7 @@ export class ImageLoaderService {
 
   /**
    * Check if we can process more items in the queue
-   * @returns {boolean}
+   * @returns
    */
   private get canProcess(): boolean {
     return this.queue.length > 0 && this.processing < this.concurrency;
@@ -141,8 +137,8 @@ export class ImageLoaderService {
 
   /**
    * Preload an image
-   * @param {string} imageUrl Image URL
-   * @returns {Promise<string>} returns a promise that resolves with the cached image URL
+   * @param imageUrl Image URL
+   * @returns returns a promise that resolves with the cached image URL
    */
   preload(imageUrl: string): Promise<string> {
     return this.getImagePath(imageUrl);
@@ -204,7 +200,7 @@ export class ImageLoaderService {
 
   /**
    * Clears cache of a single image
-   * @param {string} imageUrl Image URL
+   * @param imageUrl Image URL
    */
   async clearImageCache(imageUrl: string) {
     if (!this.platform.is('cordova')) {
@@ -268,8 +264,8 @@ export class ImageLoaderService {
   /**
    * Gets the filesystem path of an image.
    * This will return the remote path if anything goes wrong or if the cache service isn't ready yet.
-   * @param {string} imageUrl The remote URL of the image
-   * @returns {Promise<string>} Returns a promise that will always resolve with an image URL
+   * @param imageUrl The remote URL of the image
+   * @returns Returns a promise that will always resolve with an image URL
    */
   async getImagePath(imageUrl: string): Promise<string> {
     if (typeof imageUrl !== 'string' || imageUrl.length <= 0) {
@@ -297,7 +293,7 @@ export class ImageLoaderService {
 
   /**
    * Returns if an imageUrl is an relative path
-   * @param {string} imageUrl
+   * @param imageUrl
    */
   private isImageUrlRelative(imageUrl: string) {
     return !/^(https?|file):\/\/\/?/i.test(imageUrl);
@@ -305,7 +301,7 @@ export class ImageLoaderService {
 
   /**
    * Add an item to the queue
-   * @param {string} imageUrl
+   * @param imageUrl
    * @param resolve
    * @param reject
    */
@@ -418,8 +414,8 @@ export class ImageLoaderService {
 
   /**
    * Search if the url is currently in the queue
-   * @param imageUrl {string} Image url to search
-   * @returns {boolean}
+   * @param imageUrl Image url to search
+   * @returns
    */
   private currentlyInQueue(imageUrl: string) {
     return this.queue.some(item => item.imageUrl === imageUrl);
@@ -427,7 +423,7 @@ export class ImageLoaderService {
 
   /**
    * Initialize the cache service
-   * @param [replace] {boolean} Whether to replace the cache directory if it already exists
+   * @param [replace] Whether to replace the cache directory if it already exists
    */
   private async initCache(replace?: boolean) {
     this.concurrency = this.config.concurrency;
@@ -447,8 +443,8 @@ export class ImageLoaderService {
   /**
    * Adds a file to index.
    * Also deletes any files if they are older than the set maximum cache age.
-   * @param {FileEntry} file File to index
-   * @returns {Promise<any>}
+   * @param file File to index
+
    */
   private async addFileToIndex(file: FileEntry): Promise<any> {
     const metadata = await new Promise<any>((resolve, reject) => file.getMetadata(resolve, reject));
@@ -475,7 +471,7 @@ export class ImageLoaderService {
 
   /**
    * Indexes the cache if necessary
-   * @returns {Promise<void>}
+
    */
   private async indexCache(): Promise<void> {
     this.cacheIndex = [];
@@ -527,8 +523,8 @@ export class ImageLoaderService {
 
   /**
    * Remove a file
-   * @param {string} file The name of the file to remove
-   * @returns {Promise<any>}
+   * @param file The name of the file to remove
+
    */
   private async removeFile(file: string): Promise<any> {
     await this.file.removeFile(this.getFileCacheDirectory() + this.config.cacheDirectoryName, file);
@@ -544,8 +540,8 @@ export class ImageLoaderService {
 
   /**
    * Get the local path of a previously cached image if exists
-   * @param {string} url The remote URL of the image
-   * @returns {Promise<string>} Returns a promise that resolves with the local path if exists, or rejects if doesn't exist
+   * @param url The remote URL of the image
+    Returns a promise that resolves with the local path if exists, or rejects if doesn't exist
    */
   private async getCachedImagePath(url: string): Promise<string> {
     await this.ready();
@@ -616,7 +612,7 @@ export class ImageLoaderService {
 
   /**
    * Normalizes the image uri to a version that can be loaded in the webview
-   * @fileEntry {FileEntry} the fileentry of the image file
+   * @param fileEntry the FileEntry of the image file
    * @returns the normalized Url
    */
 
@@ -634,7 +630,7 @@ export class ImageLoaderService {
 
   /**
    * Throws a console error if debug mode is enabled
-   * @param {any[]} args Error message
+   * @param args Error message
    */
   private throwError(...args: any[]): void {
     if (this.config.debugMode) {
@@ -645,7 +641,7 @@ export class ImageLoaderService {
 
   /**
    * Throws a console warning if debug mode is enabled
-   * @param {any[]} args Error message
+   * @param args Error message
    */
   private throwWarning(...args: any[]): void {
     if (this.config.debugMode) {
@@ -656,8 +652,8 @@ export class ImageLoaderService {
 
   /**
    * Check if the cache directory exists
-   * @param directory {string} The directory to check. Either this.file.tempDirectory or this.getFileCacheDirectory()
-   * @returns {Promise<boolean|FileError>} Returns a promise that resolves if exists, and rejects if it doesn't
+   * @param directory The directory to check. Either this.file.tempDirectory or this.getFileCacheDirectory()
+   * @returns Returns a promise that resolves if exists, and rejects if it doesn't
    */
   private cacheDirectoryExists(directory: string): Promise<boolean> {
     return this.file.checkDir(directory, this.config.cacheDirectoryName);
@@ -665,8 +661,8 @@ export class ImageLoaderService {
 
   /**
    * Create the cache directories
-   * @param replace {boolean} override directory if exists
-   * @returns {Promise<DirectoryEntry|FileError>} Returns a promise that resolves if the directories were created, and rejects on error
+   * @param replace override directory if exists
+   * @returns Returns a promise that resolves if the directories were created, and rejects on error
    */
   private createCacheDirectory(replace: boolean = false): Promise<any> {
     let cacheDirectoryPromise: Promise<any>, tempDirectoryPromise: Promise<any>;
@@ -711,8 +707,8 @@ export class ImageLoaderService {
 
   /**
    * Creates a unique file name out of the URL
-   * @param {string} url URL of the file
-   * @returns {string} Unique file name
+   * @param url URL of the file
+   * @returns Unique file name
    */
   private createFileName(url: string): string {
     // hash the url to get a unique file name
@@ -726,8 +722,8 @@ export class ImageLoaderService {
 
   /**
    * Converts a string to a unique 32-bit int
-   * @param {string} string string to hash
-   * @returns {number} 32-bit int
+   * @param string string to hash
+   * @returns 32-bit int
    */
   private hashString(string: string): number {
     let hash = 0,
@@ -748,10 +744,9 @@ export class ImageLoaderService {
   /**
    * Extract extension from filename or url
    *
-   * @param {string} url
-   * @returns {string}
-   *
-   * Not always will url's contain a valid image extention. We'll check if any valid extention is supplied.
+   * @param url
+   * @returns
+   * Not always will url's contain a valid image extension. We'll check if any valid extension is supplied.
    * If not, we will use the default.
    */
   private getExtensionFromUrl(url: string): string {
