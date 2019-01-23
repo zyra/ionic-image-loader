@@ -1,10 +1,10 @@
 import { HttpClient }             from '@angular/common/http';
 import { Injectable }             from '@angular/core';
 import { File, FileEntry }        from '@ionic-native/file';
-import { normalizeURL, Platform } from 'ionic-angular';
+import { Platform }               from 'ionic-angular';
 import { fromEvent }              from 'rxjs/observable/fromEvent';
-import { first }                  from 'rxjs/operators';
-import { ImageLoaderConfig }      from './image-loader-config';
+import { first }                   from 'rxjs/operators';
+import { ImageLoaderConfig }       from './image-loader-config';
 
 interface IndexItem {
   name: string;
@@ -558,14 +558,8 @@ export class ImageLoader {
             // in this case only the tempDirectory is accessible,
             // therefore the file needs to be copied into that directory first!
             if (this.isIonicWKWebView) {
-              // Use Ionic normalizeUrl to generate the right URL for Ionic WKWebView
-              if (typeof Ionic.normalizeURL === 'function' ) {
-                resolve(Ionic.normalizeURL(fileEntry.nativeURL));
-              } else if (Ionic.WebView && typeof Ionic.WebView.convertFileSrc === 'function') {
-                resolve(Ionic.WebView.convertFileSrc(fileEntry.nativeURL));
-              } else {
-                resolve(normalizeURL(fileEntry.nativeURL));
-              }
+              // Use Ionic convertFileSrc to generate the right URL for Ionic WKWebView
+              resolve(Ionic.WebView.convertFileSrc(fileEntry.nativeURL));
             } else if (this.isWKWebView) {
               // check if file already exists in temp directory
               this.file
@@ -573,7 +567,7 @@ export class ImageLoader {
                 .then((tempFileEntry: FileEntry) => {
                   // file exists in temp directory
                   // return native path
-                  resolve(tempFileEntry.nativeURL);
+                  resolve(Ionic.WebView.convertFileSrc(tempFileEntry.nativeURL));
                 })
                 .catch(() => {
                   // file does not yet exist in the temp directory.
@@ -583,13 +577,13 @@ export class ImageLoader {
                     .then((tempFileEntry: FileEntry) => {
                       // now the file exists in the temp directory
                       // return native path
-                      resolve(tempFileEntry.nativeURL);
+                      resolve(Ionic.WebView.convertFileSrc(tempFileEntry.nativeURL));
                     })
                     .catch(reject);
                 });
             } else {
               // return native path
-              resolve(fileEntry.nativeURL);
+              resolve(Ionic.WebView.convertFileSrc(fileEntry.nativeURL));
             }
           }
         })
