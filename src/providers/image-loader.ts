@@ -1,8 +1,8 @@
 import { HttpClient }             from '@angular/common/http';
 import { Injectable }             from '@angular/core';
 import { File, FileEntry }        from '@ionic-native/file';
-import { Platform }               from 'ionic-angular';
-import { fromEvent }              from 'rxjs/observable/fromEvent';
+import { Platform }               from '@ionic/angular';
+import { fromEvent }              from 'rxjs';
 import { first }                   from 'rxjs/operators';
 import { ImageLoaderConfig }       from './image-loader-config';
 
