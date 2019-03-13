@@ -1,9 +1,15 @@
+<a name="6.3.3"></a>
+## [6.3.3](https://github.com/zyra/ionic-image-loader/compare/v6.3.2...v6.3.3) (2019-03-13)
+
+
+
 <a name="6.3.2"></a>
-## [6.3.2](https://github.com/zyra/ionic-image-loader/compare/v6.3.0...v6.3.2) (2018-09-23)
+## [6.3.2](https://github.com/zyra/ionic-image-loader/compare/6.0.0...v6.3.2) (2018-09-23)
 
 
 ### Bug Fixes
 
+* **image-loader:** fix rxjs fromEvent issue ([ce7f59f](https://github.com/zyra/ionic-image-loader/commit/ce7f59f))
 * **image-loader:** URLs with query params lead to broken filenames ([#196](https://github.com/zyra/ionic-image-loader/issues/196)) ([d32f351](https://github.com/zyra/ionic-image-loader/commit/d32f351))
 * **image-loader:** Wrong path with Ionic on Android ([#194](https://github.com/zyra/ionic-image-loader/issues/194)) ([d4132f1](https://github.com/zyra/ionic-image-loader/commit/d4132f1))
 * **load:** fire load event only when image is done loading ([#200](https://github.com/zyra/ionic-image-loader/issues/200)) ([ce123dc](https://github.com/zyra/ionic-image-loader/commit/ce123dc)), closes [#195](https://github.com/zyra/ionic-image-loader/issues/195)
@@ -12,67 +18,20 @@
 ### Features
 
 * **clearImageCache:** add ability to remove single image cache ([#192](https://github.com/zyra/ionic-image-loader/issues/192)) ([e22aa57](https://github.com/zyra/ionic-image-loader/commit/e22aa57))
-
-
-
-<a name="6.3.0"></a>
-# [6.3.0](https://github.com/zyra/ionic-image-loader/compare/v6.2.0...v6.3.0) (2018-09-17)
-
-
-### Features
-
+* **image-loader:** add ionic webView 2 support ([#189](https://github.com/zyra/ionic-image-loader/issues/189)) ([da035a8](https://github.com/zyra/ionic-image-loader/commit/da035a8)), closes [#187](https://github.com/zyra/ionic-image-loader/issues/187)
+* **lib:** allow specifying storage type ([#177](https://github.com/zyra/ionic-image-loader/issues/177)) ([4d8e1c5](https://github.com/zyra/ionic-image-loader/commit/4d8e1c5))
+* **lib:** Angular5 support ([cb8fd22](https://github.com/zyra/ionic-image-loader/commit/cb8fd22))
 * **lib:** fix issues when loading same image multiple times ([f23056f](https://github.com/zyra/ionic-image-loader/commit/f23056f))
 
 
 
-<a name="6.2.0"></a>
-# [6.2.0](https://github.com/zyra/ionic-image-loader/compare/v6.1.0...v6.2.0) (2018-09-17)
-
-
-### Features
-
-* **lib:** allow specifying storage type ([#177](https://github.com/zyra/ionic-image-loader/issues/177)) ([4d8e1c5](https://github.com/zyra/ionic-image-loader/commit/4d8e1c5))
-
-
-
-<a name="6.1.0"></a>
-# [6.1.0](https://github.com/zyra/ionic-image-loader/compare/v5.1.1...v6.1.0) (2018-09-17)
-
-
-### Features
-
-* **image-loader:** add ionic webView 2 support ([#189](https://github.com/zyra/ionic-image-loader/issues/189)) ([da035a8](https://github.com/zyra/ionic-image-loader/commit/da035a8)), closes [#187](https://github.com/zyra/ionic-image-loader/issues/187)
-* **lib:** Angular5 support ([cb8fd22](https://github.com/zyra/ionic-image-loader/commit/cb8fd22))
-
-
-
-<a name="5.1.1"></a>
-## [5.1.1](https://github.com/zyra/ionic-image-loader/compare/6.0.0...v5.1.1) (2018-09-17)
-
-
-### Bug Fixes
-
-* **image-loader:** fix rxjs fromEvent issue ([ce7f59f](https://github.com/zyra/ionic-image-loader/commit/ce7f59f))
-
-
-
 <a name="6.0.0"></a>
-# [6.0.0](https://github.com/zyra/ionic-image-loader/compare/v6.0.0...6.0.0) (2018-09-17)
-
-
-
-<a name="6.0.0"></a>
-# [6.0.0](https://github.com/zyra/ionic-image-loader/compare/5.1.0...v6.0.0) (2018-09-17)
+# [6.0.0](https://github.com/zyra/ionic-image-loader/compare/5.1.0...6.0.0) (2018-09-17)
 
 
 
 <a name="5.1.0"></a>
-# [5.1.0](https://github.com/zyra/ionic-image-loader/compare/v5.1.0...5.1.0) (2018-09-17)
-
-
-
-<a name="5.1.0"></a>
-# [5.1.0](https://github.com/zyra/ionic-image-loader/compare/v5.0.4...v5.1.0) (2018-09-17)
+# [5.1.0](https://github.com/zyra/ionic-image-loader/compare/v5.0.4...5.1.0) (2018-09-17)
 
 
 ### Bug Fixes
@@ -202,9 +161,9 @@
 
 ### Bug Fixes
 
+* **core:** update to use ionic-native v4 ([0b14443](https://github.com/zyra/ionic-image-loader/commit/0b14443)), closes [#74](https://github.com/zyra/ionic-image-loader/issues/74)
 * add URL resolver ([#61](https://github.com/zyra/ionic-image-loader/issues/61)) ([da78d60](https://github.com/zyra/ionic-image-loader/commit/da78d60))
 * use deviceready and fix data:null issue ([#55](https://github.com/zyra/ionic-image-loader/issues/55)) ([fe1dca4](https://github.com/zyra/ionic-image-loader/commit/fe1dca4))
-* **core:** update to use ionic-native v4 ([0b14443](https://github.com/zyra/ionic-image-loader/commit/0b14443)), closes [#74](https://github.com/zyra/ionic-image-loader/issues/74)
 
 
 ### BREAKING CHANGES
@@ -262,18 +221,18 @@
 
 ### Bug Fixes
 
-* always use getCachedImagePath to get image path ([#25](https://github.com/zyra/ionic-image-loader/issues/25)) ([09ed878](https://github.com/zyra/ionic-image-loader/commit/09ed878))
 * **image-loader:** delete one file at once to maintain cache size ([f37f1e9](https://github.com/zyra/ionic-image-loader/commit/f37f1e9))
 * **image-loader:** delete one file at once to maintain cache size ([09871bd](https://github.com/zyra/ionic-image-loader/commit/09871bd))
 * **image-loader:** ignore errors when maintaining cache size ([4c14ee6](https://github.com/zyra/ionic-image-loader/commit/4c14ee6))
-* **image-loader:** trust all hosts ([6411b1c](https://github.com/zyra/ionic-image-loader/commit/6411b1c)), closes [#23](https://github.com/zyra/ionic-image-loader/issues/23)
 * **img-loader:** center align spinner ([8655454](https://github.com/zyra/ionic-image-loader/commit/8655454))
+* always use getCachedImagePath to get image path ([#25](https://github.com/zyra/ionic-image-loader/issues/25)) ([09ed878](https://github.com/zyra/ionic-image-loader/commit/09ed878))
+* **image-loader:** trust all hosts ([6411b1c](https://github.com/zyra/ionic-image-loader/commit/6411b1c)), closes [#23](https://github.com/zyra/ionic-image-loader/issues/23)
 
 
 ### Features
 
-* **img-loader:** add load output ([981dc69](https://github.com/zyra/ionic-image-loader/commit/981dc69)), closes [#24](https://github.com/zyra/ionic-image-loader/issues/24)
 * use ion-spinner and ionic native v3 ([50b6b7b](https://github.com/zyra/ionic-image-loader/commit/50b6b7b))
+* **img-loader:** add load output ([981dc69](https://github.com/zyra/ionic-image-loader/commit/981dc69)), closes [#24](https://github.com/zyra/ionic-image-loader/issues/24)
 
 
 
@@ -350,8 +309,8 @@
 
 ### Bug Fixes
 
-* **image-loader-spinner:** make spinner responsive and use svg ([e2616c3](https://github.com/zyra/ionic-image-loader/commit/e2616c3))
 * use fallback image if image fails to load ([#6](https://github.com/zyra/ionic-image-loader/issues/6)) ([d57f395](https://github.com/zyra/ionic-image-loader/commit/d57f395))
+* **image-loader-spinner:** make spinner responsive and use svg ([e2616c3](https://github.com/zyra/ionic-image-loader/commit/e2616c3))
 
 
 
