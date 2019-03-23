@@ -356,8 +356,8 @@ export class ImageLoader {
             error(e);
             reject(e);
           });
-        },
-      );
+        }
+      ).catch((e) => this.throwError(e));
     } else {
       // Prevented same Image from loading at the same time
       this.currentlyProcessing[currentItem.imageUrl].then(() => {
