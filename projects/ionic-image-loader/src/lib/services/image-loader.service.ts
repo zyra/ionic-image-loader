@@ -87,7 +87,8 @@ export class ImageLoaderService {
                         this.isInit = true;
                         this.initPromiseResolve();
                         this.throwWarning(
-                            'You are running on a browser or using livereload, IonicImageLoader will not function, falling back to browser loading.',
+                            'You are running on a browser or using livereload, IonicImageLoader will not function,' +
+                            ' falling back to browser loading.',
                         );
                     }
                 });
