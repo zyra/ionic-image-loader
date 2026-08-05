@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/zyra/ionic-image-loader#readme",
   "devDependencies": {
-    "@angular/common": "5.2.11",
+    "@angular/common": "20.3.27",
     "@angular/compiler": "5.2.11",
     "@angular/compiler-cli": "5.2.11",
     "@angular/core": "5.2.11",
